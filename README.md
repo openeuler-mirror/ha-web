@@ -1,7 +1,9 @@
-# ha-web
+# HA-web
 
 #### 介绍
-Web Interface for HA management
+HA-web：Linux 高可用集群Web提供一套基于BS架构对集群资源统一配置和管理的界面。
+该管理界面直观易用，可以实时监控所有集群节点的运行状态，能对集群资源进行规则设置、添加、启动、停止、修改、删除等常规操作。
+跨平台支持Chrome、IE、Firefox常用浏览器。
 
 #### 软件架构
 软件架构说明
