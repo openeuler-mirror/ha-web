@@ -22,37 +22,37 @@ service.interceptors.request.use(
   }
 )
 
-service.interceptors.response.use(
-  res => {
-    if (res.data.code !== 0) {
-      // Message({
-      //   message: res.data.msg || 'Error',
-      //   type: 'error',
-      //   duration: 5 * 1000
-      // })
-      if (res.data.code === 2) {
-        MessageBox.confirm('Session timed out, please login again.', '', {
-          confirmButtonText: 'login',
-          cancelButtonText: 'cancel',
-          type: 'warning'
-        }).then(() => {
-          location.reload()
-        })
-      }
-      return Promise.reject(new Error(res.data.msg || 'Error'))
-    } else {
-      return res
-    }
-  },
-  error => {
-    console.log('err' + error) 
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 5 * 1000
-    })
-    return Promise.reject(error)
-  }
-)
+// service.interceptors.response.use(
+//   res => {
+//     if (res.data.code ) {
+//       // Message({
+//       //   message: res.data.msg || 'Error',
+//       //   type: 'error',
+//       //   duration: 5 * 1000
+//       // })
+//       if (res.data.code === 2) {
+//         MessageBox.confirm('Session timed out, please login again.', '', {
+//           confirmButtonText: 'login',
+//           cancelButtonText: 'cancel',
+//           type: 'warning'
+//         }).then(() => {
+//           location.reload()
+//         })
+//       }
+//       return Promise.reject(new Error(res.data.msg || 'Error'))
+//     } else {
+//       return res
+//     }
+//   },
+//   error => {
+//     console.log('err' + error) 
+//     Message({
+//       message: error.message,
+//       type: 'error',
+//       duration: 5 * 1000
+//     })
+//     return Promise.reject(error)
+//   }
+// )
 
 export default service

@@ -19,6 +19,14 @@
             item.text
           }}</el-button>
         </template>
+        <template>
+          <el-popconfirm
+            title="确定删除资源吗？">
+            <template #reference>
+              <el-button class="operations">删除</el-button>
+            </template>
+          </el-popconfirm>
+        </template>
         <el-dropdown>
           <el-button class="el-dropdown-link operations">关系</el-button>
           <template #dropdown>
@@ -74,9 +82,10 @@
               class="item"
               effect="dark"
               :content="item.status"
-              placement="top"
-            >
+              placement="top">
+              <span>图标</span>
             </el-tooltip>
+            
             <span>{{ item.id }}</span>
           </template>
           <template slot-scope="scope">
@@ -492,10 +501,6 @@ export default {
         },
         {
           text: "回迁",
-          icon: "",
-        },
-        {
-          text: "删除",
           icon: "",
         },
       ],

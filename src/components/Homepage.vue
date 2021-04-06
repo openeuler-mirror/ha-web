@@ -55,7 +55,6 @@ body {
       .bar-text {
         cursor: pointer;
       }
-
       color: white;
       padding-left: 55px;
       padding-top: 10px;
@@ -79,6 +78,9 @@ body {
       -webkit-transition: all 0.3s ease-out;
       -o-transition: all 0.3s ease-out;
       transition: all 0.3s ease-out;
+      .vsm--toggle-btn:focus {
+        outline: #1e1e21;
+      }
     }
     .v-sidebar-menu.vsm_expanded .vsm--item_open .vsm--link_level-1 {
       background-color: #2b333e;

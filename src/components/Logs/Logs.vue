@@ -1,31 +1,48 @@
 <template>
   <div class="priority-modal">
-    <div class="bar-text" @click="dialogVisible = true">日志下载</div>
-
-    <el-dialog
-      :visible.sync="dialogVisible"
-      width="30%"
-      :modal-append-to-body="false"
-    >
-      <span>日志下载需要一段时间，你确定要立即下载集群日志吗？</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
+    <div class="bar-text" @click="open">日志下载</div>
   </div>
 </template>
 <script>
+import { getLogs } from "@/api/tools";
 export default {
-  data() {
-    return {
-      dialogVisible: false,
-    };
+  methods: {
+    open() {
+      this.$confirm(
+        "日志下载需要一段时间，你确定要立即下载集群日志吗？",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "正在下载请稍候!",
+          });
+          console.log("确认操作");
+          getLogs().then((res) => {
+          window.open(res.data.filepath)
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "取消下载",
+          });
+        });
+    },
   },
 };
 </script>
 <style lang="scss">
-
+.el-message-box__wrapper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 30%;
+}
 </style>

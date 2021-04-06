@@ -8,44 +8,41 @@
       width="650px"
       :modal-append-to-body="false"
     >
-      <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tabs v-if="form.hbaddrs1" v-model="activeName" >
         <el-tab-pane label="主心跳" name="first">
           <el-form ref="form" :model="form">
             <el-form-item label="节点心跳IP-ns187:">
-              <el-input placeholder="192.168.100.187"></el-input>
+              <el-input v-model="form.hbaddrs1[0].ip"></el-input>
             </el-form-item>
-            <el-form-item
-              label="节点心跳IP-ns188:"
-              placeholder="192.168.100.188"
-            >
-              <el-input placeholder="192.168.100.188"></el-input>
+            <el-form-item label="节点心跳IP-ns188:">
+              <el-input v-model="form.hbaddrs1[1].ip"></el-input>
             </el-form-item>
           </el-form>
         </el-tab-pane>
         <el-tab-pane label="备用心跳" name="second">
           <el-form ref="form" :model="form">
             <el-form-item>
-              <el-switch
-                v-model="backupHeartBeat"
-                inactive-text="启用备用心跳"
-              >
+              <el-switch v-model="backupHeartBeat" inactive-text="启用备用心跳">
               </el-switch>
             </el-form-item>
             <el-form-item label="节点心跳IP-ns187:">
-              <el-input placeholder="192.168.100.187"></el-input>
+              <el-input
+                :disabled="!backupHeartBeat"
+                v-model="form.hbaddrs2[0].ip"
+              ></el-input>
             </el-form-item>
-            <el-form-item
-              label="节点心跳IP-ns188:"
-             
-            >
-              <el-input  placeholder="192.168.100.188"></el-input>
+            <el-form-item label="节点心跳IP-ns188:">
+              <el-input
+                :disabled="!backupHeartBeat"
+                v-model="form.hbaddrs2[1].ip"
+              ></el-input>
             </el-form-item>
           </el-form>
         </el-tab-pane>
       </el-tabs>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false"
+        <el-button type="primary" @click="updateHeartBeat"
           >确 定</el-button
         >
       </span>
@@ -53,41 +50,27 @@
   </div>
 </template>
 <script>
+import { getConfigs } from "@/api/cluster";
 export default {
   data() {
     return {
       dialogVisible: false,
       activeName: "first",
-      backupHeartBeat:false
+      backupHeartBeat: false,
+      form: {},
     };
   },
+  created() {
+    let _this = this;
+    getConfigs().then((res) => {
+      _this.form = res.data.hbstatus;
+    });
+  },
   methods: {
-    handleClick(tab, event) {
-      console.log(tab, event);
+    updateHeartBeat(tab, event) {
+      this.dialogVisible = false
+      //todo: upload heart beat settings form
     },
   },
 };
 </script>
-<style lang="scss">
-.priority-modal {
-  .bar-text {
-    cursor: pointer;
-  }
-
-  color: white;
-  padding-left: 55px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  .input-box {
-    width: 400px;
-  }
-  .el-input {
-    width: 400px;
-  }
-}
-.priority-modal:hover {
-  transition: background-color 0.4s linear;
-  border-right: 5px solid #c21a1f;
-  background-color: #1e242b;
-}
-</style>
