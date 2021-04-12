@@ -1,5 +1,10 @@
 <template>
   <div class="main">
+    <div class="top">
+<div class="bar-title"></div>
+      <top-bar></top-bar>
+
+    </div>
     <div class="sider">
       <sidebar-menu :menu="menu" @toggle-collapse="onToggleCollapse" />
     </div>
@@ -15,6 +20,8 @@ import Priority from "@/components/Priority/Priority";
 import HeartBeat from "@/components/HeartBeat/HeartBeat";
 import Logs from "@/components/Logs/Logs";
 import ClusterOperation from "@/components/ClusterOperation/ClusterOperation";
+import TopBar from "@/components/Layout/TopBar/TopBar";
+
 export default {
   data() {
     return {
@@ -36,6 +43,7 @@ export default {
   },
   components: {
     HomeTable,
+    TopBar
   },
   methods: {
     onToggleCollapse(collapsed) {

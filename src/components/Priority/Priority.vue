@@ -15,7 +15,13 @@
             v-for="ret in rets.parameters"
             :key="ret.key"
           >
-            <span class="rebel">{{ ret.name }}</span>
+            <span class="rebel">
+              {{ ret.name }}
+              <el-tooltip effect="dark" placement="top" :content="ret.longdesc">
+                <i class="el-icon-question"></i>
+              </el-tooltip>
+              :
+            </span>
             <span class="input-number">
               <el-input-number
                 size="mini"
@@ -23,23 +29,39 @@
                 v-model="ret.value"
                 controls-position="right"
               ></el-input-number>
-              <el-input-number
+              <el-input
                 size="mini"
+                type="number"
                 v-if="ret.content.type == 'percentage'"
                 v-model="ret.value"
                 controls-position="right"
-              ></el-input-number>
-              <el-input-number
+              >
+                <template slot="append">%</template>
+              </el-input>
+              <el-input
                 size="mini"
+                type="number"
                 v-if="ret.content.type == 'time'"
                 v-model="ret.value"
                 controls-position="right"
-              ></el-input-number>
-              <el-input
+              >
+                <template slot="append">{{
+                  ret.content.unit == "s" ? "s" : "min"
+                }}</template>
+              </el-input>
+              <el-select
                 size="mini"
                 v-if="ret.content.type == 'enum'"
                 v-model="ret.value"
-              ></el-input>
+              >
+                <el-option
+                  v-for="(item, key, index) of ret.content.values"
+                  :key="index"
+                  :label="item"
+                  :value="key"
+                >
+                </el-option>
+              </el-select>
               <el-switch
                 size="mini"
                 v-if="ret.content.type == 'boolean'"
@@ -79,17 +101,23 @@ export default {
 };
 </script>
 <style  lang="scss">
+// tooltip
+.el-tooltip__popper.is-dark {
+  max-width: 240px;
+  font-size: 14px;
+  line-height: 1.5em;
+}
 .priority-modal.priority-type {
   .el-dialog {
     width: 550px;
-    height: 2000px;
   }
   #priority-content {
-    .el-form-item__content{
+    .el-form-item__content {
       width: 550px;
     }
     .ret-form {
       .form-items {
+        margin-bottom: 0px;
         display: flex;
         justify-content: space-between;
         .rebel {
@@ -101,7 +129,9 @@ export default {
           width: 45.83333333%;
           text-align: end;
           margin-right: 20px;
-     
+          .el-icon-question {
+            font-size: 16px;
+          }
         }
         .input-number {
           float: left;
@@ -110,6 +140,9 @@ export default {
           -webkit-box-sizing: border-box;
           box-sizing: border-box;
           width: 37.5%;
+          .el-input-number.is-controls-right .el-input__inner {
+            text-align: left;
+          }
         }
         .el-input {
           width: 130px;
