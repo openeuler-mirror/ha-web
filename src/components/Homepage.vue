@@ -29,12 +29,13 @@ export default {
         { header: true, title: "HA" },
         {
           title: "集群配置",
-          icon: "ICON CLASS HERE",
+          icon: "iconfont icon-peizhi",
+          // badge:"iconfont icon-peizhi",
           child: [{ component: Priority }, { component: HeartBeat }],
         },
         {
           title: "工具",
-          icon: "ICON CLASS HERE",
+          icon: "iconfont icon-gongju",
           child: [{ component: Logs }, { component: ClusterOperation }],
         },
       ],
@@ -78,6 +79,9 @@ body {
       transition: background-color 0.4s linear;
       border-right: 5px solid #c21a1f;
       background-color: #1e242b;
+    }
+    .vsm--arrow:after{
+      content: "\e611";
     }
     .v-sidebar-menu {
       width: 224px;

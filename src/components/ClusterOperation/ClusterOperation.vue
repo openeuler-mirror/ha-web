@@ -57,11 +57,11 @@ export default {
   created() {
     let _this = this;
     getCmds().then((res) => {
-      _this.commands = res.data.commands;
+      _this.commands = res.data.data;
     });
   },
   // watch: {
-  //   "form.value": function (nVal, oVal) {
+  //   "form.value": function (nVal, oVal) 
   //     let _this = this;
   //     if (nVal !== oVal) {
   //       _this.handleSelectChange(nVal);
@@ -72,7 +72,7 @@ export default {
     handleSelectChange(value) {
       let _this = this;
       getCmdResult(value).then((res) => {
-        _this.form.desc = res.data.result;
+        _this.form.desc = res.data.data;
       });
     },
     handleBtnClick() {

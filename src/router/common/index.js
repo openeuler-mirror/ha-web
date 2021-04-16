@@ -20,7 +20,7 @@ export default [
         name: "login",
         component: resolve => require(["@/components/Layout/Login/Login"], resolve),
         meta: {
-            title: "404"
+            title: "login"
         }
     }
 ];

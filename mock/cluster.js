@@ -465,7 +465,7 @@ export default {
         return {
             status: 200,
             message: "success",
-            ret: ret.data
+            data: ret.data
         };
     }
 

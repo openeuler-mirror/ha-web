@@ -16,8 +16,8 @@ export function getCmds() {
 
 export function getCmdResult(data) {
   return request({
-    url: '/commandResult',
+    url: '/commands/'+data,
     method: 'get',
-    data:data
+    
   })
 }

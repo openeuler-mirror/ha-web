@@ -13,29 +13,62 @@
           <span>欢迎登录</span>
         </div>
 
-        <div class="input_div">
-          <span></span>
-          <input type="text" placeholder="输入用户名" value="" onChange="" />
-        </div>
-        <div class="input_div">
-          <span></span>
-          <input type="password" placeholder="输入密码" value="" onChange="" />
-        </div>
-
-        <button type="submit" onClick="">登录</button>
+        <el-form v-model="loginForm" ref="loginForm">
+          <el-form-item label="用户名">
+            <el-input
+              class="input_div"
+              v-model="loginForm.username"
+              placeholder="用户名"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="密码">
+            <el-input
+              class="input_div"
+              v-model="loginForm.password"
+              placeholder="密码"
+              show-password
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click.native="onSubmit">登录</el-button>
+          </el-form-item>
+        </el-form>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import {login} from '@/api/login'
+import axios from 'axios'
 export default {
-    
+  data() {
+    return {
+      loginForm: {
+        username: "",
+        password: "",
+      },
+    };
+  },
+  methods: {
+    onSubmit() {
+      let _this = this;
+      // axios.post('/api/v1/login',_this.loginForm)
+      login(_this.loginForm)
+        .then(() => {
+          localStorage.setItem('userLogin', _this.loginForm.username);
+         	this.$router.push({ path: '/' })
+        })
+        .catch((err) => {
+          console.log("login failed"+err);
+        });
+        
+    },
+  },
 };
 </script>
 
 <style scoped lang="scss">
-
 .login_bg {
   position: absolute;
   top: 0;
@@ -45,8 +78,6 @@ export default {
   background: url(../../../assets/bg.png) no-repeat;
   background-size: cover;
 }
-
-
 
 .logo {
   height: 60px;
@@ -65,7 +96,6 @@ export default {
   }
 }
 
-
 .form {
   position: absolute;
   top: 50%;
@@ -74,9 +104,8 @@ export default {
   width: 320px;
   height: 380px;
   padding: 46px;
-  box-shadow: 5px 5px 2px rgba(28, 40, 60, .08);
-  background-color: rgba(0, 0, 0, .2);
-
+  box-shadow: 5px 5px 2px rgba(28, 40, 60, 0.08);
+  background-color: rgba(0, 0, 0, 0.2);
 
   .login_text {
     color: #fff;
@@ -84,7 +113,6 @@ export default {
     text-align: center;
     margin-bottom: 36px;
   }
-
 
   button {
     width: 100%;
@@ -96,7 +124,6 @@ export default {
     outline: none;
     margin-top: 20px;
   }
-
 
   .input_div {
     width: 100%;
@@ -122,8 +149,5 @@ export default {
       outline: none;
     }
   }
-
-
 }
-
 </style>

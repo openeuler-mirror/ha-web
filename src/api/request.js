@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import qs from 'qs'
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
 
 const service = axios.create({
   baseURL: Vue.prototype.api_base_url,
@@ -17,11 +16,17 @@ service.interceptors.request.use(
     return config
   },
   error => {
-    console.log(error) 
     return Promise.reject(error)
   }
 )
+axios.interceptors.response.use(function (response) {
+  // 对响应数据做点什么
+  return response;
+}, function (error) {
 
+  // 对响应错误做点什么
+  return Promise.reject(error.response.status);
+});
 // service.interceptors.response.use(
 //   res => {
 //     if (res.data.code ) {
@@ -42,7 +47,6 @@ service.interceptors.request.use(
 //       return Promise.reject(new Error(res.data.msg || 'Error'))
 //     } else {
 //       return res
-//     }
 //   },
 //   error => {
 //     console.log('err' + error) 

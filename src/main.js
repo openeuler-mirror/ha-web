@@ -8,6 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css'//element-ui的css
 import VueSidebarMenu from 'vue-sidebar-menu'
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 import axios from 'axios';
+import './assets/icon/iconfont.css'
 require('../mock');
 Vue.use(VueSidebarMenu)
 Vue.use(ElementUI)

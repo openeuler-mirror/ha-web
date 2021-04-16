@@ -8,7 +8,7 @@
       width="650px"
       :modal-append-to-body="false"
     >
-      <el-tabs v-if="form.hbaddrs1" v-model="activeName" >
+      <el-tabs v-if="form.hbaddrs1" v-model="activeName">
         <el-tab-pane label="主心跳" name="first">
           <el-form ref="form" :model="form">
             <el-form-item label="节点心跳IP-ns187:">
@@ -42,34 +42,51 @@
       </el-tabs>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="updateHeartBeat"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="updateHeartBeat">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
-import { getConfigs } from "@/api/cluster";
+import { getConfigs, updateHB} from "@/api/cluster";
 export default {
   data() {
     return {
       dialogVisible: false,
       activeName: "first",
       backupHeartBeat: false,
-      form: {},
+      form: {
+        hbaddrs2: {
+          0: {
+            ip: "",
+            nodeid: "",
+          },
+          1: {
+            ip: "",
+            nodeid: "",
+          },
+        },
+      },
     };
   },
   created() {
     let _this = this;
     getConfigs().then((res) => {
-      _this.form = res.data.hbstatus;
+      _this.form.hbaddrs1 = res.data.data.hbaddrs1;
+      if (res.data.data.hbaddrs2) _this.form.hbaddrs2 = res.data.data.hbaddrs2;
     });
   },
   methods: {
-    updateHeartBeat(tab, event) {
-      this.dialogVisible = false
+    updateHeartBeat() {
       //todo: upload heart beat settings form
+      let _this = this;
+      updateHB(_this.form).then(() => {
+        this.dialogVisible = false;
+        this.$message({
+          type: "success",
+          message: "已更新心跳配置",
+        });
+      });
     },
   },
 };

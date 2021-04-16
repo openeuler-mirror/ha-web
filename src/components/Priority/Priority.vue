@@ -74,16 +74,14 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogVisible = false"
-            >确 定</el-button
-          >
+          <el-button type="primary" @click="updatePriority">确 定</el-button>
         </span>
       </template>
     </el-dialog>
   </div>
 </template>
 <script>
-import { getPriorities } from "@/api/cluster";
+import { getPriorities, update } from "@/api/cluster";
 export default {
   data() {
     return {
@@ -94,9 +92,20 @@ export default {
   created() {
     let _this = this;
     getPriorities().then((res) => {
-      _this.rets = res.data.ret;
-      console.log(_this.rets);
+      _this.rets = res.data.data;
     });
+  },
+  methods: {
+    updatePriority() {
+      let _this = this;
+      _this.dialogVisible = false;
+      update(_this.rets.parameters).then((res) => {
+        this.$message({
+          type: "success",
+          message: "已更新首选项",
+        });
+      });
+    },
   },
 };
 </script>

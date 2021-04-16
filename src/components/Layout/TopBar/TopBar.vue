@@ -7,14 +7,22 @@
       ></el-button>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item>刷新设置</el-dropdown-item>
-        <el-dropdown-item>退出登录</el-dropdown-item>
+        <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  methods:{
+    logout(){
+        localStorage.removeItem('userLogin');
+        this.$router.push({path:'/login'})
+    
+    }
+  }
+};
 </script>
 
 <style scoped lang='scss'>
