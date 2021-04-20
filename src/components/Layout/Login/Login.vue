@@ -3,8 +3,8 @@
     <div class="login_bg" onKeyDown="">
       <!-- {/* 头部 */} -->
       <div class="logo">
-        <img src="" />
-        <span></span>
+        <img src="../../../assets/logo.png" />
+        <span>openUnicorn HA</span>
       </div>
 
       <!-- {/* 登录输入 */} -->
@@ -13,24 +13,26 @@
           <span>欢迎登录</span>
         </div>
 
-        <el-form v-model="loginForm" ref="loginForm">
-          <el-form-item label="用户名">
+        <el-form class="input_form" v-model="loginForm" ref="loginForm">
+          <el-form-item class="input_form-item">
             <el-input
-              class="input_div"
+              class="iconfont icon-yonghutouxiang"
               v-model="loginForm.username"
-              placeholder="用户名"
+              placeholder="输入用户名"
             ></el-input>
           </el-form-item>
-          <el-form-item label="密码">
+          <el-form-item class="input_form-item">
             <el-input
-              class="input_div"
+              class="iconfont icon-suo"
               v-model="loginForm.password"
-              placeholder="密码"
+              placeholder="输入密码"
               show-password
             ></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click.native="onSubmit">登录</el-button>
+            <el-button class="btn" type="primary" @click.native="onSubmit"
+              >登录</el-button
+            >
           </el-form-item>
         </el-form>
       </div>
@@ -39,8 +41,8 @@
 </template>
 
 <script>
-import {login} from '@/api/login'
-import axios from 'axios'
+import { login } from "@/api/login";
+import axios from "axios";
 export default {
   data() {
     return {
@@ -56,19 +58,22 @@ export default {
       // axios.post('/api/v1/login',_this.loginForm)
       login(_this.loginForm)
         .then(() => {
-          localStorage.setItem('userLogin', _this.loginForm.username);
-         	this.$router.push({ path: '/' })
+          localStorage.setItem("userLogin", _this.loginForm.username);
+          
+          this.$router.push({ path: "/" });
         })
         .catch((err) => {
-          console.log("login failed"+err);
+          console.log("login failed" + err);
         });
-        
     },
   },
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
+.login {
+  color: #fff;
+}
 .login_bg {
   position: absolute;
   top: 0;
@@ -83,16 +88,24 @@ export default {
   height: 60px;
   line-height: 60px;
   cursor: pointer;
+  position: relative;
   padding: 5px 10px;
 
   img {
     width: 50px;
-    margin-right: 8px;
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    margin-top: -25px;
   }
 
   span {
     /* font-size: @font-size-lg; */
     color: #f1f5fb;
+    position: absolute;
+    top: 50%;
+    left: 70px;
+    margin-top: -30px;
   }
 }
 
@@ -103,50 +116,34 @@ export default {
   margin: -190px 0 0 -160px;
   width: 320px;
   height: 380px;
-  padding: 46px;
   box-shadow: 5px 5px 2px rgba(28, 40, 60, 0.08);
   background-color: rgba(0, 0, 0, 0.2);
 
   .login_text {
     color: #fff;
-    // font-size: @font-size-lg;
     text-align: center;
-    margin-bottom: 36px;
+    margin: 36px 0px;
   }
+  .input_form {
+    padding: 0 40px;
 
-  button {
-    width: 100%;
-    height: 36px;
-    border-radius: 2px;
-    background-color: #c21a1f;
-    border: 1px solid #c62227;
-    color: #fff;
-    outline: none;
-    margin-top: 20px;
-  }
+    .el-form-item.input_form-item {
+      border-bottom: 1px solid #fff;
+      margin-bottom: 36px;
 
-  .input_div {
-    width: 100%;
-    height: 36px;
-    margin-bottom: 36px;
-    border-color: #fff;
-    color: #fff;
-    background-color: transparent;
-    border-color: transparent;
-    border-bottom: 1px solid #fff;
-
-    span {
-      font-size: 18px;
-      color: #fff;
+      input.el-input__inner {
+        width: 220px;
+        background: transparent;
+        border: none;
+        color: #fff;
+      }
     }
 
-    input {
+    .btn {
+      width: 100%;
       height: 36px;
-      margin-left: 6px;
-      color: #fff;
-      background-color: transparent;
-      border: none;
-      outline: none;
+      margin-top: 20px;
+      border-radius: 2px;
     }
   }
 }

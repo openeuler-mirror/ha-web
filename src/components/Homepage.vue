@@ -1,12 +1,12 @@
 <template>
   <div class="main">
     <div class="top">
-<div class="bar-title"></div>
+      <div class="bar-title"></div>
       <top-bar></top-bar>
-
     </div>
     <div class="sider">
       <sidebar-menu :menu="menu" @toggle-collapse="onToggleCollapse" />
+
     </div>
     <div class="table" :class="{ collapsed: isCollapsed }">
       <home-table></home-table>
@@ -26,7 +26,7 @@ export default {
   data() {
     return {
       menu: [
-        { header: true, title: "HA" },
+        { header: true, title: "openUnicorn HA" },
         {
           title: "集群配置",
           icon: "iconfont icon-peizhi",
@@ -44,7 +44,7 @@ export default {
   },
   components: {
     HomeTable,
-    TopBar
+    TopBar,
   },
   methods: {
     onToggleCollapse(collapsed) {
@@ -61,6 +61,7 @@ body {
   overflow: hidden;
   .sider {
     .priority-modal {
+      background: #2b333e;
       .bar-text {
         cursor: pointer;
       }
@@ -80,7 +81,7 @@ body {
       border-right: 5px solid #c21a1f;
       background-color: #1e242b;
     }
-    .vsm--arrow:after{
+    .vsm--arrow:after {
       content: "\e611";
     }
     .v-sidebar-menu {
@@ -93,24 +94,26 @@ body {
       .vsm--toggle-btn:focus {
         outline: #1e1e21;
       }
+      .vsm--link_level-1 .vsm--icon {
+        background: transparent;
+      }
+      .vsm--list .vsm--header {
+        height: 60px;
+      }
     }
-    .v-sidebar-menu.vsm_expanded .vsm--item_open .vsm--link_level-1 {
+    .v-sidebar-menu.vsm_expanded .vsm--item_open .vsm--link_level-1  {
       background-color: #2b333e;
+    }
+    .v-sidebar-menu.vsm_expanded .vsm--item_open .vsm--link_level-1 .vsm--icon {
+      background: transparent;
     }
 
     .v-sidebar-menu .vsm--dropdown > .vsm--list {
       padding: 0px;
-      .v-sidebar-menu .vsm--list .vsm--header {
-        font-size: 18px;
-        line-height: 40px;
-        cursor: pointer;
-        margin: auto;
-        -webkit-transition: all 0.3s ease-out;
-        -o-transition: all 0.3s ease-out;
-        transition: all 0.3s ease-out;
-        overflow: hidden;
-      }
     }
+    .vsm--mobile-item{
+      max-width: 150px;
+   }
   }
 }
 .table {

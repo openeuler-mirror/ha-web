@@ -2,9 +2,10 @@
   <div class="top-bar">
     <div>title</div>
     <el-dropdown class="button-group">
-      <el-button type="default"
-        >user<i class="el-icon-user el-icon--right"></i
-      ></el-button>
+      <el-button class="btn-user" type="default">
+        <i class="iconfont icon-yonghutouxiang"></i>
+        user
+      </el-button>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item>刷新设置</el-dropdown-item>
         <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
@@ -19,7 +20,6 @@ export default {
     logout(){
         localStorage.removeItem('userLogin');
         this.$router.push({path:'/login'})
-    
     }
   }
 };
@@ -34,6 +34,13 @@ export default {
     margin-top: -10px;
     float: right;
     margin-right: 20px;
+    .btn-user {
+      border: none;
+      color: #999;
+    }
+    .btn-user:hover {
+      background: transparent;
+    }
   }
 }
 </style>

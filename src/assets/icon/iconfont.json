@@ -6,69 +6,6 @@
   "description": "",
   "glyphs": [
     {
-      "icon_id": "374774",
-      "name": "开关",
-      "font_class": "kaiguan",
-      "unicode": "e61f",
-      "unicode_decimal": 58911
-    },
-    {
-      "icon_id": "705812",
-      "name": "失败",
-      "font_class": "shibai",
-      "unicode": "e682",
-      "unicode_decimal": 59010
-    },
-    {
-      "icon_id": "1929149",
-      "name": "警告",
-      "font_class": "jinggao",
-      "unicode": "e620",
-      "unicode_decimal": 58912
-    },
-    {
-      "icon_id": "1951950",
-      "name": "成功",
-      "font_class": "chenggong",
-      "unicode": "e61c",
-      "unicode_decimal": 58908
-    },
-    {
-      "icon_id": "6204756",
-      "name": "失败",
-      "font_class": "shibai1",
-      "unicode": "e64e",
-      "unicode_decimal": 58958
-    },
-    {
-      "icon_id": "6999238",
-      "name": "成功",
-      "font_class": "chenggong1",
-      "unicode": "e62f",
-      "unicode_decimal": 58927
-    },
-    {
-      "icon_id": "9826664",
-      "name": "警告",
-      "font_class": "jinggao1",
-      "unicode": "e616",
-      "unicode_decimal": 58902
-    },
-    {
-      "icon_id": "13643979",
-      "name": "停止",
-      "font_class": "tingzhi",
-      "unicode": "e60d",
-      "unicode_decimal": 58893
-    },
-    {
-      "icon_id": "18165304",
-      "name": "交通,雪糕筒,停止,路障",
-      "font_class": "roadblock",
-      "unicode": "e884",
-      "unicode_decimal": 59524
-    },
-    {
       "icon_id": "4889699",
       "name": "开始",
       "font_class": "kaishi",

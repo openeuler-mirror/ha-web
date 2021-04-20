@@ -9,6 +9,7 @@ import VueSidebarMenu from 'vue-sidebar-menu'
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 import axios from 'axios';
 import './assets/icon/iconfont.css'
+import './assets/element/index.css' //更改element ui的主题颜色
 require('../mock');
 Vue.use(VueSidebarMenu)
 Vue.use(ElementUI)

@@ -12,7 +12,7 @@ let nodelist={
           "status":"Not Running/Standby",
       },
             {
-          "id":"ns188",
+          "id":"ns189",
           "is_dc":false,
           "status":"Not Running/Standby",
       }

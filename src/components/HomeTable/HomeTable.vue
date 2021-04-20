@@ -4,19 +4,20 @@
       <el-row>
         <!-- add -->
         <el-dropdown>
-          <el-button class="el-dropdown-link operations" style="float='left'"
-            >添加</el-button
-          >
+          <el-button class="el-dropdown-link operations" style="float='left'">
+            <i class="iconfont icon-icon-test"></i>
+            添加
+          </el-button>
           <template #dropdown>
             <el-dropdown-menu placement="bottom-end">
-              <el-dropdown-item @click.native="openAddDialog"
-                >添加普通资源</el-dropdown-item
+              <el-dropdown-item @click.native="openAddDialog">
+                添加普通资源</el-dropdown-item
               >
-              <el-dropdown-item @click.native="openGroupDialog"
-                >添加组资源</el-dropdown-item
+              <el-dropdown-item @click.native="openGroupDialog">
+                添加组资源</el-dropdown-item
               >
-              <el-dropdown-item @click.native="openClongDialog"
-                >添加克隆资源</el-dropdown-item
+              <el-dropdown-item @click.native="openClongDialog">
+                添加克隆资源</el-dropdown-item
               >
             </el-dropdown-menu>
           </template>
@@ -29,42 +30,54 @@
             @click="operate('edit', radio)"
             id="edit"
             class="operations"
-            >编辑
+          >
+            <i class="iconfont icon-bianji2"></i>
+            编辑
           </el-button>
           <el-button
             :disabled="showButtons && showme"
             @click="operate('start', radio)"
             id="start"
             class="operations"
-            >启动
+          >
+            <i class="iconfont icon-kaishi"></i>
+            启动
           </el-button>
           <el-button
             :disabled="showButtons && showme"
             @click="operate('stop', radio)"
             id="stop"
             class="operations"
-            >停止
+          >
+            <i class="iconfont icon-tingzhi1"></i>
+            停止
           </el-button>
           <el-button
             :disabled="showButtons"
             @click="operate('cleanup', radio)"
             id="cleanup"
             class="operations"
-            >清理
+          >
+            <i class="iconfont icon-yijianqingli"></i>
+            清理
           </el-button>
           <el-button
             :disabled="true"
             @click="operate('migrate', radio)"
             id="migrate"
             class="operations"
-            >迁移
+          >
+            <i class="iconfont icon-qianchu"></i>
+            迁移
           </el-button>
           <el-button
             :disabled="true"
             @click="operate('unmigrate', radio)"
             id="unmigrate"
             class="operations"
-            >回迁
+          >
+            <i class="iconfont icon-qianru"></i>
+            回迁
           </el-button>
         </div>
 
@@ -162,17 +175,22 @@
         <!-- delete -->
         <el-popconfirm title="确定删除资源吗？">
           <template #reference>
-            <el-button :disabled="showButtons" class="operations"
-              >删除</el-button
-            >
+            <el-button :disabled="showButtons" class="operations">
+              <i class="iconfont icon-shanchukai"></i>
+              删除
+            </el-button>
           </template>
         </el-popconfirm>
 
         <!-- relations -->
         <el-dropdown>
-          <el-button :disabled="showButtons" class="el-dropdown-link operations"
-            >关系</el-button
+          <el-button
+            :disabled="showButtons"
+            class="el-dropdown-link operations"
           >
+            <i class="iconfont icon-guanxitu"></i>
+            关系
+          </el-button>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item>
@@ -187,9 +205,10 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <el-button class="operations" style="float: right" @click="dataLoading"
-          >刷新</el-button
-        >
+        <el-button class="operations" style="float: right" @click="dataLoading">
+          <i class="iconfont icon-shuaxin"></i>
+          刷新
+        </el-button>
       </el-row>
     </div>
 
@@ -203,7 +222,7 @@
       ref="singleTable"
       highlight-current-row
       @row-click="showRow"
-      height="750"
+      height="650"
     >
       <el-table-column width="40"> </el-table-column>
       <el-table-column label="选择" width="60">
@@ -219,10 +238,46 @@
           <el-tooltip
             class="item"
             effect="dark"
-            :content="scope.row.status"
+            :content="
+              scope.row.status_message && scope.row.status === 'Not Running'
+                ? 'Failed'
+                : scope.row.status
+            "
             placement="top"
           >
-            <span><i class="iconfont icon-zhuangtai">&#xe7df;</i></span>
+            <i
+              class="iconfont icon-B"
+              v-if="
+                scope.row.status == 'Running' ||
+                scope.row.status == 'running(Master)' ||
+                scope.row.status == 'running(Slave)'
+              "
+              style="color: green"
+            >
+            </i>
+            <i
+              class="iconfont icon-B"
+              v-else-if="scope.row.status == 'Unmanaged'"
+              style="color: gold"
+            >
+            </i>
+            <i
+              class="iconfont icon-B"
+              v-else-if="
+                scope.row.status == 'Failed' ||
+                scope.row.status == 'Stop Failed' ||
+                (scope.row.status == 'Not Running' &&
+                  scope.row.status_message != '')
+              "
+              style="color: red"
+            >
+            </i>
+            <i
+              class="iconfont icon-B"
+              v-else-if="scope.row.status == 'Not Running'"
+              style="color: '#999'"
+            >
+            </i>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -237,18 +292,27 @@
               :content="item.status"
               placement="top"
             >
-              <span>&#xe7df;</span>
+              <i
+                :style="{ color: item.is_dc ? 'green' : 'red' }"
+                class="iconfont icon-host"
+              ></i>
             </el-tooltip>
-
             <span>{{ item.id }}</span>
           </template>
+
           <template slot-scope="scope">
             <template v-for="count in scope.row.running_node.length">
-              {{
-                scope.row.running_node[count - 1] == item.id
-                  ? scope.row.running_node[count - 1]
-                  : ""
-              }}
+              <span
+                v-show="scope.row.running_node[count - 1] == item.id"
+                :key="count"
+                style="color: green"
+                class="iconfont icon-B"
+              >
+              </span>
+            </template>
+
+            <template v-for="location in scope.row.location">
+              {{ location.node == item.id ? location.level : "" }}
             </template>
           </template>
         </el-table-column>
@@ -261,33 +325,33 @@
       class="basicAddDialog"
       title="创建资源"
       :visible.sync="disableAddDialog"
-      width="30%"
+      width="46%"
     >
-      <el-form v-model="addForm" :rules="addingRules" ref="addForm">
+      <el-form
+        v-model="addForm"
+        :rules="addingRules"
+        ref="addForm"
+        label-width="200px"
+      >
         <el-tabs class="button-tabs">
           <el-tab-pane class="tab-panels" label="基本">
-            <div>
-              <el-form-item label="资源名称" prop="name">
-                <!-- <span class="labels"> 资源名称： </span> -->
-                <span>
-                  <el-input class="block" v-model="addForm.name"></el-input>
-                </span>
-              </el-form-item>
-            </div>
-            <div>
-              <el-form-item label="资源类型" prop="type">
-                <!-- <span class="labels"> 资源类型： </span> -->
-                <span>
-                  <el-cascader
-                    class="cascader dropdowns selections"
-                    v-model="addForm.type"
-                    :options="metas"
-                    :props="{ expandTrigger: 'hover' }"
-                    @change="addRscSelected"
-                  ></el-cascader>
-                </span>
-              </el-form-item>
-            </div>
+            <el-form-item label="资源名称" prop="name">
+              <!-- <span class="labels"> 资源名称： </span> -->
+              <el-input class="block" v-model="addForm.name"></el-input>
+            </el-form-item>
+
+            <el-form-item label="资源类型" prop="type">
+              <!-- <span class="labels"> 资源类型： </span> -->
+
+              <el-cascader
+                class="block"
+                v-model="addForm.type"
+                :options="metas"
+                :props="{ expandTrigger: 'hover' }"
+                @change="addRscSelected"
+              ></el-cascader>
+            </el-form-item>
+
             <div v-show="addForm.type" class="invi-panels">
               <!-- <div class="panel-contents"> -->
               <!-- <span class="labels"> device: </span> -->
@@ -310,15 +374,20 @@
             </div>
           </el-tab-pane>
 
-          <el-tab-pane class="tab-panels" v-if="addForm.type" label="实例属性">
-            <div>
-              <span class="labels"> 需要修改的实例属性： </span>
+          <el-tab-pane
+            class="tab-panels"
+            v-if="addForm.type"
+            label="实例属性"
+            label-width="200px"
+          >
+            <el-row>
+              <span class="modify-label"> 需要修改的实例属性:</span>
               <span class="block" v-if="metaAttris">
                 <el-select
                   v-model="addForm.instanceAttris"
                   multiple
                   placeholder="请选择"
-                  size="small"
+                  class="block"
                 >
                   <el-option
                     v-for="item in instanceAttris"
@@ -329,14 +398,15 @@
                   </el-option>
                 </el-select>
               </span>
-            </div>
+            </el-row>
           </el-tab-pane>
 
           <el-tab-pane class="tab-panels" label="元属性">
-            <div>
-              需要修改的元属性：
-              <span class="block" v-if="metaAttris">
+            <el-row>
+              <label class="modify-label">需要修改的元属性: </label>
+              <span v-if="metaAttris">
                 <el-select
+                  class="block"
                   v-model="addForm.metaAttris"
                   multiple
                   placeholder="请选择"
@@ -351,22 +421,22 @@
                   </el-option>
                 </el-select>
               </span>
-            </div>
+            </el-row>
             <!-- <div v-if="addForm.metaAttris"> -->
-            <div v-for="item in addForm.metaAttris" :key="item.key">
-              <span>{{ metaAttris[item].name }}</span>
-              <span>
-                <el-input></el-input>
-              </span>
-            </div>
+            <el-row v-for="item in addForm.metaAttris" :key="item.key">
+              <span class="modify-label">{{ metaAttris[item].name }}</span>
+
+              <el-input class="block"></el-input>
+            </el-row>
             <!-- </div> -->
           </el-tab-pane>
 
           <el-tab-pane class="tab-panels" v-if="addForm.type" label="操作属性">
-            <div>
-              需要修改的操作属性：
-              <span class="block" v-if="metaAttris">
+            <el-row>
+              <span class="modify-label">需要修改的操作属性：</span>
+              <span v-if="metaAttris">
                 <el-select
+                  class="block"
                   v-model="addForm.operationAttris"
                   multiple
                   placeholder="请选择"
@@ -380,7 +450,7 @@
                   </el-option>
                 </el-select>
               </span>
-            </div>
+            </el-row>
           </el-tab-pane>
           <span class="hometable-dialog-footer">
             <el-button @click="disableAddDialog = false">取 消</el-button>
@@ -397,34 +467,32 @@
       class="basicAddDialog"
       title="创建资源"
       :visible.sync="disableGroupAddDialog"
-      width="40%"
+      width="46%"
     >
       <el-tabs class="button-tabs">
         <el-tab-pane class="tab-panels" label="基本">
-          <div class="panel-contents">
-            <span class="labels"> 资源名称： </span>
-            <span class="block">
-              <el-input v-model="addForm.name"></el-input>
-            </span>
-          </div>
-          <div class="panel-contents">
-            <span class="labels"> 资源类型： </span>
-            <span class="block">
-              <el-cascader
-                v-model="addForm.type"
-                :options="metas"
-                :props="{ expandTrigger: 'hover' }"
-                @change="addRscSelected"
-              ></el-cascader>
-            </span>
-          </div>
+          <el-row>
+            <span class="modify-label"> 资源名称:</span>
+            <el-input class="block" v-model="addForm.name"></el-input>
+          </el-row>
+          <el-row>
+            <span class="modify-label"> 资源类型:</span>
+            <el-cascader
+              class="block"
+              v-model="addForm.type"
+              :options="metas"
+              :props="{ expandTrigger: 'hover' }"
+              @change="addRscSelected"
+            ></el-cascader>
+          </el-row>
         </el-tab-pane>
 
         <el-tab-pane class="tab-panels" label="元属性">
-          <div>
-            需要修改的元属性：
-            <span class="block" v-if="metaAttris">
+          <el-row>
+            <span class="modify-label">需要修改的元属性：</span>
+            <span v-if="metaAttris">
               <el-select
+                class="block"
                 v-model="addForm.metaAttris"
                 multiple
                 placeholder="请选择"
@@ -439,14 +507,13 @@
                 </el-option>
               </el-select>
             </span>
-          </div>
+          </el-row>
           <!-- <div v-if="addForm.metaAttris"> -->
-          <div v-for="item in addForm.metaAttris" :key="item.key">
-            <span>{{ metaAttris[item].name }}</span>
-            <span>
-              <el-input></el-input>
-            </span>
-          </div>
+          <el-row v-for="item in addForm.metaAttris" :key="item.key">
+            <span class="modify-label">{{ metaAttris[item].name }}</span>
+
+            <el-input class="block"></el-input>
+          </el-row>
           <!-- </div> -->
         </el-tab-pane>
 
@@ -464,34 +531,34 @@
       class="basicAddDialog"
       title="创建资源"
       :visible.sync="disableCloneDialog"
-      width="40%"
+      width="46%"
     >
       <el-tabs class="button-tabs">
         <el-tab-pane class="tab-panels" label="基本">
-          <div class="panel-contents">
-            <span class="labels"> 资源名称： </span>
-            <span class="block">
-              <el-input v-model="addForm.name"></el-input>
-            </span>
-          </div>
-          <div class="panel-contents">
-            <span class="labels"> 资源类型： </span>
-            <span class="block">
-              <el-cascader
-                v-model="addForm.type"
-                :options="metas"
-                :props="{ expandTrigger: 'hover' }"
-                @change="addRscSelected"
-              ></el-cascader>
-            </span>
-          </div>
+          <el-row>
+            <span class="modify-label"> 资源名称:</span>
+
+            <el-input class="block" v-model="addForm.name"></el-input>
+          </el-row>
+          <el-row>
+            <span class="modify-label"> 资源类型:</span>
+
+            <el-cascader
+              class="block"
+              v-model="addForm.type"
+              :options="metas"
+              :props="{ expandTrigger: 'hover' }"
+              @change="addRscSelected"
+            ></el-cascader>
+          </el-row>
         </el-tab-pane>
 
         <el-tab-pane class="tab-panels" label="元属性">
-          <div>
-            需要修改的元属性：
-            <span class="block" v-if="metaAttris">
+          <el-row>
+            <span class="modify-label">需要修改的元属性:</span>
+            <span v-if="metaAttris">
               <el-select
+                class="block"
                 v-model="addForm.metaAttris"
                 multiple
                 placeholder="请选择"
@@ -506,14 +573,13 @@
                 </el-option>
               </el-select>
             </span>
-          </div>
+          </el-row>
           <!-- <div v-if="addForm.metaAttris"> -->
-          <div v-for="item in addForm.metaAttris" :key="item.key">
-            <span>{{ metaAttris[item].name }}</span>
-            <span>
-              <el-input></el-input>
-            </span>
-          </div>
+          <el-row v-for="item in addForm.metaAttris" :key="item.key">
+            <span class="modify-label">{{ metaAttris[item].name }}</span>
+
+            <el-input class="block"></el-input>
+          </el-row>
           <!-- </div> -->
         </el-tab-pane>
 
@@ -536,7 +602,7 @@
     >
       <el-form :model="location" label-width="100px">
         <el-form-item label="资源名称:">
-          <span>{{ radio }}</span>
+          <span class="block">{{ radio }}</span>
         </el-form-item>
         <el-form-item label="Master Node:">
           <el-select
@@ -555,23 +621,47 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Slave 1:">
-          <el-select
-            v-model="location.slave1"
-            multiple
-            @change="handleLocationChange"
-            @remove-tag="handleLocationRemoveTag"
+
+        <template v-for="(item, index) in nodeList">
+          <el-form-item
+            :key="index"
+            v-show="item.status != 'Master'"
+            :label="'Slave' + ' ' + index"
           >
-            <el-option
-              v-for="item in nodeList"
-              :key="item.id"
-              :label="item.id"
-              :value="item.id"
-              :disabled="item.disabled"
+            <el-select
+              v-show="index == 1"
+              v-model="location.slave1"
+              multiple
+              @change="handleLocationChange"
+              @remove-tag="handleLocationRemoveTag"
             >
-            </el-option>
-          </el-select>
-        </el-form-item>
+              <el-option
+                v-for="item in nodeList"
+                :key="item.id"
+                :label="item.id"
+                :value="item.id"
+                :disabled="item.disabled"
+              >
+              </el-option>
+            </el-select>
+            <el-select
+              v-show="index == 2"
+              v-model="location.slave2"
+              multiple
+              @change="handleLocationChange"
+              @remove-tag="handleLocationRemoveTag"
+            >
+              <el-option
+                v-for="item in nodeList"
+                :key="item.id"
+                :label="item.id"
+                :value="item.id"
+                :disabled="item.disabled"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </template>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
@@ -732,7 +822,7 @@ export default {
         before_rscs: [],
         after_rscs: [],
       },
-      showme:false
+      showme: false,
     };
   },
   computed: {
@@ -774,18 +864,20 @@ export default {
     },
     dataLoading() {
       let _this = this;
-      getResource().then((res) => {
-        _this.tableData = res.data.data;
-      }).catch((err)=>{
-        console.log('错误');
-         console.log(err.response.status)
-         if (err.response.status==403) {
-           localStorage.removeItem('userLogin');
-           this.$router.push({path:'/login'})
-         }
-      });
+      getResource()
+        .then((res) => {
+          _this.tableData = res.data.data;
+        })
+        .catch((err) => {
+          console.log("错误");
+          console.log(err.response.status);
+          if (err.response.status == 403) {
+            localStorage.removeItem("userLogin");
+            this.$router.push({ path: "/login" });
+          }
+        });
       getNodes().then((res) => {
-        _this.nodeList = res.data.data;
+        _this.nodeList = res.data.nodelist;
       });
       getDrdbStatus().then((res) => {
         _this.drdbStatus = res.data.data;
@@ -902,30 +994,23 @@ export default {
 
 <style scoped lang='scss'>
 .data-operate {
-  margin: 20px 10px 0px 0px;
+  margin: 20px;
   .el-dialog {
     .button-tabs {
       .tab-panels {
         .block {
-          float: right;
-          flex: 0 0 auto;
-          display: block;
-          -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-          width: auto;
-          margin-right: 60px;
-          .el-input-number.is-controls-right .el-input__inner {
-            text-align: left;
-          }
+          float: left;
+          width: 260px;
         }
-        .cascader.dropdowns.selections {
-          width: 208px;
-          float: right;
-          flex: 0 0 auto;
-          display: block;
-          -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-          margin-right: 60px;
+        .el-row {
+          margin-bottom: 20px;
+        }
+        .modify-label {
+          float: left;
+          line-height: 40px;
+          width: 200px;
+          text-align: right;
+          margin-right: 10px;
         }
         .panel-contents {
           margin-bottom: 5px;
@@ -933,12 +1018,8 @@ export default {
           justify-content: space-around;
           .labels {
             float: left;
-            flex: 0 0 auto;
-            display: block;
-            -webkit-box-sizing: border-box;
-            box-sizing: border-box;
             width: 20%;
-            text-align: end;
+            text-align: right;
 
             .el-icon-question {
               font-size: 16px;
@@ -956,8 +1037,7 @@ export default {
 
     .hometable-dialog-footer {
       margin-top: 40px;
-      display: flex;
-      justify-content: center;
+      float: right;
     }
   }
   .button-group {
@@ -970,7 +1050,7 @@ export default {
       .el-button {
         float: left;
         height: 40px;
-        margin: 0 10px;
+        margin: 0 6px;
       }
     }
   }
