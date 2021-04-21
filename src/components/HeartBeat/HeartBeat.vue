@@ -11,34 +11,57 @@
       <el-tabs v-if="form.hbaddrs1" v-model="activeName">
         <el-tab-pane label="主心跳" name="first">
           <el-form ref="form" :model="form">
-            <el-form-item label="节点心跳IP-ns187:">
-              <el-input v-model="form.hbaddrs1[0].ip"></el-input>
-            </el-form-item>
-            <el-form-item label="节点心跳IP-ns188:">
-              <el-input v-model="form.hbaddrs1[1].ip"></el-input>
-            </el-form-item>
+            <div v-for="item in form.hbaddrs1" :key="item.key">
+              <el-form-item>
+                <span>节点心跳-{{ item.nodeid }}</span>
+                <el-input v-model="item.ip"></el-input>
+              </el-form-item>
+            </div>
           </el-form>
         </el-tab-pane>
         <el-tab-pane label="备用心跳" name="second">
+          <el-switch v-model="backupHeartBeat" inactive-text="启用备用心跳">
+          </el-switch>
+          <div>
+            <span>节点心跳-{{ form.hbaddrs1[0].nodeid }}</span>
+            <el-input
+              v-model="backupHB[0].ip"
+              :disabled="!backupHeartBeat"
+            ></el-input>
+          </div>
+          <div>
+            <span>节点心跳-{{ form.hbaddrs1[1].nodeid }}</span>
+            <el-input
+              v-model="backupHB[1].ip"
+              :disabled="!backupHeartBeat"
+            ></el-input>
+          </div>
+        </el-tab-pane>
+
+        <!-- <el-tab-pane label="备用心跳" name="second">
           <el-form ref="form" :model="form">
             <el-form-item>
               <el-switch v-model="backupHeartBeat" inactive-text="启用备用心跳">
               </el-switch>
             </el-form-item>
-            <el-form-item label="节点心跳IP-ns187:">
+            <el-form-item>
+              <span>节点心跳ip-{{ form.hbaddrs2[1].nodeid }}</span>
+
               <el-input
                 :disabled="!backupHeartBeat"
                 v-model="form.hbaddrs2[0].ip"
               ></el-input>
             </el-form-item>
-            <el-form-item label="节点心跳IP-ns188:">
+            <el-form-item>
+              <span>节点心跳ip-{{ form.hbaddrs2[1].nodeid }}</span>
+
               <el-input
                 :disabled="!backupHeartBeat"
                 v-model="form.hbaddrs2[1].ip"
               ></el-input>
             </el-form-item>
           </el-form>
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
@@ -48,41 +71,54 @@
   </div>
 </template>
 <script>
-import { getConfigs, updateHB} from "@/api/cluster";
+import { getConfigs, updateHB } from "@/api/cluster";
 export default {
   data() {
     return {
       dialogVisible: false,
       activeName: "first",
       backupHeartBeat: false,
-      form: {
-        hbaddrs2: {
-          0: {
-            ip: "",
-            nodeid: "",
-          },
-          1: {
-            ip: "",
-            nodeid: "",
-          },
+      backupHB: [
+        {
+          nodeId: "",
+          ip: "",
         },
-      },
+        {
+          nodeId: "",
+          ip: "",
+        },
+      ],
+      form: {},
     };
   },
   created() {
     let _this = this;
     getConfigs().then((res) => {
-      _this.form.hbaddrs1 = res.data.data.hbaddrs1;
-      if (res.data.data.hbaddrs2) _this.form.hbaddrs2 = res.data.data.hbaddrs2;
+      _this.form = res.data.data;
+      //   _this.form.hbaddrs1 = res.data.data.hbaddrs1;
+      if (!res.data.data.hbaddrs2) {
+        _this.backupHB[0] = res.data.data.hbaddrs1[0];
+        _this.backupHB[1] = res.data.data.hbaddrs1[1];
+      } else {
+        _this.backupHB[0] = res.data.data.hbaddrs2[0];
+        _this.backupHB[1] = res.data.data.hbaddrs2[1];
+      }
+      // });
     });
   },
   methods: {
     updateHeartBeat() {
-      //todo: upload heart beat settings form
-      let _this = this;
+      let _this = this
+      if (_this.backupHeartBeat) {
+        _this.form.hbaddrs2=[]
+        _this.form.hbaddrs2.push(_this.backupHB[0]);
+        _this.form.hbaddrs2.push(_this.backupHB[1]);
+      }
+      console.log(_this.backupHB);
+      console.log(_this.form);
       updateHB(_this.form).then(() => {
-        this.dialogVisible = false;
-        this.$message({
+        _this.dialogVisible = false;
+        _this.$message({
           type: "success",
           message: "已更新心跳配置",
         });

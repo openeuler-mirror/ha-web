@@ -7,18 +7,18 @@ const service = axios.create({
   timeout: 5000
 })
 
-service.interceptors.request.use(
-  config => {
-    if (config.method === "post") {
-      config.data = qs.stringify(config.data);
-      config.data = JSON.stringify(config.data);
-    }
-    return config
-  },
-  error => {
-    return Promise.reject(error)
-  }
-)
+// service.interceptors.request.use(
+//   // config => {
+//   //   if (config.method === "post") {
+//   //     config.data = qs.stringify(config.data);
+//   //     config.data = JSON.stringify(config.data);
+//   //   }
+//   //   return config
+//   // },
+//   error => {
+//     return Promise.reject(error)
+//   }
+// )
 axios.interceptors.response.use(function (response) {
   // 对响应数据做点什么
   return response;

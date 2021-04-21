@@ -9,7 +9,7 @@ import VueSidebarMenu from 'vue-sidebar-menu'
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 import axios from 'axios';
 import './assets/icon/iconfont.css'
-import './assets/element/index.css' //更改element ui的主题颜色
+import './assets/element/index.css'
 require('../mock');
 Vue.use(VueSidebarMenu)
 Vue.use(ElementUI)
@@ -30,6 +30,5 @@ axios.get('/static/config.json').then(res => {
     console.log('load api base url error')
   }
 }).catch(err => {
-  console.log(err)
   console.log('load api base url error')
 })

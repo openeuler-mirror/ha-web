@@ -37,15 +37,23 @@ export function getMetaAttris(type) {
 }
 export function getInstanceAttris(type) {
   return request({
-    url: '/meta_attributes'+type,
+    url: '/meta_attributes/'+type,
+    method: 'get',
+ 
+  })}
+export function getAttris(url) {
+  return request({
+    url: url,
     method: 'get',
  
   })
 }
 export function getOperationAttris(type) {
   return request({
-    url: '/meta_attributes'+type,
+    url: '/meta_attributes/'+type,
     method: 'get',
  
   })
+
+
 }

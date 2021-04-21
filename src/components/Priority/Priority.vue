@@ -65,6 +65,7 @@
               <el-switch
                 size="mini"
                 v-if="ret.content.type == 'boolean'"
+                :active-value="true"
                 v-model="ret.content.default"
               ></el-switch>
             </span>
@@ -87,6 +88,7 @@ export default {
     return {
       dialogVisible: false,
       rets: {},
+      priorities: {},
     };
   },
   created() {
@@ -99,7 +101,11 @@ export default {
     updatePriority() {
       let _this = this;
       _this.dialogVisible = false;
-      update(_this.rets.parameters).then((res) => {
+      for (let prikeys in _this.rets.parameters) {
+        _this.priorities[prikeys] = _this.rets.parameters[prikeys].value;
+      }
+      update(_this.priorities).then((res) => {
+        _this.rets = {};
         this.$message({
           type: "success",
           message: "已更新首选项",
