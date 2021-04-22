@@ -616,7 +616,7 @@
     <el-dialog
       class="basicAddDialog"
       title="创建资源"
-      :visible.sync="disableGroupAddDialog"
+      :visible.sync="disableCloneDialog"
       width="46%"
     >
       <el-tabs class="button-tabs">
@@ -704,7 +704,7 @@
         </el-tab-pane>
 
         <span class="hometable-dialog-footer">
-          <el-button @click="disableGroupAddDialog = false">取 消</el-button>
+          <el-button @click="disableCloneDialog = false">取 消</el-button>
           <el-button type="primary" @click="addItem">确 定</el-button>
         </span>
       </el-tabs>
@@ -773,7 +773,7 @@
               :key="item.id"
               :label="item.id"
               :value="item.id"
-              :disabled="item.disabled"
+              :disabled="item.disabled"           
             >
             </el-option>
           </el-select>
@@ -923,7 +923,7 @@
 <script>
 import {
   getResource,
-  getDrdbStatus,
+  // getDrdbStatus,
   easyRequest,
   getMetas,
   getMetaAttris,
@@ -951,7 +951,7 @@ export default {
       tableData: [],
       nodeList: [],
       noGroup: [],
-      drdbStatus: "",
+      // drdbStatus: "",
       disableEditDialog: false,
       disableMigrateDialog: false,
       disableGroupAddDialog: false,
@@ -1148,9 +1148,9 @@ export default {
       getNodes().then((res) => {
         _this.nodeList = res.data.data;
       });
-      getDrdbStatus().then((res) => {
-        _this.drdbStatus = res.data.data;
-      });
+      // getDrdbStatus().then((res) => {
+      //   _this.drdbStatus = res.data.data;
+      // });
     },
     openAddDialog() {
       let _this = this;
@@ -1233,7 +1233,7 @@ export default {
       _this.meta_attributes = [];
       getMetas().then((res) => {
         _this.metas = res.data.metas;
-        _this.disableGroupAddDialog = true;
+        _this.disableCloneDialog = true;
       });
       getMetaAttris("clone").then((res) => {
         _this.metaAttris = res.data.data;
@@ -1343,8 +1343,7 @@ export default {
     },
     addItem() {
       let _this = this;
-      _this.disableAddDialog = false;
-      _this.disableGroupAddDialog = false;
+
       console.log("addForm");
       console.log(_this.addForm);
       for (let i in _this.addForm.instance_attributes) {
@@ -1360,6 +1359,9 @@ export default {
           type: "success",
           message: "resource adding success",
         });
+        _this.disableAddDialog = false;
+        _this.disableGroupAddDialog = false;
+        _this.disableCloneDialog = false;
         _this.dataLoading();
       });
     },
