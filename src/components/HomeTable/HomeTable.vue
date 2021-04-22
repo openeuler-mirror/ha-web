@@ -335,8 +335,9 @@
       >
         <el-tabs class="button-tabs">
           <el-tab-pane class="tab-panels" label="基本">
-            <el-form-item label="资源名称" prop="name">
-              <!-- <span class="labels"> 资源名称： </span> -->
+            <el-form-item label="资源名称" prop="id">
+              <!-- <span class="labels"> 资源名称： </span> -->.
+              {{addForm.id}}
               <el-input class="block" v-model="addForm.id"></el-input>
             </el-form-item>
             <el-form-item label="资源类型" prop="type">
@@ -962,6 +963,7 @@ export default {
       instance_attributes: [],
       meta_attributes: [],
       addForm: {
+         id:'',
         meta_attributes: {},
         instance_attributes: {},
       },
@@ -974,14 +976,8 @@ export default {
       operationAttris: [],
       instanceAttris: [],
       addingRules: {
-        name: [{ required: true, message: "请输入资源名称", trigger: "blur" }],
-
-        type: [{ required: true, message: "请输入资源类型", trigger: "blur" }],
-        device: [{ required: true, message: "请输入device", trigger: "blur" }],
-        directory: [
-          { required: true, message: "请输入directory", trigger: "blur" },
-        ],
-        fstype: [{ required: true, message: "请输入fstype", trigger: "blur" }],
+        id: [{ required: true, message: '请输入资源名称', trigger: 'blur' }],
+        // type: [{ required: true, message: "请输入资源类型", trigger: "blur" }],
       },
 
       locationVisible: false,
@@ -1156,6 +1152,7 @@ export default {
       let _this = this;
       (_this.activeName = "first"),
         (_this.addForm = {
+          id:'',
           category: "primitive",
           meta_attributes: {},
           instance_attributes: {},

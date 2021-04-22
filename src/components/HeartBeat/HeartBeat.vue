@@ -6,8 +6,7 @@
       width="650px"
       :modal-append-to-body="false"
     >
-      <span>这是一段信息</span>
-      <!-- <el-tabs v-if="form.hbaddrs1" v-model="activeName">
+      <el-tabs v-if="form.hbaddrs1" v-model="activeName">
         <el-tab-pane label="主心跳" name="first">
           <el-form ref="form" :model="form">
             <div v-for="item in form.hbaddrs1" :key="item.key">
@@ -35,33 +34,8 @@
               :disabled="!backupHeartBeat"
             ></el-input>
           </div>
-        </el-tab-pane> -->
-
-      <!-- <el-tab-pane label="备用心跳" name="second">
-          <el-form ref="form" :model="form">
-            <el-form-item>
-              <el-switch v-model="backupHeartBeat" inactive-text="启用备用心跳">
-              </el-switch>
-            </el-form-item>
-            <el-form-item>
-              <span>节点心跳ip-{{ form.hbaddrs2[1].nodeid }}</span>
-
-              <el-input
-                :disabled="!backupHeartBeat"
-                v-model="form.hbaddrs2[0].ip"
-              ></el-input>
-            </el-form-item>
-            <el-form-item>
-              <span>节点心跳ip-{{ form.hbaddrs2[1].nodeid }}</span>
-
-              <el-input
-                :disabled="!backupHeartBeat"
-                v-model="form.hbaddrs2[1].ip"
-              ></el-input>
-            </el-form-item>
-          </el-form>
-        </el-tab-pane> -->
-      <!-- </el-tabs> -->
+        </el-tab-pane>
+      </el-tabs>
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleCancel">取 消</el-button>
         <el-button type="primary" @click="updateHeartBeat">确 定</el-button>
@@ -96,7 +70,8 @@ export default {
     let _this = this;
     getConfigs().then((res) => {
       _this.form = res.data.data;
-      //   _this.form.hbaddrs1 = res.data.data.hbaddrs1;
+        _this.form.hbaddrs1 = res.data.data.hbaddrs1;
+        console.log(_this.form);
       if (!res.data.data.hbaddrs2) {
         _this.backupHB[0] = res.data.data.hbaddrs1[0];
         _this.backupHB[1] = res.data.data.hbaddrs1[1];
@@ -115,8 +90,6 @@ export default {
         _this.form.hbaddrs2.push(_this.backupHB[0]);
         _this.form.hbaddrs2.push(_this.backupHB[1]);
       }
-      console.log(_this.backupHB);
-      console.log(_this.form);
       _this.$store.state.count = "";
       updateHB(_this.form).then(() => {
         _this.$message({
