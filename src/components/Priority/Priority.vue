@@ -1,10 +1,8 @@
 <template>
   <div class="priority-modal priority-type">
-    <div class="bar-text" @click="dialogVisible = true">首选项配置</div>
-
     <el-dialog
       title="首选项配置"
-      :visible.sync="dialogVisible"
+      :visible.sync="msg"
       :modal-append-to-body="false"
       id="priority-content"
     >
@@ -74,7 +72,7 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button @click="handleCancel">取 消</el-button>
           <el-button type="primary" @click="updatePriority">确 定</el-button>
         </span>
       </template>
@@ -84,9 +82,11 @@
 <script>
 import { getPriorities, update } from "@/api/cluster";
 export default {
+  props: {
+    msg: Boolean,
+  },
   data() {
     return {
-      dialogVisible: false,
       rets: {},
       priorities: {},
     };
@@ -100,7 +100,7 @@ export default {
   methods: {
     updatePriority() {
       let _this = this;
-      _this.dialogVisible = false;
+      _this.$store.state.count = ''
       for (let prikeys in _this.rets.parameters) {
         _this.priorities[prikeys] = _this.rets.parameters[prikeys].value;
       }
@@ -112,6 +112,10 @@ export default {
         });
       });
     },
+    handleCancel() {
+      let _this = this
+      _this.$store.state.count = ''
+    }
   },
 };
 </script>

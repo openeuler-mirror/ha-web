@@ -18,19 +18,19 @@
             <el-input
               class="iconfont icon-yonghutouxiang"
               v-model="loginForm.username"
-              placeholder="用户名"
+              placeholder="输入用户名"
             ></el-input>
           </el-form-item>
           <el-form-item class="input_form-item">
             <el-input
               class="iconfont icon-suo"
               v-model="loginForm.password"
-              placeholder="密码"
+              placeholder="输入密码"
               show-password
             ></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click.native="onSubmit">登录</el-button>
+            <el-button class="btn" type="primary" @click.native="onSubmit">登录</el-button>
           </el-form-item>
         </el-form>
       </div>

@@ -1,9 +1,8 @@
 <template>
   <div class="priority-modal">
-    <div class="bar-text" @click="dialogVisible = true">集群快捷操作</div>
     <el-dialog
       title="集群快捷操作"
-      :visible.sync="dialogVisible"
+      :visible.sync="msg"
       :modal-append-to-body="false"
       top="10vh"
       @close="handleBtnClick"
@@ -43,6 +42,9 @@
 <script>
 import { getCmds, getCmdResult } from "@/api/tools";
 export default {
+  props: {
+    msg: Boolean,
+  },
   data() {
     return {
       dialogVisible: false,
@@ -81,7 +83,7 @@ export default {
         value: "",
         desc: "",
       };
-      this.dialogVisible = false;
+      _this.$store.state.count = "";
     },
   },
 };

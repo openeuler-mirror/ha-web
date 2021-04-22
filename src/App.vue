@@ -18,4 +18,12 @@ export default {
   color: #2c3e50;
   margin: -8px;
 }
+html,
+body,
+#app,
+.el-container {
+  padding: 0px;
+  margin: 0px;
+  height: 100%;
+}
 </style>

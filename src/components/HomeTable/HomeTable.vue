@@ -222,7 +222,7 @@
       ref="singleTable"
       highlight-current-row
       @row-click="showRow"
-      height="87vh"
+      height="80vh"
     >
       <el-table-column width="40"> </el-table-column>
       <el-table-column label="选择" width="60">
@@ -342,7 +342,7 @@
             <el-form-item label="资源类型" prop="type">
               <!-- <span class="labels"> 资源类型： </span> -->
               <el-cascader
-                class="cascader dropdowns selections"
+                class="block"
                 v-model="addForm.type"
                 :options="metas"
                 :props="{ expandTrigger: 'hover' }"
@@ -364,7 +364,7 @@
                   v-model="instance_attributes"
                   multiple
                   placeholder="请选择"
-                  size="small"
+                  class="block"
                 >
                   <!-- -->
                   <el-option
@@ -467,10 +467,11 @@
           </el-tab-pane>
 
           <el-tab-pane class="tab-panels" v-if="false" label="操作属性">
-            <div>
-              需要修改的操作属性：
+            <el-row>
+              <span class="modify-label">需要修改的操作属性：</span>
               <span class="block" v-if="metaAttris && operationAttris">
                 <el-select
+                  class="block"
                   v-model="addSelectedAttris.actions"
                   multiple
                   placeholder="请选择"
@@ -485,7 +486,7 @@
                   </el-option>
                 </el-select>
               </span>
-            </div>
+            </el-row>
 
             <!-- <el-table :data="addForm.actions">
               <el-table-column prop="name" label="name">
@@ -1458,7 +1459,6 @@ export default {
 
 <style scoped lang='scss'>
 .data-operate {
-  margin: 20px;
   .el-dialog {
     .button-tabs {
       .tab-panels {
@@ -1506,7 +1506,8 @@ export default {
   }
   .button-group {
     border-bottom: 1px solid #e4e4e4;
-    padding-bottom: 10px;
+    padding: 10px;
+    background: #fff;
     .el-row {
       .el-dropdown {
         float: left;

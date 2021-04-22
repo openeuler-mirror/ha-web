@@ -1,14 +1,13 @@
 <template>
   <div class="priority-modal">
-    <div class="bar-text" @click="dialogVisible = true">心跳配置</div>
-
     <el-dialog
       title="心跳配置"
-      :visible.sync="dialogVisible"
+      :visible.sync="msg"
       width="650px"
       :modal-append-to-body="false"
     >
-      <el-tabs v-if="form.hbaddrs1" v-model="activeName">
+      <span>这是一段信息</span>
+      <!-- <el-tabs v-if="form.hbaddrs1" v-model="activeName">
         <el-tab-pane label="主心跳" name="first">
           <el-form ref="form" :model="form">
             <div v-for="item in form.hbaddrs1" :key="item.key">
@@ -36,9 +35,9 @@
               :disabled="!backupHeartBeat"
             ></el-input>
           </div>
-        </el-tab-pane>
+        </el-tab-pane> -->
 
-        <!-- <el-tab-pane label="备用心跳" name="second">
+      <!-- <el-tab-pane label="备用心跳" name="second">
           <el-form ref="form" :model="form">
             <el-form-item>
               <el-switch v-model="backupHeartBeat" inactive-text="启用备用心跳">
@@ -62,9 +61,9 @@
             </el-form-item>
           </el-form>
         </el-tab-pane> -->
-      </el-tabs>
+      <!-- </el-tabs> -->
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="handleCancel">取 消</el-button>
         <el-button type="primary" @click="updateHeartBeat">确 定</el-button>
       </span>
     </el-dialog>
@@ -73,9 +72,11 @@
 <script>
 import { getConfigs, updateHB } from "@/api/cluster";
 export default {
+  props: {
+    msg: Boolean,
+  },
   data() {
     return {
-      dialogVisible: false,
       activeName: "first",
       backupHeartBeat: false,
       backupHB: [
@@ -108,21 +109,25 @@ export default {
   },
   methods: {
     updateHeartBeat() {
-      let _this = this
+      let _this = this;
       if (_this.backupHeartBeat) {
-        _this.form.hbaddrs2=[]
+        _this.form.hbaddrs2 = [];
         _this.form.hbaddrs2.push(_this.backupHB[0]);
         _this.form.hbaddrs2.push(_this.backupHB[1]);
       }
       console.log(_this.backupHB);
       console.log(_this.form);
+      _this.$store.state.count = "";
       updateHB(_this.form).then(() => {
-        _this.dialogVisible = false;
         _this.$message({
           type: "success",
           message: "已更新心跳配置",
         });
       });
+    },
+    handleCancel() {
+      let _this = this;
+      _this.$store.state.count = "";
     },
   },
 };

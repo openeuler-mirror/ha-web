@@ -1,10 +1,9 @@
 <template>
   <div class="top-bar">
-    <div>title</div>
     <el-dropdown class="button-group">
       <el-button class="btn-user" type="default">
         <i class="iconfont icon-yonghutouxiang"></i>
-        user
+        <span>user</span>
       </el-button>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item @click.native="refreshSetting">刷新设置</el-dropdown-item>
@@ -69,12 +68,13 @@ export default {
   height: 60px;
   box-shadow: 0px 1px 5px 1px #ecf0f6;
   .button-group {
-    margin-top: -10px;
     float: right;
     margin-right: 20px;
+    margin-top: 10px;
     .btn-user {
       border: none;
       color: #999;
+      background: transparent;
     }
     .btn-user:hover {
       background: transparent;

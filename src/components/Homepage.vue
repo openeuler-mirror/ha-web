@@ -1,17 +1,67 @@
 <template>
-  <div class="main">
-    <div class="top">
-      <div class="bar-title"></div>
-      <top-bar></top-bar>
-    </div>
-    <div class="sider">
-      <sidebar-menu :menu="menu" @toggle-collapse="onToggleCollapse" />
+  <el-container>
+    <el-aside width="auto">
+      <div class="logo">
+        <img src="../assets/logo.png" />
+        <span>openUnicorn HA</span>
+      </div>
 
-    </div>
-    <div class="table" :class="{ collapsed: isCollapsed }">
-      <home-table></home-table>
-    </div>
-  </div>
+      <el-menu
+        class="el-menu-vertical-demo"
+        @select="handleSelect"
+        :collapse="isCollapse"
+        background-color="#2b333e"
+        text-color="#f1f5fb"
+      >
+        <el-menu-item index="1">
+          <i class="iconfont icon-xitong1"></i>
+          <template #title>
+            <span>系统</span>
+          </template>
+        </el-menu-item>
+
+        <el-submenu index="2">
+          <template #title>
+            <i class="iconfont icon-peizhi"></i>
+            <span>集群配置</span>
+          </template>
+          <el-menu-item index="2-1">
+            <span>首选项配置</span>
+          </el-menu-item>
+          <el-menu-item index="2-2">
+            <span>心跳配置</span>
+          </el-menu-item>
+        </el-submenu>
+
+        <el-submenu index="3">
+          <template #title>
+            <i class="iconfont icon-gongju"></i>
+            <span>工具</span>
+          </template>
+          <el-menu-item index="3-1">
+            <logs></logs>
+          </el-menu-item>
+          <el-menu-item index="3-2">
+            <span>集群快捷操作</span>
+          </el-menu-item>
+        </el-submenu>
+      </el-menu>
+    </el-aside>
+    <el-container>
+      <el-header>
+        <el-button class="btn-menu" @click="toggleCollapse">
+          <i class="iconfont icon-caidan"></i>
+        </el-button>
+        <top-bar></top-bar>
+      </el-header>
+      <el-main>
+        <home-table></home-table>
+        <priority :msg="$store.state.count == '2-1'"></priority>
+        <heart-beat :msg="$store.state.count == '2-2'"></heart-beat>
+        <cluster-operation :msg="$store.state.count == '3-2'"></cluster-operation>
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
 <script>
@@ -25,108 +75,99 @@ import TopBar from "@/components/Layout/TopBar/TopBar";
 export default {
   data() {
     return {
-      menu: [
-        { header: true, title: "openUnicorn HA" },
-        {
-          title: "集群配置",
-          icon: "iconfont icon-peizhi",
-          // badge:"iconfont icon-peizhi",
-          child: [{ component: Priority }, { component: HeartBeat }],
-        },
-        {
-          title: "工具",
-          icon: "iconfont icon-gongju",
-          child: [{ component: Logs }, { component: ClusterOperation }],
-        },
-      ],
-      isCollapsed: false,
+      isCollapse: false,
+      menuItemIndex: '',
     };
   },
   components: {
     HomeTable,
     TopBar,
+    Priority,
+    ClusterOperation,
+    Logs,
+    HeartBeat,
   },
   methods: {
-    onToggleCollapse(collapsed) {
-      let _this = this;
-      _this.isCollapsed = !_this.isCollapsed;
+    handleSelect(key, keyPath){
+      let _this = this
+      console.log(key, keyPath)
+      _this.$store.commit('mutationsShowDialog', key);
+    },
+    toggleCollapse() {
+      let _this = this
+      _this.isCollapse = !_this.isCollapse
     },
   },
 };
 </script>
 
-<style  lang='scss'>
-body {
-  padding: 0px !important;
-  overflow: hidden;
-  .sider {
-    .priority-modal {
-      background: #2b333e;
-      .bar-text {
-        cursor: pointer;
-      }
-      color: white;
-      padding-left: 55px;
-      padding-top: 10px;
-      padding-bottom: 10px;
-      .input-box {
-        width: 400px;
-      }
-      .el-input {
-        width: 400px;
-      }
+<style lang='scss'>
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 230px;
+  border: none;
+}
+.el-submenu.is-active.is-open {
+  color: #fff;
+}
+.el-container {
+  .el-menu{
+    .el-menu-item.is-active{
+      color: #fff;
     }
-    .priority-modal:hover {
-      transition: background-color 0.4s linear;
-      border-right: 5px solid #c21a1f;
-      background-color: #1e242b;
+    .el-menu-item:hover{
+      color: #c21a1f;
+      border-right: 4px solid #c21a1f;
     }
-    .vsm--arrow:after {
-      content: "\e611";
-    }
-    .v-sidebar-menu {
-      width: 224px;
-      background-color: #2b333e;
-      font-size: 14px;
-      -webkit-transition: all 0.3s ease-out;
-      -o-transition: all 0.3s ease-out;
-      transition: all 0.3s ease-out;
-      .vsm--toggle-btn:focus {
-        outline: #1e1e21;
-      }
-      .vsm--link_level-1 .vsm--icon {
-        background: transparent;
-      }
-      .vsm--list .vsm--header {
-        height: 60px;
-      }
-    }
-    .v-sidebar-menu.vsm_expanded .vsm--item_open .vsm--link_level-1  {
-      background-color: #2b333e;
-    }
-    .v-sidebar-menu.vsm_expanded .vsm--item_open .vsm--link_level-1 .vsm--icon {
-      background: transparent;
-    }
-
-    .v-sidebar-menu .vsm--dropdown > .vsm--list {
-      padding: 0px;
-    }
-    .vsm--mobile-item{
-      max-width: 150px;
-   }
   }
-}
-.table {
-  margin-left: 240px;
-  -webkit-transition: all 0.3s ease-out;
-  -o-transition: all 0.3s ease-out;
-  transition: all 0.3s ease-out;
-}
+  .logo {
+    padding: 8px 12px;
+    position: relative;
 
-.table.collapsed {
-  margin-left: 80px;
-  -webkit-transition: all 0.3s ease-out;
-  -o-transition: all 0.3s ease-out;
-  transition: all 0.3s ease-out;
+    img {
+      width: 40px;
+    }
+    span {
+      position: absolute;
+      top: 50%;
+      left: 66px;
+      margin-top: -10px;
+
+      font-size: 18px;
+      color: #f1f5fb;
+    }
+  }
+
+  .el-aside {
+    background: #2b333e;
+    i {
+      margin-right: 4px;
+      color: #f1f5fb;
+      font-size: 18px;
+    }
+    div.el-menu-item :hover {
+      border-right: 1px solid #c21a1f;
+    }
+  }
+  .el-header {
+    background: #fff;
+    margin: 0;
+    padding: 0;
+    .btn-menu {
+      float: left;
+      padding: 0 25px;
+      margin: 0;
+      border: none;
+      border-bottom: 1px solid #ecf0f6;
+      background: transparent;
+
+      i{
+        font-size: 26px;
+        line-height: 60px;
+      }
+    }
+  }
+  .el-main {
+    background: #f1f5fb;
+  }
 }
 </style>

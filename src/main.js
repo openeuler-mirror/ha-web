@@ -10,6 +10,7 @@ import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 import axios from 'axios';
 import './assets/icon/iconfont.css'
 import './assets/element/index.css'
+import store from './components/VueX/store'
 require('../mock');
 Vue.use(VueSidebarMenu)
 Vue.use(ElementUI)
@@ -22,6 +23,7 @@ axios.get('/static/config.json').then(res => {
     Vue.prototype.api_base_url = config.api_base_url
     new Vue({
       el: '#app',
+      store,
       router,
       components: { App },
       template: '<App/>'
