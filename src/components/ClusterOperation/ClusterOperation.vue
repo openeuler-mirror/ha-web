@@ -6,6 +6,9 @@
       :modal-append-to-body="false"
       top="10vh"
       @close="handleBtnClick"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      :before-close="handleBtnClick"
       class="operation-dialog"
     >
       <el-form :model="form" ref="form">

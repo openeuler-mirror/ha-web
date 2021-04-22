@@ -3,7 +3,7 @@
     <el-aside width="auto">
       <div class="logo">
         <img src="../assets/logo.png" />
-        <span>openUnicorn HA</span>
+        <span v-show="!isCollapse">openUnicorn HA</span>
       </div>
 
       <el-menu
@@ -92,6 +92,7 @@ export default {
       let _this = this
       console.log(key, keyPath)
       _this.$store.commit('mutationsShowDialog', key);
+      console.log(`store${_this.$store.state.count}`)
     },
     toggleCollapse() {
       let _this = this
@@ -140,13 +141,14 @@ export default {
   .el-aside {
     background: #2b333e;
     i {
-      margin-right: 4px;
+      margin: 0 3px;
       color: #f1f5fb;
       font-size: 18px;
     }
     div.el-menu-item :hover {
       border-right: 1px solid #c21a1f;
     }
+    
   }
   .el-header {
     background: #fff;

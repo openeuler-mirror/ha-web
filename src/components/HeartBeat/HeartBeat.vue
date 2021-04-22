@@ -5,6 +5,9 @@
       :visible.sync="msg"
       width="650px"
       :modal-append-to-body="false"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      :before-close="handleCancel"
     >
       <el-tabs v-if="form.hbaddrs1" v-model="activeName">
         <el-tab-pane label="主心跳" name="first">

@@ -5,6 +5,9 @@
       :visible.sync="msg"
       :modal-append-to-body="false"
       id="priority-content"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      :before-close="handleCancel"
     >
       <div class="ret-form" v-if="rets">
         <el-form ref="rets" :model="rets.parameters">
@@ -115,7 +118,7 @@ export default {
     handleCancel() {
       let _this = this
       _this.$store.state.count = ''
-    }
+    },
   },
 };
 </script>
