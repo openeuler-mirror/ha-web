@@ -16,7 +16,7 @@
               <el-dropdown-item @click.native="openGroupDialog">
                 添加组资源</el-dropdown-item
               >
-              <el-dropdown-item @click.native="openClongDialog">
+              <el-dropdown-item @click.native="openCloneDialog">
                 添加克隆资源</el-dropdown-item
               >
             </el-dropdown-menu>
@@ -26,7 +26,7 @@
         <!-- operations -->
         <div class="easy-operation">
           <el-button
-            :disabled="showEdit"
+            :disabled="true"
             @click="operate('edit', radio)"
             id="edit"
             class="operations"
@@ -35,7 +35,7 @@
             编辑
           </el-button>
           <el-button
-            :disabled="showButtons && showme"
+            :disabled="showStart"
             @click="operate('start', radio)"
             id="start"
             class="operations"
@@ -44,7 +44,7 @@
             启动
           </el-button>
           <el-button
-            :disabled="showButtons && showme"
+            :disabled="showButtons"
             @click="operate('stop', radio)"
             id="stop"
             class="operations"
@@ -62,7 +62,7 @@
             清理
           </el-button>
           <el-button
-            :disabled="true"
+            :disabled="showMigrate"
             @click="operate('migrate', radio)"
             id="migrate"
             class="operations"
@@ -71,7 +71,7 @@
             迁移
           </el-button>
           <el-button
-            :disabled="true"
+            :disabled="showUnmigrate"
             @click="operate('unmigrate', radio)"
             id="unmigrate"
             class="operations"
@@ -173,7 +173,7 @@
         </el-dialog> -->
 
         <!-- delete -->
-        <el-popconfirm title="确定删除资源吗？">
+        <el-popconfirm @confirm="deleteItem" title="确定删除资源吗？">
           <template #reference>
             <el-button :disabled="showButtons" class="operations">
               <i class="iconfont icon-shanchukai"></i>
@@ -300,7 +300,7 @@
             <span>{{ item.id }}</span>
           </template>
 
-          <template slot-scope="scope">
+          <template slot-scope="scope" v-if="scope.row.running_node">
             <template v-for="count in scope.row.running_node.length">
               <span
                 v-show="scope.row.running_node[count - 1] == item.id"
@@ -337,7 +337,7 @@
           <el-tab-pane class="tab-panels" label="基本">
             <el-form-item label="资源名称" prop="name">
               <!-- <span class="labels"> 资源名称： </span> -->
-              <el-input class="block" v-model="addForm.name"></el-input>
+              <el-input class="block" v-model="addForm.id"></el-input>
             </el-form-item>
             <el-form-item label="资源类型" prop="type">
               <!-- <span class="labels"> 资源类型： </span> -->
@@ -360,8 +360,6 @@
             <el-row>
               <span class="modify-label"> 需要修改的实例属性： </span>
               <span class="block" v-if="metaAttris">
-                {{ instance_attributes }}
-                {{ addForm.instance_attributes }}
                 <el-select
                   v-model="instance_attributes"
                   multiple
@@ -381,30 +379,37 @@
             </el-row>
             <div v-if="instance_attributes">
               <div v-for="(item, key) in instance_attributes" :key="key">
-                <span>{{ instance_attributes[key] }}</span>
-                <span>
-                  <el-input
-                    v-if="InsTypes[instance_attributes[key]] == 'string'"
-                    v-model="
-                      addForm.instance_attributes[instance_attributes[key]]
-                    "
-                    @input="forceUpdate"
-                  ></el-input>
-                  <el-switch
-                    v-if="InsTypes[instance_attributes[key]] == 'boolean'"
-                    v-model="
-                      addForm.instance_attributes[instance_attributes[key]]
-                    "
-                    @input="forceUpdate"
-                  ></el-switch>
-                  <el-input-number
-                    v-if="InsTypes[instance_attributes[key]] == 'integer'"
-                    v-model="
-                      addForm.instance_attributes[instance_attributes[key]]
-                    "
-                    @input="forceUpdate"
-                  ></el-input-number>
-                </span>
+                <el-row>
+                  <span class="modify-label">{{
+                    instance_attributes[key]
+                  }}</span>
+                  <span>
+                    <el-input
+                      class="block"
+                      v-if="InsTypes[instance_attributes[key]] == 'string'"
+                      v-model="
+                        addForm.instance_attributes[instance_attributes[key]]
+                      "
+                      @input="forceUpdate"
+                    ></el-input>
+                    <el-switch
+                      class="block"
+                      v-if="InsTypes[instance_attributes[key]] == 'boolean'"
+                      v-model="
+                        addForm.instance_attributes[instance_attributes[key]]
+                      "
+                      @input="forceUpdate"
+                    ></el-switch>
+                    <el-input-number
+                      class="block"
+                      v-if="InsTypes[instance_attributes[key]] == 'integer'"
+                      v-model="
+                        addForm.instance_attributes[instance_attributes[key]]
+                      "
+                      @input="forceUpdate"
+                    ></el-input-number>
+                  </span>
+                </el-row>
               </div>
             </div>
           </el-tab-pane>
@@ -413,8 +418,6 @@
             <el-row>
               <label class="modify-label">需要修改的元属性: </label>
               <span v-if="metaAttris">
-                {{ metaAttris }}
-                {{ meta_attributes }}
                 <el-select
                   class="block"
                   v-model="meta_attributes"
@@ -433,40 +436,37 @@
             </el-row>
             <!-- <div v-if="addForm.metaAttris"> -->
             <el-row v-if="meta_attributes">
-              <div v-for="(item, key) in instance_attributes" :key="key">
-                <span class="modify-label">{{ instance_attributes[key] }}</span>
-                <span>
-                  <el-input
-                    class="block"
-                    v-if="InsTypes[instance_attributes[key]] == 'string'"
-                    v-model="
-                      addForm.instance_attributes[instance_attributes[key]]
-                    "
-                    @input="forceUpdate"
-                  ></el-input>
-                  <el-switch
-                    class="block"
-                    v-if="InsTypes[instance_attributes[key]] == 'boolean'"
-                    v-model="
-                      addForm.instance_attributes[instance_attributes[key]]
-                    "
-                    @input="forceUpdate"
-                  ></el-switch>
-                  <el-input-number
-                    class="block"
-                    v-if="InsTypes[instance_attributes[key]] == 'integer'"
-                    v-model="
-                      addForm.instance_attributes[instance_attributes[key]]
-                    "
-                    @input="forceUpdate"
-                  ></el-input-number>
-                </span>
+              <div v-for="(item, key) in meta_attributes" :key="key">
+                <el-row>
+                  <span class="modify-label">{{ meta_attributes[key] }}</span>
+                  <span>
+                    <el-input
+                      class="block"
+                      v-if="metaAttrTypes[meta_attributes[key]] == 'string'"
+                      v-model="addForm.meta_attributes[meta_attributes[key]]"
+                      @input="forceUpdate"
+                    ></el-input>
+                    <el-switch
+                      class="block"
+                      :active-value="true"
+                      v-if="metaAttrTypes[meta_attributes[key]] == 'boolean'"
+                      v-model="addForm.meta_attributes[meta_attributes[key]]"
+                      @input="forceUpdate"
+                    ></el-switch>
+                    <el-input-number
+                      class="block"
+                      v-if="metaAttrTypes[meta_attributes[key]] == 'integer'"
+                      v-model="addForm.meta_attributes[meta_attributes[key]]"
+                      @input="forceUpdate"
+                    ></el-input-number>
+                  </span>
+                </el-row>
               </div>
             </el-row>
             <!-- </div> -->
           </el-tab-pane>
 
-          <el-tab-pane class="tab-panels" v-if="addForm.type" label="操作属性">
+          <el-tab-pane class="tab-panels" v-if="false" label="操作属性">
             <div>
               需要修改的操作属性：
               <span class="block" v-if="metaAttris && operationAttris">
@@ -507,9 +507,7 @@
           </el-tab-pane>
           <span class="hometable-dialog-footer">
             <el-button @click="disableAddDialog = false">取 消</el-button>
-            <el-button type="primary" @click="disableAddDialog = false"
-              >确 定</el-button
-            >
+            <el-button type="primary" @click="addItem">确 定</el-button>
           </span>
         </el-tabs>
       </el-form>
@@ -526,13 +524,17 @@
         <el-tab-pane class="tab-panels" label="基本">
           <el-row>
             <span class="modify-label"> 资源名称:</span>
-            <el-input class="block" v-model="groupForm.id"></el-input>
+            <el-input class="block" v-model="addForm.id"></el-input>
           </el-row>
           <el-row>
             <span class="modify-label">组内资源：</span>
 
-              
-            <el-select class="block" v-model="groupForm.rscs" multiple placeholder="请选择">
+            <el-select
+              class="block"
+              v-model="addForm.rscs"
+              multiple
+              placeholder="请选择"
+            >
               <el-option
                 v-for="item in noGroup"
                 :key="item.key"
@@ -546,14 +548,13 @@
 
         <el-tab-pane class="tab-panels" label="元属性">
           <el-row>
-            <span class="modify-label">需要修改的元属性：</span>
+            <label class="modify-label">需要修改的元属性: </label>
             <span v-if="metaAttris">
               <el-select
                 class="block"
-                v-model="groupForm.metaAttris"
+                v-model="meta_attributes"
                 multiple
                 placeholder="请选择"
-                @change="setMetaAttris"
               >
                 <el-option
                   v-for="item in metaAttris"
@@ -566,17 +567,46 @@
             </span>
           </el-row>
           <!-- <div v-if="addForm.metaAttris"> -->
-          <el-row v-for="item in addForm.metaAttris" :key="item.key">
-            <span class="modify-label">{{ metaAttris[item].name }}</span>
-
-            <el-input class="block"></el-input>
+          <el-row v-if="meta_attributes">
+            <div v-for="(item, key) in meta_attributes" :key="key">
+              <el-row>
+                <span class="modify-label">{{ meta_attributes[key] }}</span>
+                <span>
+                  <el-input
+                    class="block"
+                    v-if="metaAttrTypes[meta_attributes[key]] == 'string'"
+                    v-model="addForm.meta_attributes[meta_attributes[key]]"
+                    @input="forceUpdate"
+                  ></el-input>
+                  <el-switch
+                    class="block"
+                    v-if="metaAttrTypes[meta_attributes[key]] == 'boolean'"
+                    v-model="addForm.meta_attributes[meta_attributes[key]]"
+                    :active-value="true"
+                    @input="forceUpdate"
+                  ></el-switch>
+                  <el-input-number
+                    class="block"
+                    v-if="metaAttrTypes[meta_attributes[key]] == 'integer'"
+                    v-model="addForm.meta_attributes[meta_attributes[key]]"
+                    @input="forceUpdate"
+                  ></el-input-number>
+                  <el-input
+                    class="block"
+                    v-if="metaAttrTypes[meta_attributes[key]] == 'enum'"
+                    v-model="addForm.meta_attributes[meta_attributes[key]]"
+                    @input="forceUpdate"
+                  ></el-input>
+                </span>
+              </el-row>
+            </div>
           </el-row>
           <!-- </div> -->
         </el-tab-pane>
 
         <span class="hometable-dialog-footer">
           <el-button @click="disableGroupAddDialog = false">取 消</el-button>
-          <el-button type="primary" @click="updateGroup">确 定</el-button>
+          <el-button type="primary" @click="addItem">确 定</el-button>
         </span>
       </el-tabs>
     </el-dialog>
@@ -585,38 +615,44 @@
     <el-dialog
       class="basicAddDialog"
       title="创建资源"
-      :visible.sync="disableCloneDialog"
+      :visible.sync="disableGroupAddDialog"
       width="46%"
     >
       <el-tabs class="button-tabs">
         <el-tab-pane class="tab-panels" label="基本">
           <el-row>
             <span class="modify-label"> 资源名称:</span>
-
-            <el-input class="block" v-model="addForm.name"></el-input>
+            <el-input class="block" disabled v-model="addForm.id"></el-input>
           </el-row>
           <el-row>
-            <span class="modify-label"> 资源类型:</span>
+            <span class="modify-label">克隆对象：</span>
 
-            <el-cascader
+            <el-select
               class="block"
-              v-model="addForm.type"
-              :options="metas"
-              :props="{ expandTrigger: 'hover' }"
-            ></el-cascader>
+              v-model="addForm.rsc_id"
+              placeholder="请选择"
+              @change="setCloneRscId"
+            >
+              <el-option
+                v-for="item in tableData"
+                :key="item.key"
+                :label="item.id"
+                :value="item.id"
+              >
+              </el-option>
+            </el-select>
           </el-row>
         </el-tab-pane>
 
         <el-tab-pane class="tab-panels" label="元属性">
           <el-row>
-            <span class="modify-label">需要修改的元属性:</span>
+            <label class="modify-label">需要修改的元属性: </label>
             <span v-if="metaAttris">
               <el-select
                 class="block"
-                v-model="addForm.metaAttris"
+                v-model="meta_attributes"
                 multiple
                 placeholder="请选择"
-                @change="setMetaAttris"
               >
                 <el-option
                   v-for="item in metaAttris"
@@ -628,23 +664,88 @@
               </el-select>
             </span>
           </el-row>
-
           <!-- <div v-if="addForm.metaAttris"> -->
-          <el-row v-for="item in addForm.metaAttris" :key="item.key">
-            <span class="modify-label">{{ metaAttris[item].name }}</span>
-
-            <el-input class="block"></el-input>
+          <el-row v-if="meta_attributes">
+            <div v-for="(item, key) in meta_attributes" :key="key">
+              <el-row>
+                <span class="modify-label">{{ meta_attributes[key] }}</span>
+                <span>
+                  <el-input
+                    class="block"
+                    v-if="metaAttrTypes[meta_attributes[key]] == 'string'"
+                    v-model="addForm.meta_attributes[meta_attributes[key]]"
+                    @input="forceUpdate"
+                  ></el-input>
+                  <el-switch
+                    class="block"
+                    v-if="metaAttrTypes[meta_attributes[key]] == 'boolean'"
+                    v-model="addForm.meta_attributes[meta_attributes[key]]"
+                    :active-value="true"
+                    @input="forceUpdate"
+                  ></el-switch>
+                  <el-input-number
+                    class="block"
+                    v-if="metaAttrTypes[meta_attributes[key]] == 'integer'"
+                    v-model="addForm.meta_attributes[meta_attributes[key]]"
+                    @input="forceUpdate"
+                  ></el-input-number>
+                  <el-input
+                    class="block"
+                    v-if="metaAttrTypes[meta_attributes[key]] == 'enum'"
+                    v-model="addForm.meta_attributes[meta_attributes[key]]"
+                    @input="forceUpdate"
+                  ></el-input>
+                </span>
+              </el-row>
+            </div>
           </el-row>
           <!-- </div> -->
         </el-tab-pane>
 
         <span class="hometable-dialog-footer">
           <el-button @click="disableGroupAddDialog = false">取 消</el-button>
-          <el-button type="primary" @click="disableGroupAddDialog = false"
-            >确 定</el-button
-          >
+          <el-button type="primary" @click="addItem">确 定</el-button>
         </span>
       </el-tabs>
+    </el-dialog>
+    <!-- migrate  -->
+    <el-dialog
+      title="迁移资源"
+      :visible.sync="disableMigrateDialog"
+      width="600px"
+      top="15vh"
+      class="location"
+    >
+      <el-form :model="migrate" label-width="100px">
+        <el-form-item label="资源名称:">
+          <span>{{ radio }}</span>
+        </el-form-item>
+        <el-form-item label="迁移至节点:">
+          <el-select v-model="migrate.to_node">
+            <el-option
+              v-for="item in nodeList"
+              :key="item.id"
+              :label="item.id"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="强制迁移:">
+          <el-switch v-model="migrate.is_force"> </el-switch>
+        </el-form-item>
+        <el-form-item label="有效期:">
+          <el-input v-model="migrate.period">
+            <template slot="append">小时</template>
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="colocationVisible = false">取 消</el-button>
+          <el-button type="primary" @click="updateMigrate">确 定</el-button>
+        </span>
+      </template>
     </el-dialog>
 
     <!-- location -->
@@ -721,9 +822,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="locationVisible = false">取 消</el-button>
-          <el-button type="primary" @click="locationVisible = false"
-            >确 定</el-button
-          >
+          <el-button type="primary" @click="locates">确 定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -766,7 +865,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="colocationVisible = false">取 消</el-button>
-          <el-button type="primary" @click="colocationVisible = false"
+          <el-button type="primary" @click="coordination"
             >确 定</el-button
           >
         </span>
@@ -811,7 +910,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="orderVisible = false">取 消</el-button>
-          <el-button type="primary" @click="orderVisible = false"
+          <el-button type="primary" @click="orders"
             >确 定</el-button
           >
         </span>
@@ -827,9 +926,14 @@ import {
   easyRequest,
   getMetas,
   getMetaAttris,
-  getInstanceAttris,
-  getOperationAttris,
   getAttris,
+  addItems,
+  deleteItems,
+  updateMigrates,
+  updateUnmigrates,
+  updateCoordination,
+  updateLocations,
+  updateOrder
 } from "@/api/homeTable";
 import { getNodes } from "@/api/node";
 import Vue from "vue";
@@ -857,6 +961,7 @@ export default {
       instance_attributes: [],
       meta_attributes: [],
       addForm: {
+        meta_attributes: {},
         instance_attributes: {},
       },
       addSelectedAttris: {
@@ -884,6 +989,7 @@ export default {
       location: {
         masterNode: [],
         slave1: [],
+        node_level: [],
       },
       colocation: {
         same_node: [],
@@ -895,10 +1001,16 @@ export default {
       },
       showme: false,
       InsTypes: {},
+      metaAttrTypes: {},
+      migrate: {
+        is_force: false,
+        period: "",
+        to_node: "",
+      },
     };
   },
   computed: {
-    //TODO: specify the conditions of showing each button
+    //TODO: specify the conditions of chosenSrc is chlild
     showButtons() {
       let _this = this;
       if (_this.radio) {
@@ -907,6 +1019,41 @@ export default {
         return true;
       }
     },
+    showStart() {
+      let _this = this;
+      if (_this.chosenSrc && _this.chosenSrc.status !== "Running") {
+        return false;
+      } else {
+        return true;
+      }
+    },
+
+    showMigrate() {
+      let _this = this;
+      if (
+        _this.chosenSrc &&
+        _this.chosenSrc.status == "Running" &&
+        _this.chosenSrc.type !== "clone"
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    showUnmigrate() {
+      let _this = this;
+      if (
+        _this.chosenSrc &&
+        _this.chosenSrc.status == "Running" &&
+        _this.chosenSrc.type !== "clone" &&
+        _this.chosenSrc.allow_unmigrate
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+
     showEdit() {
       let _this = this;
       if (
@@ -966,8 +1113,9 @@ export default {
 
   methods: {
     //设置基础添加的元属性
-    setMetaAttris(value) {
-      Vue.set(this.addForm, this.addForm.meta_attributes, value);
+    setCloneRscId(value) {
+      let _this = this;
+      _this.addForm.id = _this.addForm.rsc_id + "-clone";
     },
     showRow(row) {
       let _this = this;
@@ -989,7 +1137,6 @@ export default {
               _this.noGroup.push(item);
             }
           });
-          console.log(_this.noGroup);
         })
         .catch((err) => {
           if (err.response.status == 403) {
@@ -1006,11 +1153,15 @@ export default {
     },
     openAddDialog() {
       let _this = this;
-      _this.addForm = {
-        instance_attributes: {},
-      };
+      (_this.activeName = "first"),
+        (_this.addForm = {
+          category: "primitive",
+          meta_attributes: {},
+          instance_attributes: {},
+        });
       _this.InsTypes = {};
       _this.instance_attributes = [];
+      _this.meta_attributes = [];
       getMetas().then((res) => {
         _this.metas = res.data.data;
         let types = _this.metas;
@@ -1045,36 +1196,50 @@ export default {
       });
       getMetaAttris("primitive").then((res) => {
         _this.metaAttris = res.data.data;
+        for (let i in _this.metaAttris) {
+          _this.metaAttrTypes[_this.metaAttris[i].name] =
+            _this.metaAttris[i].content.type;
+        }
       });
     },
     openGroupDialog() {
       let _this = this;
-      _this.addForm = {
-        instance_attributes: {},
-      };
+      (_this.activeName = "first"),
+        (_this.addForm = {
+          category: "group",
+          meta_attributes: {},
+        });
+      _this.meta_attributes = [];
       getMetas().then((res) => {
         _this.metas = res.data.metas;
         _this.disableGroupAddDialog = true;
       });
       getMetaAttris("group").then((res) => {
         _this.metaAttris = res.data.data;
+        for (let i in _this.metaAttris) {
+          _this.metaAttrTypes[_this.metaAttris[i].name] =
+            _this.metaAttris[i].content.type;
+        }
       });
     },
-    openClongDialog() {
+    openCloneDialog() {
       let _this = this;
-      _this.addForm = {};
+      (_this.activeName = "first"),
+        (_this.addForm = {
+          category: "clone",
+          meta_attributes: {},
+        });
+      _this.meta_attributes = [];
       getMetas().then((res) => {
         _this.metas = res.data.metas;
-        _this.disableCloneDialog = true;
+        _this.disableGroupAddDialog = true;
       });
       getMetaAttris("clone").then((res) => {
-        _this.metaAttris = res.data.metaAttris;
-      });
-      getInstanceAttris().then((res) => {
-        _this.instanceAttris = res.data.instanceAttris;
-      });
-      getOperationAttris().then((res) => {
-        _this.operationAttris = res.data.operationAttris;
+        _this.metaAttris = res.data.data;
+        for (let i in _this.metaAttris) {
+          _this.metaAttrTypes[_this.metaAttris[i].name] =
+            _this.metaAttris[i].content.type;
+        }
       });
     },
     // 根据选择的类型请求action和parameters
@@ -1084,6 +1249,10 @@ export default {
       _this.operationAttris = [];
       _this.InsTypes = {};
       _this.instance_attributes = [];
+      _this.addForm.instance_attributes = {};
+      delete _this.addForm.class;
+      delete _this.addForm.provider;
+      delete _this.addForm.type;
 
       if (value) {
         if (value[0]) {
@@ -1097,6 +1266,9 @@ export default {
                   _this.instanceAttris[i].content.type;
               }
             });
+            _this.addForm.class = value[0];
+            _this.addForm.provider = value[1];
+            _this.addForm.type = value[2];
           } else {
             let url = "/metas/" + value[0] + "/" + value[1];
             getAttris(url).then((res) => {
@@ -1106,8 +1278,8 @@ export default {
                 _this.InsTypes[_this.instanceAttris[i].name] =
                   _this.instanceAttris[i].content.type;
               }
-              console.log(_this.InsTypes);
-              console.log(222);
+              _this.addForm.class = value[0];
+              _this.addForm.provider = value[1];
             });
           }
         }
@@ -1165,12 +1337,120 @@ export default {
         }
       }
     },
-    updateGroup() {
-      let _this = this;
-      disableGroupAddDialog = false;
-    },
     forceUpdate() {
       this.$forceUpdate();
+    },
+    addItem() {
+      let _this = this;
+      _this.disableAddDialog = false;
+      _this.disableGroupAddDialog = false;
+      console.log("addForm");
+      console.log(_this.addForm);
+      for (let i in _this.addForm.instance_attributes) {
+        if (_this.addForm.instance_attributes[i] == "")
+          _this.addForm.instance_attributes[i] = true;
+      }
+      for (let i in _this.addForm.meta_attributes) {
+        if (_this.addForm.meta_attributes[i] == "")
+          _this.addForm.meta_attributes[i] = true;
+      }
+      addItems(_this.addForm).then((res) => {
+        this.$message({
+          type: "success",
+          message: "resource adding success",
+        });
+        _this.dataLoading();
+      });
+    },
+    deleteItem() {
+      let _this = this;
+      let url = "/resources/" + _this.radio + "/delete";
+      deleteItems(url).then(() => {
+        _this.dataLoading();
+        this.$message({
+          type: "success",
+          message: "resource delete success",
+        });
+      });
+    },
+    updateMigrate() {
+      let _this = this;
+      _this.disableMigrateDialog = false;
+      let url = "/resources/" + _this.radio + "/migrate";
+      updateMigrates(url, _this.migrate).then(() => {
+        _this.dataLoading();
+        this.$message({
+          type: "success",
+          message: "resource migrate success",
+        });
+      });
+    },
+    updateUnmigrate() {
+      let _this = this;
+      let url = "/resources/" + _this.radio + "/unmigrate";
+      updateUnmigrates(url).then(() => {
+        _this.dataLoading();
+        this.$message({
+          type: "success",
+          message: "resource unmigrate success",
+        });
+      });
+    },
+    locates() {
+      let _this = this;
+      for (let i in _this.location.masterNode) {
+        _this.location.node_level.push({
+          level: "Master Node",
+          node: _this.location.masterNode[i],
+        });
+      }
+      for (let i in _this.location.slave1) {
+        _this.location.node_level.push({
+          level: "Slave 1",
+          node: _this.location.slave1[i],
+        });
+      }
+      for (let i in _this.location.slave2) {
+        _this.location.node_level.push({
+          level: "Slave 2",
+          node: _this.location.slave2[i],
+        });
+      }
+      let url = "/resources/" + _this.radio + "/location";
+      updateLocations(url, _this.location).then(() => {
+        _this.locationVisible = false;
+        _this.dataLoading();
+        this.$message({
+          type: "success",
+          message: "location update success",
+        });
+      });
+    },
+    coordination() {
+      let _this = this;
+      _this.colocation.rsc_id = _this.radio;
+      let url = "/resources/" + _this.radio + "/colocation";
+      updateCoordination(url, _this.colocation).then(() => {
+        _this.colocationVisible = false;
+        _this.dataLoading();
+        this.$message({
+          type: "success",
+          message: "location update success",
+        });
+      });
+    },
+    orders() {
+      let _this = this;
+      _this.order.rsc_id = _this.radio;
+      let url = "/resources/" + _this.radio + "/order";
+      updateOrder(url, _this.order).then(() => {
+        _this.orderVisible = false;
+        _this.dataLoading();
+        this.$message({
+          type: "success",
+          message: "location update success",
+        });
+      });
     },
   },
 };

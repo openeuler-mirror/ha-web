@@ -48,6 +48,58 @@ export function getAttris(url) {
  
   })
 }
+export function addItems(data) {
+  return request({
+    url:'/resources',
+    method: 'post',
+    data
+ 
+  })
+}
+export function deleteItems(url) {
+  return request({
+    url:url,
+    method: 'put',
+    
+ 
+  })
+}
+export function updateMigrates(url,data) {
+  return request({
+    url:url,
+    method: 'put',
+    data
+ 
+  })
+}
+export function updateUnmigrates(url) {
+  return request({
+    url:url,
+    method: 'put',
+ 
+  })
+}
+export function updateLocations(url,data) {
+  return request({
+    url:url,
+    method: 'put',
+    data
+  })
+}
+export function updateOrder(url,data) {
+  return request({
+    url:url,
+    method: 'put',
+    data
+  })
+}
+export function updateCoordination(url,data) {
+  return request({
+    url:url,
+    method: 'put',
+    data
+  })
+}
 export function getOperationAttris(type) {
   return request({
     url: '/meta_attributes/'+type,
