@@ -26,8 +26,8 @@
         <!-- operations -->
         <div class="easy-operation">
           <el-button
-            :disabled="true"
-            @click="operate('edit', radio)"
+            :disabled="showEdit"
+            @click="openEdit"
             id="edit"
             class="operations"
           >
@@ -80,97 +80,6 @@
             回迁
           </el-button>
         </div>
-
-        <!-- <el-dialog
-          title="编辑资源"
-          :visible.sync="disableEditDialog"
-          width="650px"
-          :modal-append-to-body="false"
-        >
-          <el-tabs v-if="chosenSrc" v-model="activeName">
-            <el-tab-pane label="基本" name="first">
-              <el-form ref="form" :model="editForm" class="edit-panel">
-                <el-form-item label="资源名称">
-                  <el-input
-                    size="mini"
-                    disabled
-                    v-if="chosenSrc.id"
-                    v-model="chosenSrc.id"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item label="资源类型">
-                  <el-input
-                    size="mini"
-                    v-if="chosenSrc.id"
-                    v-model="chosenSrc.id"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item label="device">
-                  <el-input
-                    size="mini"
-                    v-if="chosenSrc.id"
-                    v-model="chosenSrc.id"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item label="directory">
-                  <el-input
-                    size="mini"
-                    v-if="chosenSrc.id"
-                    v-model="chosenSrc.id"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item label="fstype">
-                  <el-input
-                    size="mini"
-                    v-if="chosenSrc.id"
-                    v-model="chosenSrc.id"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item label="组内资源">
-                  <el-input
-                    size="mini"
-                    v-if="chosenSrc.id"
-                    v-model="chosenSrc.id"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item label="克隆对象">
-                  <el-input
-                    size="mini"
-                    v-if="chosenSrc.id"
-                    v-model="chosenSrc.id"
-                  ></el-input>
-                </el-form-item>
-              </el-form>
-            </el-tab-pane>
-            <el-tab-pane label="元属性" name="second">
-              <el-form ref="form" :model="form">
-                <el-form-item>
-                  <el-switch
-                    v-model="backupHeartBeat"
-                    inactive-text="启用备用心跳"
-                  >
-                  </el-switch>
-                </el-form-item>
-                <el-form-item label="节点心跳IP-ns187:">
-                  <el-input
-                    :disabled="!backupHeartBeat"
-                    v-model="form.hbaddrs2[0].ip"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item label="节点心跳IP-ns188:">
-                  <el-input
-                    :disabled="!backupHeartBeat"
-                    v-model="form.hbaddrs2[1].ip"
-                  ></el-input>
-                </el-form-item>
-              </el-form>
-            </el-tab-pane>
-          </el-tabs>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="disableEditDialog = false">取 消</el-button>
-            <el-button type="primary">确 定</el-button>
-          </span>
-        </el-dialog> -->
 
         <!-- delete -->
         <el-popconfirm @confirm="deleteItem" title="确定删除资源吗？">
@@ -327,20 +236,14 @@
       :visible.sync="disableAddDialog"
       width="46%"
     >
-      <el-form
-        v-model="addForm"
-        :rules="addingRules"
-        ref="addForm"
-        label-width="200px"
-      >
+      <el-form v-model="addForm" ref="addForm" label-width="200px">
         <el-tabs class="button-tabs">
           <el-tab-pane class="tab-panels" label="基本">
-            <el-form-item label="资源名称" prop="id">
+            <el-form-item class="required" label="资源名称" prop="id">
               <!-- <span class="labels"> 资源名称： </span> -->.
-              {{addForm.id}}
-              <el-input class="block" v-model="addForm.id"></el-input>
+              <el-input class="block" required v-model="addForm.id"></el-input>
             </el-form-item>
-            <el-form-item label="资源类型" prop="type">
+            <el-form-item class="required" label="资源类型" prop="type">
               <!-- <span class="labels"> 资源类型： </span> -->
               <el-cascader
                 class="block"
@@ -366,6 +269,7 @@
                   multiple
                   placeholder="请选择"
                   class="block"
+                  @remove-tag="deleteInsTag"
                 >
                   <!-- -->
                   <el-option
@@ -387,7 +291,10 @@
                   <span>
                     <el-input
                       class="block"
-                      v-if="InsTypes[instance_attributes[key]] == 'string'"
+                      v-if="
+                        InsTypes[instance_attributes[key]] == 'string' ||
+                        InsTypes[instance_attributes[key]] == 'enum'
+                      "
                       v-model="
                         addForm.instance_attributes[instance_attributes[key]]
                       "
@@ -424,6 +331,7 @@
                   v-model="meta_attributes"
                   multiple
                   placeholder="请选择"
+                  @remove-tag="deleteMetaTag"
                 >
                   <el-option
                     v-for="item in metaAttris"
@@ -443,13 +351,17 @@
                   <span>
                     <el-input
                       class="block"
-                      v-if="metaAttrTypes[meta_attributes[key]] == 'string'"
+                      v-if="
+                        metaAttrTypes[meta_attributes[key]] == 'string' ||
+                        metaAttrTypes[meta_attributes[key]] == 'enum'
+                      "
                       v-model="addForm.meta_attributes[meta_attributes[key]]"
                       @input="forceUpdate"
                     ></el-input>
                     <el-switch
                       class="block"
-                      :active-value="true"
+                      :active-value="'true'"
+                      :inactive-value="'false'"
                       v-if="metaAttrTypes[meta_attributes[key]] == 'boolean'"
                       v-model="addForm.meta_attributes[meta_attributes[key]]"
                       @input="forceUpdate"
@@ -509,7 +421,7 @@
           </el-tab-pane>
           <span class="hometable-dialog-footer">
             <el-button @click="disableAddDialog = false">取 消</el-button>
-            <el-button type="primary" @click="addItem">确 定</el-button>
+            <el-button    :disabled="disableSubmit" type="primary" @click="addItem">确 定</el-button>
           </span>
         </el-tabs>
       </el-form>
@@ -584,7 +496,8 @@
                     class="block"
                     v-if="metaAttrTypes[meta_attributes[key]] == 'boolean'"
                     v-model="addForm.meta_attributes[meta_attributes[key]]"
-                    :active-value="true"
+                    :active-value="'true'"
+                    :inactive-value="'false'"
                     @input="forceUpdate"
                   ></el-switch>
                   <el-input-number
@@ -608,7 +521,7 @@
 
         <span class="hometable-dialog-footer">
           <el-button @click="disableGroupAddDialog = false">取 消</el-button>
-          <el-button type="primary" @click="addItem">确 定</el-button>
+          <el-button    :disabled="disableSubmit" type="primary" @click="addItem">确 定</el-button>
         </span>
       </el-tabs>
     </el-dialog>
@@ -682,7 +595,8 @@
                     class="block"
                     v-if="metaAttrTypes[meta_attributes[key]] == 'boolean'"
                     v-model="addForm.meta_attributes[meta_attributes[key]]"
-                    :active-value="true"
+                    :active-value="'true'"
+                    :inactive-value="'false'"
                     @input="forceUpdate"
                   ></el-switch>
                   <el-input-number
@@ -706,7 +620,7 @@
 
         <span class="hometable-dialog-footer">
           <el-button @click="disableCloneDialog = false">取 消</el-button>
-          <el-button type="primary" @click="addItem">确 定</el-button>
+          <el-button    :disabled="disableSubmit" type="primary" @click="addItem">确 定</el-button>
         </span>
       </el-tabs>
     </el-dialog>
@@ -774,7 +688,7 @@
               :key="item.id"
               :label="item.id"
               :value="item.id"
-              :disabled="item.disabled"           
+              :disabled="item.disabled"
             >
             </el-option>
           </el-select>
@@ -867,9 +781,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="colocationVisible = false">取 消</el-button>
-          <el-button type="primary" @click="coordination"
-            >确 定</el-button
-          >
+          <el-button type="primary" @click="coordination">确 定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -912,11 +824,205 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="orderVisible = false">取 消</el-button>
-          <el-button type="primary" @click="orders"
-            >确 定</el-button
-          >
+          <el-button type="primary" @click="orders">确 定</el-button>
         </span>
       </template>
+    </el-dialog>
+
+    <!-- edit -->
+    <el-dialog
+      class="basicAddDialog"
+      title="编辑资源"
+      :visible.sync="disableEdit"
+      width="46%"
+    >
+      <el-form
+        v-if="RcsDetail"
+        v-model="addForm"
+        ref="addForm"
+        label-width="200px"
+      >
+        <el-tabs class="button-tabs">
+          <el-tab-pane class="tab-panels" label="基本">
+            <el-form-item label="资源名称" prop="id">
+              <el-input class="block" disabled v-model="addForm.id"></el-input>
+            </el-form-item>
+            <el-form-item
+              v-if="chosenSrc.type == 'primitive' && RcsDetail"
+              label="资源类型"
+              prop="type"
+            >
+              <el-input class="block" v-model="metas" disabled></el-input>
+            </el-form-item>
+          </el-tab-pane>
+
+          <el-tab-pane
+            class="tab-panels"
+            v-if="addForm.type && instanceAttris"
+            label="实例属性"
+            label-width="200px"
+          >
+            <el-row>
+              <span class="modify-label"> 需要修改的实例属性： </span>
+              <span class="block" v-if="instanceAttris">
+                <el-select
+                  v-model="instance_attributes"
+                  multiple
+                  placeholder="请选择"
+                  class="block"
+                >
+                  <!-- -->
+                  <el-option
+                    v-for="item in instanceAttris"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
+                  >
+                  </el-option>
+                </el-select>
+              </span>
+            </el-row>
+            <div v-if="instance_attributes">
+              <div v-for="(item, key) in instance_attributes" :key="key">
+                <el-row>
+                  <span class="modify-label">{{
+                    instance_attributes[key]
+                  }}</span>
+                  <span>
+                    <el-input
+                      class="block"
+                      v-if="InsTypes[instance_attributes[key]] == 'string'"
+                      v-model="
+                        addForm.instance_attributes[instance_attributes[key]]
+                      "
+                      @input="forceUpdate"
+                    ></el-input>
+                    <el-switch
+                      class="block"
+                      v-if="InsTypes[instance_attributes[key]] == 'boolean'"
+                      v-model="
+                        addForm.instance_attributes[instance_attributes[key]]
+                      "
+                      @input="forceUpdate"
+                    ></el-switch>
+                    <el-input-number
+                      class="block"
+                      v-if="InsTypes[instance_attributes[key]] == 'integer'"
+                      v-model="
+                        addForm.instance_attributes[instance_attributes[key]]
+                      "
+                      @input="forceUpdate"
+                    ></el-input-number>
+                  </span>
+                </el-row>
+              </div>
+            </div>
+          </el-tab-pane>
+
+          <el-tab-pane class="tab-panels" label="元属性">
+            <el-row>
+              <label class="modify-label">需要修改的元属性: </label>
+              <span v-if="metaAttris">
+                <el-select
+                  class="block"
+                  v-model="meta_attributes"
+                  multiple
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="item in metaAttris"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.name"
+                  >
+                  </el-option>
+                </el-select>
+              </span>
+            </el-row>
+            <!-- <div v-if="addForm.metaAttris"> -->
+            <el-row v-if="meta_attributes">
+              <div v-for="(item, key) in meta_attributes" :key="key">
+                <el-row>
+                  <span class="modify-label">{{ meta_attributes[key] }}</span>
+                  <span>
+                    <el-input
+                      class="block"
+                      v-if="metaAttrTypes[meta_attributes[key]] == 'string'||metaAttrTypes[meta_attributes[key]] == 'enum'"
+                      v-model="addForm.meta_attributes[meta_attributes[key]]"
+                      @input="forceUpdate"
+                    ></el-input>
+                    <el-switch
+                      class="block"
+                      :active-value="'true'"
+                      :inactive-value="'false'"
+                      v-if="metaAttrTypes[meta_attributes[key]] == 'boolean'"
+                      v-model="addForm.meta_attributes[meta_attributes[key]]"
+                      @input="forceUpdate"
+                    ></el-switch>
+                    <el-input-number
+                      class="block"
+                      v-if="metaAttrTypes[meta_attributes[key]] == 'integer'"
+                      v-model="addForm.meta_attributes[meta_attributes[key]]"
+                      @input="forceUpdate"
+                    ></el-input-number>
+                  </span>
+                </el-row>
+              </div>
+            </el-row>
+            <!-- </div> -->
+          </el-tab-pane>
+
+          <el-tab-pane class="tab-panels" v-if="false" label="操作属性">
+            <el-row>
+              <span class="modify-label">需要修改的操作属性：</span>
+              <span class="block" v-if="metaAttris && operationAttris">
+                <el-select
+                  class="block"
+                  v-model="addSelectedAttris.actions"
+                  multiple
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="item in operationAttris"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item"
+                    @click.native="setActions(item)"
+                  >
+                  </el-option>
+                </el-select>
+              </span>
+            </el-row>
+
+            <!-- <el-table :data="addForm.actions">
+              <el-table-column prop="name" label="name">
+                
+              </el-table-column>
+              <el-table-column
+                prop="interval"
+                label="interval"
+              ></el-table-column>
+              <el-table-column
+                prop="start-delay"
+                label="start-delay"
+              ></el-table-column>
+              <el-table-column prop="timeout" label="timeout"></el-table-column>
+              <el-table-column prop="role" label="role"></el-table-column>
+              <el-table-column prop="on-fail" label="on-fail">
+              </el-table-column>
+            </el-table> -->
+          </el-tab-pane>
+          <span class="hometable-dialog-footer">
+            <el-button @click="disableEdit = false">取 消</el-button>
+            <el-button
+              :disabled="disableSubmit"
+              type="primary"
+              @click="addItem('edit')"
+              >确 定</el-button
+            >
+          </span>
+        </el-tabs>
+      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -935,13 +1041,17 @@ import {
   updateUnmigrates,
   updateCoordination,
   updateLocations,
-  updateOrder
+  updateOrder,
+  getRcsDetail,
+  editItem,
 } from "@/api/homeTable";
 import { getNodes } from "@/api/node";
 import Vue from "vue";
 export default {
   data() {
     return {
+      RcsDetail: {},
+      rscType: "",
       groupForm: {
         id: "",
         category: "group",
@@ -963,7 +1073,7 @@ export default {
       instance_attributes: [],
       meta_attributes: [],
       addForm: {
-         id:'',
+        id: "",
         meta_attributes: {},
         instance_attributes: {},
       },
@@ -976,7 +1086,6 @@ export default {
       operationAttris: [],
       instanceAttris: [],
       addingRules: {
-        id: [{ required: true, message: '请输入资源名称', trigger: 'blur' }],
         // type: [{ required: true, message: "请输入资源类型", trigger: "blur" }],
       },
 
@@ -1004,6 +1113,8 @@ export default {
         period: "",
         to_node: "",
       },
+      disableEdit: false,
+      disableSubmit: false,
     };
   },
   computed: {
@@ -1150,13 +1261,13 @@ export default {
     },
     openAddDialog() {
       let _this = this;
-      (_this.activeName = "first"),
-        (_this.addForm = {
-          id:'',
-          category: "primitive",
-          meta_attributes: {},
-          instance_attributes: {},
-        });
+
+      _this.addForm = {
+        id: "",
+        category: "primitive",
+        meta_attributes: {},
+        instance_attributes: {},
+      };
       _this.InsTypes = {};
       _this.instance_attributes = [];
       _this.meta_attributes = [];
@@ -1202,11 +1313,11 @@ export default {
     },
     openGroupDialog() {
       let _this = this;
-      (_this.activeName = "first"),
-        (_this.addForm = {
-          category: "group",
-          meta_attributes: {},
-        });
+      _this.activeName = "first";
+      _this.addForm = {
+        category: "group",
+        meta_attributes: {},
+      };
       _this.meta_attributes = [];
       getMetas().then((res) => {
         _this.metas = res.data.metas;
@@ -1222,11 +1333,11 @@ export default {
     },
     openCloneDialog() {
       let _this = this;
-      (_this.activeName = "first"),
-        (_this.addForm = {
-          category: "clone",
-          meta_attributes: {},
-        });
+      _this.activeName = "first";
+      _this.addForm = {
+        category: "clone",
+        meta_attributes: {},
+      };
       _this.meta_attributes = [];
       getMetas().then((res) => {
         _this.metas = res.data.metas;
@@ -1239,6 +1350,76 @@ export default {
             _this.metaAttris[i].content.type;
         }
       });
+    },
+    openEdit() {
+      let _this = this;
+      _this.InsTypes = {};
+      _this.instance_attributes = [];
+      _this.meta_attributes = [];
+      _this.addForm = {
+        id: _this.chosenSrc.id,
+        category: _this.chosenSrc.type,
+        meta_attributes: {},
+        instance_attributes: {},
+      };
+      //拿到所有已有的值
+      let url =
+        "resources/" + _this.chosenSrc.id + "?category=" + _this.chosenSrc.type;
+      getRcsDetail(url).then((res) => {
+        _this.RcsDetail = res.data.data;
+        _this.addForm.class = _this.RcsDetail.class;
+        _this.addForm.provider = _this.RcsDetail.provider;
+
+        if (_this.RcsDetail.meta_attributes) {
+          for (let i in _this.RcsDetail.meta_attributes) {
+            _this.meta_attributes.push(i);
+            _this.addForm.meta_attributes[i] =
+              _this.RcsDetail.meta_attributes[i];
+          }
+        }
+        if (_this.RcsDetail.instance_attributes) {
+          for (let i in _this.RcsDetail.instance_attributes) {
+            _this.instance_attributes.push(i);
+            _this.addForm.instance_attributes[i] =
+              _this.RcsDetail.instance_attributes[i];
+          }
+        }
+        if (_this.RcsDetail.type) {
+          _this.addForm.type = _this.RcsDetail.type;
+          _this.metas =
+            _this.RcsDetail.class +
+            "/" +
+            _this.RcsDetail.provider +
+            "/" +
+            _this.RcsDetail.type;
+          let url =
+            "/metas/" +
+            _this.RcsDetail.class +
+            "/" +
+            _this.RcsDetail.type +
+            "/" +
+            _this.RcsDetail.provider;
+          getAttris(url).then((res) => {
+            _this.instanceAttris = res.data.data.parameters;
+            _this.operationAttris = res.data.data.actions;
+            for (let i in _this.instanceAttris) {
+              _this.InsTypes[_this.instanceAttris[i].name] =
+                _this.instanceAttris[i].content.type;
+            }
+          });
+        } else {
+          _this.metas = _this.chosenRsc.class + "/" + _this.chosenRsc.provider;
+        }
+      });
+
+      getMetaAttris(_this.chosenSrc.type).then((res) => {
+        _this.metaAttris = res.data.data;
+        for (let i in _this.metaAttris) {
+          _this.metaAttrTypes[_this.metaAttris[i].name] =
+            _this.metaAttris[i].content.type;
+        }
+      });
+      _this.disableEdit = true;
     },
     // 根据选择的类型请求action和parameters
     addRscTypeSelected(value) {
@@ -1303,7 +1484,7 @@ export default {
     operate(action, radio) {
       let _this = this;
       //todo: transfer into encapsulation model
-      let req = "resources/" + radio + "/" + action;
+      let req = "/resources/" + radio + "/" + action;
       if (action == "edit" || action == "migrate") {
         _this.openDialog(action);
       } else {
@@ -1338,29 +1519,68 @@ export default {
     forceUpdate() {
       this.$forceUpdate();
     },
-    addItem() {
+    addItem(value) {
       let _this = this;
+      _this.disableSubmit = true;
 
-      console.log("addForm");
-      console.log(_this.addForm);
       for (let i in _this.addForm.instance_attributes) {
         if (_this.addForm.instance_attributes[i] == "")
-          _this.addForm.instance_attributes[i] = true;
+          _this.addForm.instance_attributes[i] = 0;
       }
       for (let i in _this.addForm.meta_attributes) {
         if (_this.addForm.meta_attributes[i] == "")
-          _this.addForm.meta_attributes[i] = true;
+          _this.addForm.meta_attributes[i] = 0;
       }
-      addItems(_this.addForm).then((res) => {
+      if (_this.addForm.id && _this.addForm.provider) {
+        if (value && value === "edit") {
+          let url = "/resources/" + _this.addForm.id;
+          editItem(url, _this.addForm)
+            .then((res) => {
+              this.$message({
+                type: "success",
+                message: "resource edit success",
+              });
+
+              _this.disableEdit = false;
+              _this.disableSubmit = false;
+              _this.dataLoading();
+            })
+            .catch((err) => {
+              this.$message({
+                type: "error",
+                message: err + "please check your inputs",
+              });
+              _this.disableSubmit = false;
+            });
+        } else {
+          addItems(_this.addForm)
+            .then((res) => {
+              this.$message({
+                type: "success",
+                message: "resource adding success",
+              });
+              _this.disableSubmit = false;
+              _this.disableAddDialog = false;
+              _this.disableGroupAddDialog = false;
+              _this.disableCloneDialog = false;
+              _this.disableEdit = false;
+              _this.dataLoading();
+            })
+            .catch((err) => {
+              this.$message({
+                type: "error",
+                message: err + "please check your inputs",
+              });
+              _this.disableSubmit = false;
+            });
+        }
+      } else {
         this.$message({
-          type: "success",
-          message: "resource adding success",
+          type: "error",
+          message: +"please check your inputs",
         });
-        _this.disableAddDialog = false;
-        _this.disableGroupAddDialog = false;
-        _this.disableCloneDialog = false;
-        _this.dataLoading();
-      });
+        _this.disableSubmit = false;
+      }
     },
     deleteItem() {
       let _this = this;
@@ -1451,6 +1671,16 @@ export default {
           message: "location update success",
         });
       });
+    },
+    deleteMetaTag(value) {
+      let _this = this;
+      delete _this.addForm.meta_attributes[value];
+    },
+    deleteInsTag(value) {
+      let _this = this;
+      console.log(_this.addForm.instance_attributes);
+      delete _this.addForm.instance_attributes[value];
+      console.log(_this.addForm.instance_attributes);
     },
   },
 };

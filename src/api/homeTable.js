@@ -100,6 +100,19 @@ export function updateCoordination(url,data) {
     data
   })
 }
+export function getRcsDetail(url) {
+  return request({
+    url:url,
+    method: 'get',
+  })
+}
+export function editItem(url,data) {
+  return request({
+    url:url,
+    method: 'put',
+    data
+  })
+}
 export function getOperationAttris(type) {
   return request({
     url: '/meta_attributes/'+type,
