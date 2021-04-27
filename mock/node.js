@@ -23,7 +23,7 @@ let nodelist={
       return {
         status: 200,
         message: "success",
-        nodelist: nodelist.data
+        nodelist: nodelist
       };
     },
     "get|api/v1/haclusters/1/login": option => {

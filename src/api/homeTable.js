@@ -32,7 +32,7 @@ export function getMetaAttris(type) {
   return request({
     url: '/resources/meta_attributes/'+type,
     method: 'get',
- 
+
   })
 }
 export function getInstanceAttris(type) {
@@ -79,6 +79,17 @@ export function updateUnmigrates(url) {
  
   })
 }
+
+//关系资源位置
+export function getResourceRelation(url) {
+  return request({
+    url:url,
+    method: 'get',
+  })
+}
+
+
+
 export function updateLocations(url,data) {
   return request({
     url:url,
@@ -117,7 +128,6 @@ export function getOperationAttris(type) {
   return request({
     url: '/meta_attributes/'+type,
     method: 'get',
- 
   })
 
 

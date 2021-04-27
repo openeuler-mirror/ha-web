@@ -102,14 +102,14 @@
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>
-                <span @click="locationVisible = true">资源位置</span>
+              <el-dropdown-item @click.native="handleClickRelation">
+                <span>资源位置</span>
               </el-dropdown-item>
-              <el-dropdown-item>
-                <span @click="colocationVisible = true">资源协同</span>
+              <el-dropdown-item @click.native="handleClickRelation">
+                <span>资源协同</span>
               </el-dropdown-item>
-              <el-dropdown-item>
-                <span @click="orderVisible = true">资源顺序</span>
+              <el-dropdown-item @click.native="handleClickRelation">
+                <span>资源顺序</span>
               </el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -421,7 +421,9 @@
           </el-tab-pane>
           <span class="hometable-dialog-footer">
             <el-button @click="disableAddDialog = false">取 消</el-button>
-            <el-button    :disabled="disableSubmit" type="primary" @click="addItem">确 定</el-button>
+            <el-button :disabled="disableSubmit" type="primary" @click="addItem"
+              >确 定</el-button
+            >
           </span>
         </el-tabs>
       </el-form>
@@ -521,7 +523,9 @@
 
         <span class="hometable-dialog-footer">
           <el-button @click="disableGroupAddDialog = false">取 消</el-button>
-          <el-button    :disabled="disableSubmit" type="primary" @click="addItem">确 定</el-button>
+          <el-button :disabled="disableSubmit" type="primary" @click="addItem"
+            >确 定</el-button
+          >
         </span>
       </el-tabs>
     </el-dialog>
@@ -620,7 +624,9 @@
 
         <span class="hometable-dialog-footer">
           <el-button @click="disableCloneDialog = false">取 消</el-button>
-          <el-button    :disabled="disableSubmit" type="primary" @click="addItem">确 定</el-button>
+          <el-button :disabled="disableSubmit" type="primary" @click="addItem"
+            >确 定</el-button
+          >
         </span>
       </el-tabs>
     </el-dialog>
@@ -658,7 +664,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="colocationVisible = false">取 消</el-button>
+          <el-button @click="rscColocationVisible = false">取 消</el-button>
           <el-button type="primary" @click="updateMigrate">确 定</el-button>
         </span>
       </template>
@@ -667,20 +673,24 @@
     <!-- location -->
     <el-dialog
       title="资源位置"
-      :visible.sync="locationVisible"
+      :visible.sync="rscLocationVisible"
       width="600px"
       top="15vh"
       class="location"
     >
-      <el-form :model="location" label-width="100px">
+      <el-form :model="rscLocation" label-width="100px">
         <el-form-item label="资源名称:">
           <span class="block">{{ radio }}</span>
         </el-form-item>
-        <el-form-item label="Master Node:">
+        <el-form-item
+          v-for="(node, level) in rscLocation"
+          :key="level"
+          :label="level"
+        >
           <el-select
-            v-model="location.masterNode"
+            v-model="rscLocation[level]"
             multiple
-            @change="handleLocationChange"
+            @change="handleLocationChange($event)"
             @remove-tag="handleLocationRemoveTag"
           >
             <el-option
@@ -693,51 +703,10 @@
             </el-option>
           </el-select>
         </el-form-item>
-
-        <template v-for="(item, index) in nodeList">
-          <el-form-item
-            :key="index"
-            v-show="item.status != 'Master'"
-            :label="'Slave' + ' ' + index"
-          >
-            <el-select
-              v-show="index == 1"
-              v-model="location.slave1"
-              multiple
-              @change="handleLocationChange"
-              @remove-tag="handleLocationRemoveTag"
-            >
-              <el-option
-                v-for="item in nodeList"
-                :key="item.id"
-                :label="item.id"
-                :value="item.id"
-                :disabled="item.disabled"
-              >
-              </el-option>
-            </el-select>
-            <el-select
-              v-show="index == 2"
-              v-model="location.slave2"
-              multiple
-              @change="handleLocationChange"
-              @remove-tag="handleLocationRemoveTag"
-            >
-              <el-option
-                v-for="item in nodeList"
-                :key="item.id"
-                :label="item.id"
-                :value="item.id"
-                :disabled="item.disabled"
-              >
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </template>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="locationVisible = false">取 消</el-button>
+          <el-button @click="rscLocationVisible = false">取 消</el-button>
           <el-button type="primary" @click="locates">确 定</el-button>
         </span>
       </template>
@@ -745,34 +714,46 @@
 
     <!-- coordination -->
     <el-dialog
-      title="资源位置"
-      :visible.sync="colocationVisible"
+      title="资源协同"
+      :visible.sync="rscColocationVisible"
       width="600px"
       top="15vh"
       class="location"
     >
-      <el-form :model="colocation" label-width="100px">
+      <el-form :model="rscColocation" label-width="100px">
         <el-form-item label="资源名称:">
           <span>{{ radio }}</span>
         </el-form-item>
         <el-form-item label="同节点资源:">
-          <el-select v-model="colocation.same_node" multiple>
+          <el-select 
+            v-model="rscColocation.same_node" 
+            multiple
+            @change="handleCOChange($event)"
+            @remove-tag="handleCORemoveTag"  
+          >
             <el-option
-              v-for="item in tableData"
+              v-for="item in resources_id"
               :key="item.id"
               :label="item.id"
               :value="item.id"
+              :disabled="item.disabled"
             >
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="互斥节点资源:">
-          <el-select v-model="colocation.diff_node" multiple>
+          <el-select 
+            v-model="rscColocation.diff_node" 
+            multiple
+            @change="handleCOChange($event)"
+            @remove-tag="handleCORemoveTag"  
+          >
             <el-option
-              v-for="item in tableData"
+              v-for="item in resources_id"
               :key="item.id"
               :label="item.id"
               :value="item.id"
+              :disabled="item.disabled"
             >
             </el-option>
           </el-select>
@@ -780,7 +761,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="colocationVisible = false">取 消</el-button>
+          <el-button @click="rscColocationVisible = false">取 消</el-button>
           <el-button type="primary" @click="coordination">确 定</el-button>
         </span>
       </template>
@@ -788,34 +769,46 @@
 
     <!-- order -->
     <el-dialog
-      title="资源位置"
-      :visible.sync="orderVisible"
+      title="资源顺序"
+      :visible.sync="rscOrderVisible"
       width="600px"
       top="15vh"
       class="location"
     >
-      <el-form :model="order" label-width="100px">
+      <el-form :model="rscOrder" label-width="100px">
         <el-form-item label="资源名称:">
           <span>{{ radio }}</span>
         </el-form-item>
         <el-form-item label="前置资源:">
-          <el-select v-model="order.before_rscs" multiple>
+          <el-select 
+            v-model="rscOrder.before_rscs" 
+            multiple
+            @change="handleCOChange($event)"
+            @remove-tag="handleCORemoveTag"  
+          >
             <el-option
-              v-for="item in tableData"
+              v-for="item in resources_id"
               :key="item.id"
               :label="item.id"
               :value="item.id"
+              :disabled="item.disabled"
             >
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="后置资源:">
-          <el-select v-model="order.after_rscs" multiple>
+          <el-select 
+            v-model="rscOrder.after_rscs" 
+            multiple
+            @change="handleCOChange($event)"
+            @remove-tag="handleCORemoveTag"  
+          >
             <el-option
-              v-for="item in tableData"
+              v-for="item in resources_id"
               :key="item.id"
               :label="item.id"
               :value="item.id"
+              :disabled="item.disabled"
             >
             </el-option>
           </el-select>
@@ -823,7 +816,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="orderVisible = false">取 消</el-button>
+          <el-button @click="rscOrderVisible = false">取 消</el-button>
           <el-button type="primary" @click="orders">确 定</el-button>
         </span>
       </template>
@@ -947,7 +940,10 @@
                   <span>
                     <el-input
                       class="block"
-                      v-if="metaAttrTypes[meta_attributes[key]] == 'string'||metaAttrTypes[meta_attributes[key]] == 'enum'"
+                      v-if="
+                        metaAttrTypes[meta_attributes[key]] == 'string' ||
+                        metaAttrTypes[meta_attributes[key]] == 'enum'
+                      "
                       v-model="addForm.meta_attributes[meta_attributes[key]]"
                       @input="forceUpdate"
                     ></el-input>
@@ -1044,6 +1040,7 @@ import {
   updateOrder,
   getRcsDetail,
   editItem,
+  getResourceRelation,
 } from "@/api/homeTable";
 import { getNodes } from "@/api/node";
 import Vue from "vue";
@@ -1060,7 +1057,24 @@ export default {
       },
       radio: "",
       tableData: [],
-      nodeList: [],
+      nodeList: [
+        {
+          id: "ns187",
+          is_dc: true,
+          status: "Master",
+        },
+        {
+          id: "ns188",
+          is_dc: false,
+          status: "Not Running/Standby",
+        },
+        {
+          id: "ns189",
+          is_dc: false,
+          status: "Not Running/Standby",
+        },
+      ],
+      resources_id: [], //接收所有资源的ID 方便资源顺序、资源协同操作
       noGroup: [],
       // drdbStatus: "",
       disableEditDialog: false,
@@ -1089,22 +1103,12 @@ export default {
         // type: [{ required: true, message: "请输入资源类型", trigger: "blur" }],
       },
 
-      locationVisible: false,
-      colocationVisible: false,
-      orderVisible: false,
-      location: {
-        masterNode: [],
-        slave1: [],
-        node_level: [],
-      },
-      colocation: {
-        same_node: [],
-        diff_node: [],
-      },
-      order: {
-        before_rscs: [],
-        after_rscs: [],
-      },
+      rscLocationVisible: false,
+      rscColocationVisible: false,
+      rscOrderVisible: false,
+      rscLocation: {},
+      rscColocation: {},
+      rscOrder: {},
       showme: false,
       InsTypes: {},
       metaAttrTypes: {},
@@ -1220,6 +1224,164 @@ export default {
   },
 
   methods: {
+    //点击关系按钮，接收接口传来的数据，反馈到页面
+    handleClickRelation(e) {
+      let _this = this;
+      let str = ''
+      if(e.target.innerHTML == "资源位置") {
+        str = "location"
+      } else if(e.target.innerHTML == "资源协同") {
+        str = "colocation"
+      } else {
+        str = "order"
+      }
+
+      //判断传来的值是否与tableData的id相同，相同置为disabled
+      function getSelectChildrenData(data) {
+        _this.resources_id = []
+        for (const item of _this.tableData) {
+          if(item.id == data.rsc_id) {
+            continue
+          }
+          _this.resources_id.push({
+            id: item.id
+          })
+        }
+        for (const key in data) {
+          if(key == 'rsc_id' || data[key].length == 0) continue
+          for(let i of data[key]) {
+            for (const j in _this.resources_id) {
+              if(i == _this.resources_id[j].id) {
+                _this.resources_id[j].disabled = true
+              }
+            }
+          }
+        }
+      }
+
+
+//从这里开始的数据
+
+      //假数据 === 模拟从接口传来的数据
+      let order = {
+        before_rscs: [],
+        rsc_id: 'group-fs-ps',
+        after_rscs: [
+          'test2',
+        ],
+      }
+
+      let colocation = {
+        same_node: ['test2'],
+        rsc_id: 'group-fs-ps',
+        diff_node: ['group1'],
+      }
+
+      let location = {
+        node_level: [
+          {
+            node: 'ns187',
+            level: 'Master Node',
+          },
+          {
+            node: 'ns188',
+            level: 'Slave 1',
+          },
+        ],
+        rsc_id: 'group-fs-ps',
+      }
+      //判断传来的是那个接口的数据
+      switch(str) {
+        //资源协同
+        case 'colocation':
+          _this.rscColocation = colocation
+          getSelectChildrenData(_this.rscColocation)
+          _this.rscColocationVisible = true
+          break
+        // 资源顺序
+        case 'order':
+          _this.rscOrder = order
+          getSelectChildrenData(_this.rscOrder)
+          _this.rscOrderVisible = true
+          break
+        //资源位置
+        default: 
+          let key = "";
+          for (let item in _this.nodeList) {
+            if (item === "0") {
+              key = "Master Node";
+            } else {
+              key = `Slave ${item}`;
+            }
+            _this.rscLocation[key] = [];
+          }
+          //将从接口获取到的值赋给rscLocation
+          location.node_level.map((item) => {
+            for (const key in _this.rscLocation) {
+              if (item.level === key) {
+                _this.rscLocation[key].push(item.node);
+              }
+            }
+            //循环遍历node是否与nodeList的id相同，相同则置nodeList为disable
+            for (const i in _this.nodeList) {
+              if (item.node === _this.nodeList[i].id) {
+                _this.nodeList[i].disabled = true;
+              }
+            }
+          });
+
+          _this.rscLocationVisible = true
+          break
+      }
+
+//到这结束的数据，都可以删除，下面的是真正的代码
+
+      // let url = '/resources/' + _this.radio + '/relations/' + str
+     /*  
+      getResourceRelation(url).then((res) => {
+        switch (str) {
+          case "colocation":
+            _this.rscColocation = res;
+            getSelectChildrenData(_this.rscColocation)
+            _this.rscColocation = colocation;
+            break;
+          case "order":
+            _this.rscOrder = res;
+            getSelectChildrenData(_this.rscOrder)
+            _this.rscOrderVisible = true;
+            break;
+          default:
+            let key = "";
+            for (let item in _this.nodeList) {
+              if (item === "0") {
+                key = "Master Node";
+              } else {
+                key = `Slave ${item}`;
+              }
+              _this.rscLocation[key] = [];
+            }
+            //将从接口获取到的值赋给rscLocation
+            res.node_level.map((item) => {
+              for (const key in _this.rscLocation) {
+                if (item.level === key) {
+                  _this.rscLocation[key].push(item.node);
+                }
+              }
+              //循环遍历node是否与nodeList的id相同，相同则置nodeList为disable
+              for (const i in _this.nodeList) {
+                if (item.node === _this.nodeList[i].id) {
+                  _this.nodeList[i].disabled = true;
+                }
+              }
+            });
+
+            _this.rscLocationVisible = true;
+            break;
+        }
+      }); 
+    */
+    },
+
     //设置基础添加的元属性
     setCloneRscId(value) {
       let _this = this;
@@ -1243,7 +1405,7 @@ export default {
           _this.tableData.forEach((item) => {
             if (!item.subrscs) {
               _this.noGroup.push(item);
-            }
+            } 
           });
         })
         .catch((err) => {
@@ -1253,7 +1415,7 @@ export default {
           }
         });
       getNodes().then((res) => {
-        _this.nodeList = res.data.data;
+        // _this.nodeList = res.data.data;
       });
       // getDrdbStatus().then((res) => {
       //   _this.drdbStatus = res.data.data;
@@ -1498,8 +1660,10 @@ export default {
       }
     },
     // 将选中的node设置为disabled
-    handleLocationChange(option) {
-      let arr = [...option];
+    handleLocationChange(node) {
+      let arr = [...node];
+      console.log(arr);
+
       for (let i in arr) {
         for (let j in this.nodeList) {
           if (arr[i] == this.nodeList[j].id) {
@@ -1507,15 +1671,38 @@ export default {
           }
         }
       }
+
+      this.$forceUpdate(); //必须要有强制更新，必然检测不到选中的值
+    },
+    handleCOChange(option){
+      let arr = [...option];
+      console.log(arr);
+
+      for (let i in arr) {
+        for (let j in this.resources_id) {
+          if (arr[i] == this.resources_id[j].id) {
+            this.resources_id[j].disabled = true;
+          }
+        }
+      }
     },
     //将移除的node设置为可选
     handleLocationRemoveTag(option) {
+
       for (let i in this.nodeList) {
         if (option == this.nodeList[i].id) {
           this.nodeList[i].disabled = false;
         }
       }
     },
+    handleCORemoveTag(option) {
+      for (let i in this.resources_id) {
+        if (option == this.resources_id[i].id) {
+          this.resources_id[i].disabled = false;
+        }
+      }
+    },
+
     forceUpdate() {
       this.$forceUpdate();
     },
@@ -1618,27 +1805,23 @@ export default {
     },
     locates() {
       let _this = this;
-      for (let i in _this.location.masterNode) {
-        _this.location.node_level.push({
-          level: "Master Node",
-          node: _this.location.masterNode[i],
-        });
+      let location = {};
+      location.node_level = [];
+      location.rsc_id = _this.radio;
+
+      for (const key in _this.rscLocation) {
+        location[key] = _this.rscLocation[key];
+        if (_this.rscLocation[key].length != 0) {
+          location.node_level.push({
+            level: key,
+            node: _this.rscLocation[key],
+          });
+        }
       }
-      for (let i in _this.location.slave1) {
-        _this.location.node_level.push({
-          level: "Slave 1",
-          node: _this.location.slave1[i],
-        });
-      }
-      for (let i in _this.location.slave2) {
-        _this.location.node_level.push({
-          level: "Slave 2",
-          node: _this.location.slave2[i],
-        });
-      }
+
       let url = "/resources/" + _this.radio + "/location";
-      updateLocations(url, _this.location).then(() => {
-        _this.locationVisible = false;
+      updateLocations(url, location).then(() => {
+        _this.rscLocationVisible = false;
         _this.dataLoading();
         this.$message({
           type: "success",
@@ -1648,10 +1831,9 @@ export default {
     },
     coordination() {
       let _this = this;
-      _this.colocation.rsc_id = _this.radio;
       let url = "/resources/" + _this.radio + "/colocation";
-      updateCoordination(url, _this.colocation).then(() => {
-        _this.colocationVisible = false;
+      updateCoordination(url, _this.rscColocation).then(() => {
+        _this.rscColocationVisible = false;
         _this.dataLoading();
         this.$message({
           type: "success",
@@ -1661,10 +1843,9 @@ export default {
     },
     orders() {
       let _this = this;
-      _this.order.rsc_id = _this.radio;
       let url = "/resources/" + _this.radio + "/order";
-      updateOrder(url, _this.order).then(() => {
-        _this.orderVisible = false;
+      updateOrder(url, _this.rscOrder).then(() => {
+        _this.rscOrderVisible = false;
         _this.dataLoading();
         this.$message({
           type: "success",

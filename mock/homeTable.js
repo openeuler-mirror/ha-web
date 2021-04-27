@@ -353,7 +353,9 @@ let resource = [
 let drdbStatus = {
   "data": { "code": "1", "message": "实时镜像存储发生故障，请联系技术支持!" }, "error": "error"
 }
-let meta_attributes = { "action": true, "data": { "migration-threshold": { "content": { "type": "integer" }, "name": "migration-threshold" }, "allow-migrate": { "content": { "type": "boolean" }, "name": "allow-migrate" }, "failure-timeout": { "content": { "type": "integer" }, "name": "failure-timeout" }, "priority": { "content": { "type": "integer" }, "name": "priority" }, "resource-stickiness": { "content": { "type": "integer" }, "name": "resource-stickiness" }, "target-role": { "content": { "default": "Stopped", "type": "enum", "values": ["Stopped", "Started"] }, "name": "target-role" }, "multiple-active": { "content": { "type": "enum", "values": ["stop_start", "stop_only", "block"] }, "name": "multiple-active" }, "is-managed": { "content": { "type": "boolean" }, "name": "is-managed" } } };
+let meta_attributes = {
+  "action": true, "data": { "migration-threshold": { "content": { "type": "integer" }, "name": "migration-threshold" }, "allow-migrate": { "content": { "type": "boolean" }, "name": "allow-migrate" }, "failure-timeout": { "content": { "type": "integer" }, "name": "failure-timeout" }, "priority": { "content": { "type": "integer" }, "name": "priority" }, "resource-stickiness": { "content": { "type": "integer" }, "name": "resource-stickiness" }, "target-role": { "content": { "default": "Stopped", "type": "enum", "values": ["Stopped", "Started"] }, "name": "target-role" }, "multiple-active": { "content": { "type": "enum", "values": ["stop_start", "stop_only", "block"] }, "name": "multiple-active" }, "is-managed": { "content": { "type": "boolean" }, "name": "is-managed" } }
+};
 
 // let metass={"action":true,
 // "data":[
@@ -368,37 +370,78 @@ let metas = [
   {
     value: 'stonith',
     label: 'stonith',
-    children:[
+    children: [
       {
-      value: 'heartbeat',
-      label: 'heartbeat',
-      children:[
-        {
-          value:'CTDB',
-          label:'CTDB'
-        }
-      ]
+        value: 'heartbeat',
+        label: 'heartbeat',
+        children: [
+          {
+            value: 'CTDB',
+            label: 'CTDB'
+          }
+        ]
       }
     ]
   },
   {
-    value:'systemd',
-    label:'systemd'
+    value: 'systemd',
+    label: 'systemd'
   },
   {
-    value:'lsb',
-    label:'lsb',
+    value: 'lsb',
+    label: 'lsb',
 
   },
   {
-    value:'service',
-    label:'service'
-  },  
+    value: 'service',
+    label: 'service'
+  },
   {
-    value:'ocf',
-    label:'ocf'
+    value: 'ocf',
+    label: 'ocf'
   },
 ]
+
+
+const rscLocation = {
+  node_level: [
+    {
+      node: 'ns187',
+      level: 'Master Node',
+    },
+    {
+      node: 'ns188',
+      level: 'Slave 1',
+    },
+  ],
+  rsc_id: 'dummyx',
+}
+let rscColocation = {
+  action: true,
+  data: {
+    same_node: [
+
+    ],
+    rsc_id: 'dummyx',
+    diff_node: [
+      'group1',
+    ],
+  },
+}
+const rscOrder = {
+  action: true,
+  data: {
+    before_rscs: [
+
+    ],
+    rsc_id: 'dummyx',
+    after_rscs: [
+      'group1',
+    ],
+  },
+}
+
+
 
 let metaAttris = {
   "migration-threshold": {
@@ -427,6 +470,17 @@ export default {
       data: resource
     };
   },
+  "get|api/resources/id/relations/location": option => {
+    return {
+      status: 200,
+      message: "location",
+      data: rscLocation
+    };
+  },
+
+
+
+
   "get|api/drbd_status": option => {
     return {
       status: 200,

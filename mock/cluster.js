@@ -445,7 +445,7 @@ export default {
             case 'x':
                 break;
             default:
-                result = commandResult.data
+                result = commandResult
                 break;
         }
         return {
@@ -465,7 +465,7 @@ export default {
         return {
             status: 200,
             message: "success",
-            data: ret.data
+            data: ret
         };
     }
 

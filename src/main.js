@@ -11,7 +11,7 @@ import axios from 'axios';
 import './assets/icon/iconfont.css'
 import './assets/element/index.css'
 import store from './components/VueX/store'
-// require('../mock');
+require('../mock');
 Vue.use(VueSidebarMenu)
 Vue.use(ElementUI)
 
