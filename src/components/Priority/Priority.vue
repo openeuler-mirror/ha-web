@@ -108,7 +108,6 @@ export default {
         _this.priorities[prikeys] = _this.rets.parameters[prikeys].value;
       }
       update(_this.priorities).then((res) => {
-        _this.rets = {};
         this.$message({
           type: "success",
           message: "已更新首选项",

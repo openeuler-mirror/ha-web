@@ -74,7 +74,6 @@ export default {
     getConfigs().then((res) => {
       _this.form = res.data.data;
         _this.form.hbaddrs1 = res.data.data.hbaddrs1;
-        console.log(_this.form);
       if (!res.data.data.hbaddrs2) {
         _this.backupHB[0] = res.data.data.hbaddrs1[0];
         _this.backupHB[1] = res.data.data.hbaddrs1[1];
@@ -93,8 +92,8 @@ export default {
         _this.form.hbaddrs2.push(_this.backupHB[0]);
         _this.form.hbaddrs2.push(_this.backupHB[1]);
       }
-      _this.$store.state.count = "";
       updateHB(_this.form).then(() => {
+        _this.$store.state.count = "";
         _this.$message({
           type: "success",
           message: "已更新心跳配置",

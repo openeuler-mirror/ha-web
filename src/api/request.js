@@ -4,7 +4,7 @@ import axios from 'axios'
 
 const service = axios.create({
   baseURL: Vue.prototype.api_base_url,
-  timeout: 5000
+  timeout: 100000
 })
 
 // service.interceptors.request.use(
@@ -21,7 +21,22 @@ const service = axios.create({
 // )
 axios.interceptors.response.use(function (response) {
   // 对响应数据做点什么
-  return response;
+  response => {
+    // 如果返回的状态码为200，说明接口请求成功，可以正常拿到数据
+    // 否则的话抛出错误
+    if (response.status === 403) {
+    
+      localStorage.removeItem("userLogin");
+      document.cookie =
+        "beegosessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        location.replace('/')
+
+      return Promise.reject(response);
+    } else {
+      return Promise.resolve(response);
+    }
+  }
+
 }, function (error) {
 
   // 对响应错误做点什么

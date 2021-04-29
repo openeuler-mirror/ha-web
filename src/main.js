@@ -5,14 +5,11 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui' //element-ui的全部组件
 import 'element-ui/lib/theme-chalk/index.css'//element-ui的css
-import VueSidebarMenu from 'vue-sidebar-menu'
-import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 import axios from 'axios';
 import './assets/icon/iconfont.css'
 import './assets/element/index.css'
 import store from './components/VueX/store'
-require('../mock');
-Vue.use(VueSidebarMenu)
+// require('../mock');
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false

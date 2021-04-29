@@ -90,9 +90,7 @@ export default {
   methods: {
     handleSelect(key, keyPath){
       let _this = this
-      console.log(key, keyPath)
       _this.$store.commit('mutationsShowDialog', key);
-      console.log(`store${_this.$store.state.count}`)
     },
     toggleCollapse() {
       let _this = this
