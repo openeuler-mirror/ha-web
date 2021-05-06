@@ -18,8 +18,11 @@
           >
             <span class="rebel">
               {{ ret.name }}
-              <el-tooltip effect="dark" placement="top" :content="ret.longdesc">
-                <i class="el-icon-question"></i>
+              <el-tooltip 
+                v-show="ret.longdesc ? ret.longdesc : false" 
+                effect="dark" placement="top" 
+                :content="ret.longdesc">
+                <i class="iconfont icon-wenhao"></i>
               </el-tooltip>
               :
             </span>

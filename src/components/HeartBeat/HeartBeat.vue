@@ -14,29 +14,31 @@
           <el-form ref="form" :model="form">
             <div v-for="item in form.hbaddrs1" :key="item.key">
               <el-form-item>
-                <span>节点心跳-{{ item.nodeid }}</span>
-                <el-input v-model="item.ip"></el-input>
+                <span class="node-text">节点心跳-{{ item.nodeid }}:</span>
+                <el-input class="node-input" v-model="item.ip"></el-input>
               </el-form-item>
             </div>
           </el-form>
         </el-tab-pane>
         <el-tab-pane label="备用心跳" name="second">
-          <el-switch v-model="backupHeartBeat" inactive-text="启用备用心跳">
-          </el-switch>
-          <div>
-            <span>节点心跳-{{ form.hbaddrs1[0].nodeid }}</span>
+          <el-row>
+            <el-switch class="node-text node-switch" v-model="backupHeartBeat" inactive-text="启用备用心跳">
+            </el-switch>  
+          </el-row>  
+          <el-row>
+            <span class="node-text">节点心跳-{{ form.hbaddrs1[0].nodeid }}</span>
             <el-input
               v-model="backupHB[0].ip"
               :disabled="!backupHeartBeat"
             ></el-input>
-          </div>
-          <div>
-            <span>节点心跳-{{ form.hbaddrs1[1].nodeid }}</span>
+          </el-row>
+          <el-row>
+            <span class="node-text">节点心跳-{{ form.hbaddrs1[1].nodeid }}</span>
             <el-input
               v-model="backupHB[1].ip"
               :disabled="!backupHeartBeat"
             ></el-input>
-          </div>
+          </el-row>
         </el-tab-pane>
       </el-tabs>
       <span slot="footer" class="dialog-footer">
@@ -107,3 +109,21 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss">
+.priority-modal{
+  .el-row {
+    margin: 20px 0;
+  }
+  .node-text{
+    margin-left: 80px;
+    margin-right: 10px;
+  }
+  .el-switch__label.is-active {
+    color: #606266;
+  }
+  .el-input{
+    width: 46%;
+  }
+}
+</style>

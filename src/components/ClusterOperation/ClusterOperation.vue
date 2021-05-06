@@ -91,12 +91,13 @@ export default {
   },
 };
 </script>
-<style scoped lang="scss">
+<style lang="scss">
 // The width of the selector is aligned with the text box below
 body .sider .priority-modal .el-input {
   width: inherit;
 }
 .operation-dialog {
+  
   .el-dialog {
     .el-dialog__header {
       border-bottom: 1px solid #f4f4f4;

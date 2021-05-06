@@ -42,10 +42,9 @@
           <el-form-item
             v-if="dialogType == 'primitive' && dialogAction == 'edit'"
             class="required"
-            label="资源类型"
+            label="资源类型:"
             prop="type"
           >
-            <!-- <span class="labels"> 资源类型： </span> -->
             <el-input class="block" v-model="editMetas" disabled></el-input>
           </el-form-item>
           <el-form-item
@@ -72,9 +71,7 @@
             </el-row>
           </el-form-item>
 
-          <el-form-item v-if="dialogType == 'clone'">
-            <span class="modify-label">克隆对象：</span>
-
+          <el-form-item v-if="dialogType == 'clone'" label="克隆对象:">
             <el-select
               :disabled="dialogAction == 'edit'"
               class="block"

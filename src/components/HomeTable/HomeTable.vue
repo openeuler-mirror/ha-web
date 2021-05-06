@@ -71,14 +71,20 @@
               style="color: '#999'"
             >
             </i>
+            <i
+              class="iconfont icon-B"
+              v-else
+              style="color: '#999'"
+            >
+            </i>
           </el-tooltip>
         </template>
       </el-table-column>
       <el-table-column sortable prop="type" label="资源类型"> </el-table-column>
       <el-table-column sortable prop="svc" label="服务"> </el-table-column>
       <template v-for="(item, index) in nodeList">
-        <el-table-column :key="index">
-          <template #header>
+        <el-table-column :key="index" width="150px">
+          <template #header @click="qwe">
             <el-tooltip
               class="item"
               effect="dark"
@@ -86,19 +92,23 @@
               placement="top"
             >
               <i
-                :style="{ color: item.is_dc ? 'green' : 'red' }"
+                :style="{ color: item.status == 'Not Running' ||  item.status == 'Not Running/Standby' ? 'red' : 'green' }"
                 class="iconfont icon-host"
               ></i>
             </el-tooltip>
+            <el-badge is-dot 
+                v-show="item.status == 'Master/Standby' ||
+                        item.status == 'Not Running/Standby' ||
+                        item.status == 'Standby'"	>
+            </el-badge>
             <span>{{ item.id }}</span>
           </template>
 
-          <template slot-scope="scope" v-if="scope.row.running_node">
-            <template v-for="count in scope.row.running_node.length">
+          <template slot-scope="scope">
+            <template>
               <span
-                v-show="scope.row.running_node[count - 1] == item.id"
-                :key="count"
-                style="color: green"
+                :key="item.id"
+                :style="{color: scope.row.running_node.indexOf(item.id) > -1 ? 'green': '#999'}"
                 class="iconfont icon-B"
               >
               </span>
@@ -198,6 +208,7 @@ export default {
     }
   }
 }
+
 .edit-panel {
   .el-input {
     width: 200px;

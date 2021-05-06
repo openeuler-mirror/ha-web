@@ -74,11 +74,8 @@ export default {
 .top-bar {
   color: #fff;
   height: 60px;
-  box-shadow: 0px 1px 5px 1px #ecf0f6;
   .button-group {
     float: right;
-    margin-right: 20px;
-    margin-top: 10px;
     .btn-user {
       border: none;
       color: #999;

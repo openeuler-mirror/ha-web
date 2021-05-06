@@ -104,7 +104,6 @@
       </el-dropdown>
       <el-button
         class="operations"
-        style="float: right"
         @click.native="getResources"
       >
         <i class="iconfont icon-shuaxin"></i>
@@ -112,6 +111,8 @@
       </el-button>
     </el-row>
     <dialogs ref="ezDialog" @refresh="getResources"></dialogs>
+
+    <!-- migrate -->
     <el-dialog
       title="迁移资源"
       :visible.sync="disableMigrateDialog"
@@ -120,7 +121,7 @@
       class="location"
       :before-close="resetMigrate"
     >
-      <el-form :model="migrate" label-width="100px">
+      <el-form :model="migrate" label-width="160px">
         <el-form-item label="资源名称:">
           <span>{{ chosenItem.id }}</span>
         </el-form-item>
@@ -139,7 +140,7 @@
           <el-switch v-model="migrate.is_force"> </el-switch>
         </el-form-item>
         <el-form-item label="有效期:">
-          <el-input v-model="migrate.period">
+          <el-input style="width: 56%" v-model="migrate.period">
             <template slot="append">小时</template>
           </el-input>
         </el-form-item>
@@ -152,15 +153,15 @@
       </template>
     </el-dialog>
 
+    <!-- location -->
     <el-dialog
       title="资源位置"
       :visible.sync="rscLocationVisible"
       width="600px"
       top="15vh"
       class="location"
-      :before-close="reset"
     >
-      <el-form :model="rscLocation" label-width="100px">
+      <el-form :model="rscLocation" label-width="160px">
         <el-form-item label="资源名称:">
           <span class="block">{{ chosenItem.id }}</span>
         </el-form-item>
@@ -193,6 +194,8 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- colocation -->
     <el-dialog
       title="资源协同"
       :visible.sync="rscColocationVisible"
@@ -200,7 +203,7 @@
       top="15vh"
       class="location"
     >
-      <el-form :model="rscColocation" label-width="100px">
+      <el-form :model="rscColocation" label-width="160px">
         <el-form-item label="资源名称:">
           <span>{{ chosenItem.id }}</span>
         </el-form-item>
@@ -255,7 +258,7 @@
       top="15vh"
       class="location"
     >
-      <el-form :model="rscOrder" label-width="100px">
+      <el-form :model="rscOrder" label-width="160px">
         <el-form-item label="资源名称:">
           <span>{{ chosenItem.id }}</span>
         </el-form-item>
@@ -525,7 +528,6 @@ export default {
     },
     handleLocationChange(node) {
       let arr = [...node];
-      console.log(arr);
 
       for (let i in arr) {
         for (let j in this.nodeList) {
@@ -539,7 +541,6 @@ export default {
     },
     handleCOChange(option) {
       let arr = [...option];
-      console.log(arr);
 
       for (let i in arr) {
         for (let j in this.resources_id) {
@@ -571,11 +572,15 @@ export default {
 
       for (const key in _this.rscLocation) {
         location[key] = _this.rscLocation[key];
-        if (_this.rscLocation[key].length != 0) {
+        if (_this.rscLocation[key].length == 0) {
+          continue
+        } else if(_this.rscLocation[key].length >= 1) {
           location.node_level.push({
             level: key,
             node: _this.rscLocation[key],
           });
+        } else {
+
         }
       }
 
