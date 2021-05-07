@@ -19,6 +19,7 @@
               class="iconfont icon-yonghutouxiang"
               v-model="loginForm.username"
               placeholder="输入用户名"
+              @keyup.enter.native="onSubmit"
             ></el-input>
           </el-form-item>
           <el-form-item class="input_form-item">
@@ -27,10 +28,13 @@
               v-model="loginForm.password"
               placeholder="输入密码"
               show-password
+              @keyup.enter.native="onSubmit"
             ></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button class="btn" type="primary" @click.native="onSubmit">登录</el-button>
+            <el-button class="btn" type="primary" @click.native="onSubmit"
+              >登录</el-button
+            >
           </el-form-item>
         </el-form>
       </div>
@@ -53,13 +57,14 @@ export default {
   methods: {
     onSubmit() {
       let _this = this;
-      axios.post('/api/v1/login',_this.loginForm)
+      axios
+        .post("/api/v1/login", _this.loginForm)
         .then(() => {
-          localStorage.setItem('userLogin', _this.loginForm.username); 
-         	this.$router.push({ path: '/' })
+          localStorage.setItem("userLogin", _this.loginForm.username);
+          this.$router.push({ path: "/" });
         })
         .catch((err) => {
-          console.log("login failed"+err);
+          console.log("login failed" + err);
         });
     },
   },

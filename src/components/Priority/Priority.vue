@@ -18,10 +18,12 @@
           >
             <span class="rebel">
               {{ ret.name }}
-              <el-tooltip 
-                v-show="ret.longdesc ? ret.longdesc : false" 
-                effect="dark" placement="top" 
-                :content="ret.longdesc">
+              <el-tooltip
+                v-show="ret.longdesc ? ret.longdesc : false"
+                effect="dark"
+                placement="top"
+                :content="ret.longdesc"
+              >
                 <i class="iconfont icon-wenhao"></i>
               </el-tooltip>
               :
@@ -69,8 +71,9 @@
               <el-switch
                 size="mini"
                 v-if="ret.content.type == 'boolean'"
-                :active-value="true"
-                v-model="ret.content.default"
+                :active-value="'true'"
+                :inactive-value="'false'"
+                v-model="ret.value"
               ></el-switch>
             </span>
           </el-form-item>
@@ -106,20 +109,31 @@ export default {
   methods: {
     updatePriority() {
       let _this = this;
-      _this.$store.state.count = ''
       for (let prikeys in _this.rets.parameters) {
-        _this.priorities[prikeys] = _this.rets.parameters[prikeys].value;
+        if (
+          _this.rets.parameters[prikeys].value == "true" ||
+          _this.rets.parameters[prikeys].value == "false"
+        ) {
+          if (_this.rets.parameters[prikeys].value == "true") {
+            _this.priorities[prikeys] = true;
+          } else {
+            _this.priorities[prikeys] = false;
+          }
+        } else {
+          _this.priorities[prikeys] = _this.rets.parameters[prikeys].value;
+        }
       }
       update(_this.priorities).then((res) => {
         this.$message({
           type: "success",
           message: "已更新首选项",
         });
+        _this.$store.state.count = "";
       });
     },
     handleCancel() {
-      let _this = this
-      _this.$store.state.count = ''
+      let _this = this;
+      _this.$store.state.count = "";
     },
   },
 };

@@ -486,7 +486,7 @@ export default {
         easyRequest(req).then(() => {
           this.$message({
             type: "success",
-            message: "resource" + action + "success",
+            message: "resource " + action + " success",
           });
         });
       }

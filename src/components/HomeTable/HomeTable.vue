@@ -71,12 +71,7 @@
               style="color: '#999'"
             >
             </i>
-            <i
-              class="iconfont icon-B"
-              v-else
-              style="color: '#999'"
-            >
-            </i>
+            <i class="iconfont icon-B" v-else style="color: '#999'"> </i>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -84,31 +79,49 @@
       <el-table-column sortable prop="svc" label="服务"> </el-table-column>
       <template v-for="(item, index) in nodeList">
         <el-table-column :key="index" width="150px">
-          <template #header @click="qwe">
-            <el-tooltip
-              class="item"
-              effect="dark"
-              :content="item.status"
-              placement="top"
-            >
-              <i
-                :style="{ color: item.status == 'Not Running' ||  item.status == 'Not Running/Standby' ? 'red' : 'green' }"
-                class="iconfont icon-host"
-              ></i>
-            </el-tooltip>
-            <el-badge is-dot 
-                v-show="item.status == 'Master/Standby' ||
-                        item.status == 'Not Running/Standby' ||
-                        item.status == 'Standby'"	>
-            </el-badge>
-            <span>{{ item.id }}</span>
+          <template #header>
+            <div @click="openStandByDialog(item)">
+              <el-tooltip
+                class="item"
+                effect="dark"
+                :content="item.status"
+                placement="top"
+              >
+                <i
+                  :style="{
+                    color:
+                      item.status == 'Not Running' ||
+                      item.status == 'Not Running/Standby'
+                        ? 'red'
+                        : 'green',
+                  }"
+                  class="iconfont icon-host"
+                ></i>
+              </el-tooltip>
+              <el-badge
+                is-dot
+                v-show="
+                  item.status == 'Master/Standby' ||
+                  item.status == 'Not Running/Standby' ||
+                  item.status == 'Standby'
+                "
+              >
+              </el-badge>
+              <span>{{ item.id }}</span>
+            </div>
           </template>
 
-          <template slot-scope="scope">
-            <template>
+          <template slot-scope="scope" v-if="scope.row.running_node">
+            <template v-for="count in scope.row.running_node.length">
               <span
-                :key="item.id"
-                :style="{color: scope.row.running_node.indexOf(item.id) > -1 ? 'green': '#999'}"
+                v-show="scope.row.running_node[count - 1] == item.id"
+                :key="count"
+                :style="{
+                  color:
+                    scope.row.running_node.indexOf(item.id) > -1
+                      ? 'green'
+                      : '#999',
+                }"
                 class="iconfont icon-B"
               >
               </span>
@@ -121,11 +134,53 @@
         </el-table-column>
       </template>
     </el-table>
+
+    <el-dialog
+      title=""
+      :visible.sync="disableStandbyDialog"
+      width="500px"
+      top="15vh"
+      class="location"
+    >
+      <el-form :model="chosenNode" label-width="100px">
+        <el-form-item label="节点id:">
+          <span>{{ chosenNode.id }}</span>
+        </el-form-item>
+        <el-form-item class="node-buttons">
+          <el-row>
+            <el-button v-if="chosenNode.running" @click.native="runStat('stop')"
+              >停用
+            </el-button>
+            <el-button
+              v-if="!chosenNode.running"
+              @click.native="runStat('start')"
+              >启动</el-button
+            >
+            <el-input
+              v-model="input"
+              show-password
+              placeholder="请输入密码"
+            ></el-input>
+          </el-row>
+
+          <el-row>
+            <el-button
+              v-if="chosenNode.standby"
+              @click.native="standbyStat('unstandby')"
+              >启用</el-button
+            >
+            <el-button v-else @click.native="standbyStat('standby')"
+              >备用</el-button
+            >
+          </el-row>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getResource } from "@/api/homeTable";
+import { getResource, runAction, standbyAction } from "@/api/homeTable";
 import { getNodes } from "@/api/node";
 import Operations from "@/components/Layout/Operations/Operations";
 
@@ -137,6 +192,9 @@ export default {
       tableData: [],
       nodeList: [],
       chosenSrc: {},
+      chosenNode: {},
+      disableStandbyDialog: false,
+      input: "",
     };
   },
   components: {
@@ -168,7 +226,6 @@ export default {
         .then((res) => {
           _this.tableData = res.data.data;
           _this.$store.commit("mutationsRscs", _this.tableData);
-          console.log(_this.$store.state.rscs);
           let noGroup = [];
           let ids = [];
           _this.tableData.forEach((item) => {
@@ -190,6 +247,65 @@ export default {
         });
       getNodes().then((res) => {
         _this.nodeList = res.data.data;
+        _this.nodeList.map(_this.parseNodeStatusMsg);
+      });
+    },
+    parseNodeStatusMsg(node) {
+      let running = true;
+      let standby = false;
+
+      switch (node.status) {
+        case "Master":
+          break;
+        case "Master/Standby":
+          standby = true;
+          break;
+        case "Not Running/Standby":
+          running = false;
+          standby = true;
+          break;
+        case "Standby":
+          standby = true;
+          break;
+        case "Not Running":
+          running = false;
+          break;
+        case "Running":
+          running = true;
+          break;
+        default:
+          break;
+      }
+      node.running = running;
+      node.standby = standby;
+    },
+    openStandByDialog(item) {
+      this.chosenNode = item;
+      this.disableStandbyDialog = true;
+    },
+
+    standbyStat(val) {
+      let url = "nodes/" + this.chosenNode.id + "/" + val;
+      standbyAction(url).then((res) => {
+        this.$message({
+          type: "success",
+          message: "node " + val + " success",
+        });
+        this.disableStandbyDialog = false;
+
+        this.dataLoading();
+      });
+    },
+    runStat(val) {
+      let url = "nodes/" + this.chosenNode.id + "/" + val;
+      runAction(url, this.input).then((res) => {
+        this.$message({
+          type: "success",
+          message: "node " + val + " success",
+        });
+        this.disableStandbyDialog = false;
+
+        this.dataLoading();
       });
     },
   },
@@ -208,7 +324,16 @@ export default {
     }
   }
 }
-
+.node-buttons {
+  button {
+    width: 90px;
+    margin-top: 7px;
+    margin-left: -10px;
+  }
+  .el-input {
+    width: 190px;
+  }
+}
 .edit-panel {
   .el-input {
     width: 200px;

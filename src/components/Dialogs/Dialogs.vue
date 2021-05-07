@@ -2,11 +2,13 @@
   <!-- dialogs -->
   <el-dialog
     class="basicAddDialog"
-    title="资源配置"
     :visible.sync="isVisible"
     width="46%"
     :before-close="closeDialog"
   >
+    <el-row>
+      <div class="el-dialog__title">{{ title }}</div>
+    </el-row>
     <el-form v-model="addForm" ref="addForm" label-width="200px">
       <el-tabs v-model="activeName" class="button-tabs">
         <el-tab-pane name="first" class="tab-panels" label="基本">
@@ -37,6 +39,7 @@
               :options="metas"
               :props="{ expandTrigger: 'hover' }"
               @change="addRscTypeSelected"
+              filterable
             ></el-cascader>
           </el-form-item>
           <el-form-item
@@ -59,6 +62,7 @@
                 v-model="addForm.rscs"
                 multiple
                 placeholder="请选择"
+                filterable
               >
                 <el-option
                   v-for="item in noGroup"
@@ -78,6 +82,7 @@
               v-model="addForm.rsc_id"
               placeholder="请选择"
               @change="setCloneRscId"
+              filterable
             >
               <el-option
                 v-for="item in tableData"
@@ -93,7 +98,12 @@
         <el-tab-pane
           name="second"
           class="tab-panels"
-          v-if="addForm.type && addForm.type !== '' && instanceAttris"
+          v-if="
+            addForm.type &&
+            addForm.type !== '' &&
+            instanceAttris &&
+            instanceAttris[0]
+          "
           label="实例属性"
           label-width="200px"
         >
@@ -106,6 +116,7 @@
                 placeholder="请选择"
                 class="block"
                 @remove-tag="deleteInsTag"
+                filterable
               >
                 <!-- -->
                 <el-option
@@ -113,6 +124,7 @@
                   :key="item.name"
                   :label="item.name"
                   :value="item.name"
+                  :disabled="item.required == 1"
                 >
                 </el-option>
               </el-select>
@@ -136,7 +148,7 @@
                   ></el-input>
                   <el-switch
                     class="block"
-                     :active-value="'true'"
+                    :active-value="'true'"
                     :inactive-value="'false'"
                     v-if="InsTypes[instance_attributes[key]] == 'boolean'"
                     v-model="
@@ -157,16 +169,22 @@
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane name="third" class="tab-panels" label="元属性">
+        <el-tab-pane
+          name="meta"
+          class="tab-panels"
+          label="元属性"
+          v-if="addForm.type && addForm.type !== '' && metaAttris"
+        >
           <el-row>
             <label class="modify-label">需要修改的元属性: </label>
-            <span v-if="metaAttris">
+            <span>
               <el-select
                 class="block"
                 v-model="meta_attributes"
                 multiple
                 placeholder="请选择"
                 @remove-tag="deleteMetaTag"
+                filterable
               >
                 <el-option
                   v-for="item in metaAttris"
@@ -213,6 +231,82 @@
           </el-row>
           <!-- </div> -->
         </el-tab-pane>
+
+        <el-tab-pane
+          v-if="addForm.type && addForm.type !== '' && actionsAttris"
+          name="forth"
+          class="tab-panels"
+          label="操作属性"
+          label-width="200px"
+        >
+          <el-row>
+            <span class="modify-label"> 需要修改的操作属性： </span>
+            <span class="block">
+              <el-select
+                v-model="action_attributes"
+                multiple
+                placeholder="请选择"
+                class="block"
+                @change="addActionTag"
+                filterable
+              >
+                <!-- -->
+                <el-option
+                  v-for="item in actionsAttris"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="JSON.stringify(item)"
+                >
+                </el-option>
+              </el-select>
+            </span>
+          </el-row>
+          <el-table class="block" :data="yigebiaoge" style="width: 100%">
+            <el-table-column prop="name" label="name" width="75%">
+            </el-table-column>
+            <el-table-column prop="interval" label="interval" width="75%">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.interval"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column prop="start-delay" label="start-delay" width="75%">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row['start-delay']"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column prop="timeout" label="timeout" width="75%">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.timeout"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column prop="role" label="role" width="75%">
+              <template slot-scope="scope">
+                <!-- <el-input v-model="scope.row.role"></el-input> -->
+                <el-select v-model="scope.row.role" placeholder="请选择">
+                  <el-option
+                    v-for="item in role"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
+                  />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column prop="on-fail" label="on-fail" width="75%">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row['on-fail']" placeholder="请选择">
+                  <el-option
+                    v-for="item in onFail"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
+                  />
+                </el-select>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+
         <span class="hometable-dialog-footer">
           <el-button @click="closeDialog">取 消</el-button>
           <el-button :disabled="disableSubmit" type="primary" @click="addItem"
@@ -240,6 +334,7 @@ export default {
       addForm: {
         id: "",
         meta_attributes: {},
+        actions: [],
         instance_attributes: {},
       },
       activeName: "first",
@@ -252,26 +347,31 @@ export default {
       instanceAttris: [], //实例属性下拉列表
       instance_attributes: [],
       InsTypes: {}, //实例属性的类型列表，用来判断生成的输入类型
-      operationAttris: [], //操作属性列表
+      actionsAttris: [], //操作属性列表
+      action_attributes: [],
       disableSubmit: false,
       noGroup: [],
       tableData: [],
       RcsDetail: {},
       disableInputName: false,
       editMetas: "",
+      yigebiaoge: [],
+      role: [
+        { name: "Stopped" },
+        { name: "Started" },
+        { name: "Master" },
+        { name: "Slave" },
+      ],
+      onFail: [
+        { name: "ignore" },
+        { name: "block" },
+        { name: "stop" },
+        { name: "restart" },
+        { name: "standby" },
+        { name: "fence" },
+      ],
+      title: "",
     };
-  },
-  computed: {
-    showInsPane() {
-      let _this = this;
-      if (_this.dialogAction == "add") {
-        return addForm.type && addForm.type !== "" && instanceAttris
-          ? true
-          : false;
-      } else {
-        return;
-      }
-    },
   },
   methods: {
     closeDialog() {
@@ -282,12 +382,16 @@ export default {
       this.metaAttrTypes = [];
       this.instance_attributes = [];
       this.instanceAttris = [];
+      this.action_attributes = [];
+      this.actionsAttris = [];
+      this.yigebiaoge = [];
       this.InsTypes = {};
       this.activeName = "first";
       this.tableData = [];
       this.addForm = {
         id: "",
         category: "",
+        actions: [],
         meta_attributes: {},
         instance_attributes: {},
         type: [],
@@ -301,7 +405,7 @@ export default {
       let _this = this;
       _this.dialogType = type;
       _this.dialogAction = action;
-
+      _this.title = _this.dialogAction == "add" ? "创建资源" : "编辑资源";
       _this.disableInputName =
         _this.dialogType == "clone" || _this.dialogAction == "edit"
           ? true
@@ -377,6 +481,7 @@ export default {
                 _this.RcsDetail.meta_attributes[i];
             }
           }
+
           if (_this.RcsDetail.instance_attributes) {
             for (let i in _this.RcsDetail.instance_attributes) {
               _this.instance_attributes.push(i);
@@ -385,7 +490,7 @@ export default {
             }
           }
           if (_this.dialogType == "primitive") {
-            if (_this.RcsDetail.type) {
+            if (_this.RcsDetail.provider) {
               _this.addForm.type = _this.RcsDetail.type;
               _this.editMetas =
                 _this.RcsDetail.class +
@@ -402,15 +507,46 @@ export default {
                 _this.RcsDetail.provider;
               getAttris(url).then((res) => {
                 _this.instanceAttris = res.data.data.parameters;
-                _this.operationAttris = res.data.data.actions;
+                _this.actionsAttris = res.data.data.actions;
+                if (_this.RcsDetail.actions) {
+                  for (let i of _this.RcsDetail.actions) {
+                    for (let j of _this.actionsAttris) {
+                      if (j.name == i.name) {
+                        _this.action_attributes.push(j.name);
+                      }
+                    }
+                    _this.yigebiaoge.push(i);
+                  }
+                }
                 for (let i in _this.instanceAttris) {
                   _this.InsTypes[_this.instanceAttris[i].name] =
                     _this.instanceAttris[i].content.type;
                 }
               });
             } else {
-              _this.metas =
-                _this.chosenRsc.class + "/" + _this.chosenRsc.provider;
+              _this.addForm.type = _this.RcsDetail.type;
+              _this.editMetas =
+                _this.RcsDetail.class + "/" + _this.RcsDetail.type;
+              let url =
+                "/metas/" + _this.RcsDetail.class + "/" + _this.RcsDetail.type;
+              getAttris(url).then((res) => {
+                _this.instanceAttris = res.data.data.parameters;
+                _this.actionsAttris = res.data.data.actions;
+                if (_this.RcsDetail.actions) {
+                  for (let i of _this.RcsDetail.actions) {
+                    for (let j of _this.actionsAttris) {
+                      if (j.name == i.name) {
+                        _this.action_attributes.push(j.name);
+                      }
+                    }
+                    _this.yigebiaoge.push(i);
+                  }
+                }
+                for (let i in _this.instanceAttris) {
+                  _this.InsTypes[_this.instanceAttris[i].name] =
+                    _this.instanceAttris[i].content.type;
+                }
+              });
             }
           }
         });
@@ -420,24 +556,31 @@ export default {
     addRscTypeSelected(value) {
       let _this = this;
       _this.instanceAttris = [];
-      _this.operationAttris = [];
+      _this.actionsAttris = [];
       _this.InsTypes = {};
       _this.instance_attributes = [];
       _this.addForm.instance_attributes = {};
+      _this.action_attributes = [];
+      _this.yigebiaoge = [];
       this.meta_attributes = []; //选中的元属性列表
       delete _this.addForm.class;
       delete _this.addForm.provider;
       delete _this.addForm.type;
       if (value) {
         if (value[0]) {
+          _this.addForm.class = value[0];
+          _this.addForm.type = value[1];
           if (value[2]) {
             let url = "/metas/" + value[0] + "/" + value[2] + "/" + value[1];
             getAttris(url).then((res) => {
               _this.instanceAttris = res.data.data.parameters;
-              _this.operationAttris = res.data.data.actions;
+              _this.actionsAttris = res.data.data.actions;
               for (let i in _this.instanceAttris) {
                 _this.InsTypes[_this.instanceAttris[i].name] =
                   _this.instanceAttris[i].content.type;
+                if (_this.instanceAttris[i].required == 1) {
+                  _this.instance_attributes.push(_this.instanceAttris[i].name);
+                }
               }
             });
             _this.addForm.class = value[0];
@@ -446,20 +589,41 @@ export default {
           } else {
             let url = "/metas/" + value[0] + "/" + value[1];
             getAttris(url).then((res) => {
-              _this.instanceAttris = res.data.parameters;
-              _this.operationAttris = res.data.actions;
+              _this.instanceAttris = res.data.data.parameters;
+              _this.actionsAttris = res.data.data.actions;
+              console.log(_this.actionsAttris);
+              console.log(res);
               for (let i in _this.instanceAttris) {
                 _this.InsTypes[_this.instanceAttris[i].name] =
                   _this.instanceAttris[i].content.type;
               }
-              _this.addForm.class = value[0];
-              _this.addForm.provider = value[1];
             });
           }
         }
       }
 
       //todo : update add form
+    },
+    addActionTag(value) {
+      if (value.length > this.yigebiaoge.length) {
+        for (let item of value) {
+          if (
+            this.yigebiaoge
+              .map((item) => item.name)
+              .indexOf(JSON.parse(item).name) == -1
+          ) {
+            this.yigebiaoge.push(JSON.parse(item));
+          }
+        }
+      } else {
+        for (let data of this.yigebiaoge) {
+          if (
+            value.map((item) => JSON.parse(item).name).indexOf(data.name) == -1
+          ) {
+            this.yigebiaoge.splice(this.yigebiaoge.indexOf(data), 1);
+          }
+        }
+      }
     },
     deleteInsTag(value) {
       let _this = this;
@@ -491,6 +655,9 @@ export default {
           _this.addForm.instance_attributes[i] = false;
         }
       }
+      for (let i in _this.yigebiaoge) {
+        _this.addForm.actions.push(_this.yigebiaoge[i]);
+      }
       for (let i in _this.addForm.meta_attributes) {
         if (_this.addForm.meta_attributes[i] == "") {
           _this.addForm.meta_attributes[i] = 0;
@@ -508,13 +675,22 @@ export default {
             _this.addForm.category = "primitive";
             addItems(_this.addForm)
               .then((res) => {
-                this.$message({
-                  type: "success",
-                  message: "resource adding success",
-                });
-                _this.disableSubmit = false;
-                _this.isVisible = false;
-                _this.$emit("refresh");
+                if (res.action == true) {
+                  this.$message({
+                    type: "success",
+                    message: "resource adding success",
+                  });
+                  _this.disableSubmit = false;
+                  _this.isVisible = false;
+                  _this.closeDialog();
+                  _this.$emit("refresh");
+                } else {
+                  this.$message({
+                    type: "error",
+                    message: " please check your inputs",
+                  });
+                  _this.disableSubmit = false;
+                }
               })
               .catch((err) => {
                 this.$message({
@@ -542,6 +718,7 @@ export default {
                     type: "error",
                     message: err + " please check your inputs",
                   });
+                  _this.closeDialog();
                   _this.disableSubmit = false;
                 });
             }
@@ -585,8 +762,9 @@ export default {
                 message: "resource edit success",
               });
 
-              _this.isVisible = false;
               _this.disableSubmit = false;
+              _this.closeDialog();
+              _this.isVisible = false;
               _this.$emit("refresh");
             })
             .catch((err) => {

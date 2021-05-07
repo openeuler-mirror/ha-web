@@ -24,7 +24,12 @@ export default {
           });
           console.log("确认操作");
           getLogs().then((res) => {
-          window.open(res.data.filepath)
+            let aLink = document.createElement("a");
+            let evt = document.createEvent("MouseEvents");
+            evt.initEvent("click", false, true);
+            aLink.href = "kylinha-log-ha1-20210506111701.tar";
+            aLink.dispatchEvent(evt);
+            return Promise.resolve();
           });
         })
         .catch(() => {
