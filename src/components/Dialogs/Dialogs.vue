@@ -93,6 +93,28 @@
               </el-option>
             </el-select>
           </el-form-item>
+          <template v-if="instance_attributes.length">
+            <el-form-item v-for="(item, key) in instance_attributes" :key="key"
+            class="required"
+            
+            :label="instance_attributes[key]"
+            :prop="instance_attributes[key]"
+          >
+            <el-row>
+              {{addForm.instance_attributes}}
+              <el-input
+                    class="block"
+                    v-if="
+                      InsTypes[instance_attributes[key]] == 'string' ||
+                      InsTypes[instance_attributes[key]] == 'enum'
+                    "
+                    v-model="
+                      addForm.instance_attributes[instance_attributes[key]]
+                    "
+                  ></el-input>
+            </el-row>
+          </el-form-item>
+          </template>
         </el-tab-pane>
 
         <el-tab-pane
@@ -130,7 +152,7 @@
               </el-select>
             </span>
           </el-row>
-          <div v-if="instance_attributes">
+          <!-- <div v-if="instance_attributes">
             <div v-for="(item, key) in instance_attributes" :key="item.name">
               <el-row>
                 <span class="modify-label">{{ instance_attributes[key] }}</span>
@@ -167,7 +189,7 @@
                 </span>
               </el-row>
             </div>
-          </div>
+          </div> -->
         </el-tab-pane>
         <el-tab-pane
           name="meta"
@@ -580,6 +602,8 @@ export default {
                   _this.instanceAttris[i].content.type;
                 if (_this.instanceAttris[i].required == 1) {
                   _this.instance_attributes.push(_this.instanceAttris[i].name);
+                  this.$set(_this.addForm.instance_attributes, _this.instanceAttris[i].name, "")
+                  
                 }
               }
             });
@@ -675,7 +699,7 @@ export default {
             _this.addForm.category = "primitive";
             addItems(_this.addForm)
               .then((res) => {
-                if (res.action == true) {
+                if (res.data.action == true) {
                   this.$message({
                     type: "success",
                     message: "resource adding success",

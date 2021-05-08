@@ -44,7 +44,7 @@ export default {
         { text: "每5秒自动刷新", value: 5 },
         { text: "每10秒自动刷新", value: 10 },
       ],
-      value: 0,
+      value: localStorage.getItem("refresh") ? parseInt(localStorage.getItem("refresh")) : 0,
     };
   },
   methods: {
@@ -56,7 +56,9 @@ export default {
       let _this = this;
       localStorage.setItem("refresh", _this.value);
       _this.disableRefresh = false;
-      _this.$router.push({ path: "/" });
+      //_this.$router.push({ path: "/" });
+      window.location = "/"
+      
     },
     logout() {
       localStorage.removeItem("userLogin");

@@ -111,20 +111,15 @@
             </div>
           </template>
 
-          <template slot-scope="scope" v-if="scope.row.running_node">
-            <template v-for="count in scope.row.running_node.length">
+          <template slot-scope="scope">
+            <template>
               <span
-                v-show="scope.row.running_node[count - 1] == item.id"
-                :key="count"
-                :style="{
-                  color:
-                    scope.row.running_node.indexOf(item.id) > -1
-                      ? 'green'
-                      : '#999',
-                }"
+                :key="item.id"
+                :style="{color: scope.row.running_node.indexOf(item.id) > -1 ? 'green': '#999'}"
                 class="iconfont icon-B"
               >
               </span>
+              
             </template>
 
             <template v-for="location in scope.row.location">
@@ -205,7 +200,7 @@ export default {
     this.dataLoading();
     if (
       localStorage.getItem("refresh") &&
-      localStorage.getItem("refresh") !== 0
+      localStorage.getItem("refresh") != 0
     ) {
       window.setInterval(() => {
         setTimeout(_this.dataLoading(), 0);
