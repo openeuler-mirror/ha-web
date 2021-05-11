@@ -3,7 +3,7 @@
   <el-dialog
     class="basicAddDialog"
     :visible.sync="isVisible"
-    width="46%"
+    width="700px"
     :before-close="closeDialog"
   >
     <el-row>
@@ -93,27 +93,48 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <template v-if="instance_attributes.length">
-            <el-form-item v-for="(item, key) in instance_attributes" :key="key"
-            class="required"
-            
-            :label="instance_attributes[key]"
-            :prop="instance_attributes[key]"
-          >
-            <el-row>
-              {{addForm.instance_attributes}}
-              <el-input
-                    class="block"
+          <template v-if="requiredItems[0]">
+            <el-form-item
+              v-for="(item, key) in requiredItems"
+              :key="key"
+              :prop="requiredItems[key].id"
+              :label="requiredItems[key].name"
+            >
+              <el-row class="row-style">
+                <span class="block">
+                  <el-input
+                  style="width: 100%"
+                   @input="forceUpdate"
                     v-if="
-                      InsTypes[instance_attributes[key]] == 'string' ||
-                      InsTypes[instance_attributes[key]] == 'enum'
+                      InsTypes[requiredItems[key].name] == 'string' ||
+                      InsTypes[requiredItems[key].name] == 'enum'
                     "
                     v-model="
-                      addForm.instance_attributes[instance_attributes[key]]
+                      addForm.instance_attributes[requiredItems[key].name]
                     "
                   ></el-input>
-            </el-row>
-          </el-form-item>
+                  <el-switch
+                    class="block"
+                    :active-value="'true'"
+                    :inactive-value="'false'"
+                    v-if="InsTypes[requiredItems[key].name] == 'boolean'"
+                    v-model="
+                      addForm.instance_attributes[requiredItems[key].name]
+                    "
+                    @input="forceUpdate"
+                  ></el-switch>
+                  <el-input-number
+                    class="block"
+                    style="width: 100%"
+                    v-if="InsTypes[requiredItems[key].name] == 'integer'"
+                    v-model="
+                      addForm.instance_attributes[requiredItems[key].name]
+                    "
+                    @input="forceUpdate"
+                  ></el-input-number>
+                </span>
+              </el-row>
+            </el-form-item>
           </template>
         </el-tab-pane>
 
@@ -152,10 +173,10 @@
               </el-select>
             </span>
           </el-row>
-          <!-- <div v-if="instance_attributes">
+          <div v-if="instance_attributes.length">
             <div v-for="(item, key) in instance_attributes" :key="item.name">
-              <el-row>
-                <span class="modify-label">{{ instance_attributes[key] }}</span>
+              <el-row v-if="!verifyItem(item)">
+                <span class="modify-label">{{instance_attributes[key]}}</span>
                 <span>
                   <el-input
                     class="block"
@@ -170,6 +191,7 @@
                   ></el-input>
                   <el-switch
                     class="block"
+                    style="height: 40px"
                     :active-value="'true'"
                     :inactive-value="'false'"
                     v-if="InsTypes[instance_attributes[key]] == 'boolean'"
@@ -189,7 +211,7 @@
                 </span>
               </el-row>
             </div>
-          </div> -->
+          </div>
         </el-tab-pane>
         <el-tab-pane
           name="meta"
@@ -225,6 +247,7 @@
                 <span class="modify-label">{{ meta_attributes[key] }}</span>
                 <span>
                   <el-input
+                    style="width: 100%"
                     class="block"
                     v-if="
                       metaAttrTypes[meta_attributes[key]] == 'string' ||
@@ -235,6 +258,7 @@
                   ></el-input>
                   <el-switch
                     class="block"
+                    style="width: 100%"
                     :active-value="'true'"
                     :inactive-value="'false'"
                     v-if="metaAttrTypes[meta_attributes[key]] == 'boolean'"
@@ -243,6 +267,7 @@
                   ></el-switch>
                   <el-input-number
                     class="block"
+                    style="width: 100%"
                     v-if="metaAttrTypes[meta_attributes[key]] == 'integer'"
                     v-model="addForm.meta_attributes[meta_attributes[key]]"
                     @input="forceUpdate"
@@ -272,7 +297,6 @@
                 @change="addActionTag"
                 filterable
               >
-                <!-- -->
                 <el-option
                   v-for="item in actionsAttris"
                   :key="item.key"
@@ -283,25 +307,25 @@
               </el-select>
             </span>
           </el-row>
-          <el-table class="block" :data="yigebiaoge" style="width: 100%">
-            <el-table-column prop="name" label="name" width="75%">
+          <el-table :data="yigebiaoge" style="width: 100%" :header-cell-style="{ 'background-color': '#fafafa' }">
+            <el-table-column prop="name" label="name" width="70px">
             </el-table-column>
-            <el-table-column prop="interval" label="interval" width="75%">
+            <el-table-column prop="interval" label="interval" width="110px">
               <template slot-scope="scope">
                 <el-input v-model="scope.row.interval"></el-input>
               </template>
             </el-table-column>
-            <el-table-column prop="start-delay" label="start-delay" width="75%">
+            <el-table-column prop="start-delay" label="start-delay" width="110px">
               <template slot-scope="scope">
                 <el-input v-model="scope.row['start-delay']"></el-input>
               </template>
             </el-table-column>
-            <el-table-column prop="timeout" label="timeout" width="75%">
+            <el-table-column prop="timeout" label="timeout" width="110px">
               <template slot-scope="scope">
                 <el-input v-model="scope.row.timeout"></el-input>
               </template>
             </el-table-column>
-            <el-table-column prop="role" label="role" width="75%">
+            <el-table-column prop="role" label="role" width="130px">
               <template slot-scope="scope">
                 <!-- <el-input v-model="scope.row.role"></el-input> -->
                 <el-select v-model="scope.row.role" placeholder="请选择">
@@ -314,7 +338,7 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column prop="on-fail" label="on-fail" width="75%">
+            <el-table-column prop="on-fail" label="on-fail" width="130px">
               <template slot-scope="scope">
                 <el-select v-model="scope.row['on-fail']" placeholder="请选择">
                   <el-option
@@ -378,6 +402,7 @@ export default {
       disableInputName: false,
       editMetas: "",
       yigebiaoge: [],
+      requiredItems: [],
       role: [
         { name: "Stopped" },
         { name: "Started" },
@@ -398,8 +423,8 @@ export default {
   methods: {
     closeDialog() {
       this.isVisible = false;
-      this.metas = [];
       this.meta_attributes = []; //选中的元属性列表
+      this.metas = [];
       this.metaAttris = [];
       this.metaAttrTypes = [];
       this.instance_attributes = [];
@@ -417,6 +442,7 @@ export default {
         meta_attributes: {},
         instance_attributes: {},
         type: [],
+        ip: "",
       };
       this.RcsDetail = {};
       delete this.addForm.class;
@@ -585,6 +611,7 @@ export default {
       _this.action_attributes = [];
       _this.yigebiaoge = [];
       this.meta_attributes = []; //选中的元属性列表
+      this.requiredItems = [];
       delete _this.addForm.class;
       delete _this.addForm.provider;
       delete _this.addForm.type;
@@ -592,41 +619,27 @@ export default {
         if (value[0]) {
           _this.addForm.class = value[0];
           _this.addForm.type = value[1];
+          let url = "";
           if (value[2]) {
-            let url = "/metas/" + value[0] + "/" + value[2] + "/" + value[1];
-            getAttris(url).then((res) => {
-              _this.instanceAttris = res.data.data.parameters;
-              _this.actionsAttris = res.data.data.actions;
-              for (let i in _this.instanceAttris) {
-                _this.InsTypes[_this.instanceAttris[i].name] =
-                  _this.instanceAttris[i].content.type;
-                if (_this.instanceAttris[i].required == 1) {
-                  _this.instance_attributes.push(_this.instanceAttris[i].name);
-                  this.$set(_this.addForm.instance_attributes, _this.instanceAttris[i].name, "")
-                  
-                }
-              }
-            });
-            _this.addForm.class = value[0];
-            _this.addForm.provider = value[1];
+            url = "/metas/" + value[0] + "/" + value[2] + "/" + value[1];
             _this.addForm.type = value[2];
           } else {
-            let url = "/metas/" + value[0] + "/" + value[1];
-            getAttris(url).then((res) => {
-              _this.instanceAttris = res.data.data.parameters;
-              _this.actionsAttris = res.data.data.actions;
-              console.log(_this.actionsAttris);
-              console.log(res);
-              for (let i in _this.instanceAttris) {
-                _this.InsTypes[_this.instanceAttris[i].name] =
-                  _this.instanceAttris[i].content.type;
-              }
-            });
+            url = "/metas/" + value[0] + "/" + value[1];
           }
+          getAttris(url).then((res) => {
+            _this.instanceAttris = Array.from(new Set(res.data.data.parameters.map(item=>JSON.stringify(item)))).map(item=>JSON.parse(item));
+            _this.actionsAttris = Array.from(new Set(res.data.data.actions.map(item=>JSON.stringify(item)))).map(item=>JSON.parse(item));
+            for (let i in _this.instanceAttris) {
+              _this.InsTypes[_this.instanceAttris[i].name] =
+                _this.instanceAttris[i].content.type;
+              if (_this.instanceAttris[i].required == 1) {
+                _this.requiredItems.push(_this.instanceAttris[i]);
+                _this.instanceAttris.splice(i,1)
+              }
+            }
+          });
         }
       }
-
-      //todo : update add form
     },
     addActionTag(value) {
       if (value.length > this.yigebiaoge.length) {
@@ -647,6 +660,13 @@ export default {
             this.yigebiaoge.splice(this.yigebiaoge.indexOf(data), 1);
           }
         }
+      }
+    },
+    verifyItem(item) {
+      if (this.requiredItems.indexOf(item) > -1) {
+        return true;
+      } else {
+        return false;
       }
     },
     deleteInsTag(value) {
@@ -842,9 +862,13 @@ export default {
       .block {
         float: left;
         width: 260px;
+        // height: 40px;
       }
       .el-row {
         margin-bottom: 20px;
+      }
+      .row-style{
+        margin: 0px;
       }
       .modify-label {
         float: left;
