@@ -126,12 +126,12 @@
           <span>{{ chosenItem.id }}</span>
         </el-form-item>
         <el-form-item label="迁移至节点:">
-          <el-select v-model="migrate.to_node">
+          <el-select v-model="migrate.to_node" no-data-text="无匹配结果">
             <el-option
-              v-for="item in nodeLists"
-              :key="item.id"
-              :label="item.id"
-              :value="item.id"
+              v-for="item in migrateNodes"
+              :key="item"
+              :label="item"
+              :value="item"
             >
             </el-option>
           </el-select>
@@ -331,6 +331,7 @@ export default {
         period: "",
         to_node: "",
       },
+      migrateNodes: [],  //可迁移节点
       resources_id: [],
       rscLocationVisible: false,
       rscColocationVisible: false,
@@ -339,6 +340,7 @@ export default {
       rscColocation: {},
       rscOrder: {},
       nodeList: [],
+
     };
   },
   computed: {
@@ -391,7 +393,6 @@ export default {
     getNodeList() {
       let _this = this;
       _this.nodeList = JSON.parse(JSON.stringify(_this.nodeLists));
-      console.log(_this.nodeList);
       this.$forceUpdate();
     },
     handleClickRelation(str) {
@@ -480,7 +481,16 @@ export default {
     operate(action) {
       let _this = this;
       if (action == "migrate") {
+        // console.log(_this.chosenItem)
+        // console.log(_this.nodeLists)
+        //选中的数据的running_node有值，则该值不可作为迁移的节点
+        _this.nodeLists.forEach(item => {
+          if(_this.chosenItem.running_node.indexOf(item.id) == -1) {
+            _this.migrateNodes.push(item.id)
+          }
+        }) 
         _this.disableMigrateDialog = true;
+        
       } else {
         let req = "/resources/" + this.chosenItem.id + "/" + action;
         easyRequest(req).then(() => {

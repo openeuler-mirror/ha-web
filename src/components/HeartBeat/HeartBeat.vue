@@ -77,7 +77,6 @@ export default {
   created() {
     let _this = this;
     getConfigs().then((res) => {
-      console.log(res.data.data)
       // console.log('bijiao', (res.data.data).constructor == Object)
       //判断心跳配置数据是否正常，正常数据类型为object
       if((res.data.data).constructor == Object) {
@@ -91,7 +90,6 @@ export default {
           _this.form.hbaddrs2.flag = true
         } else if(res.data.data.hbaddrs1) {
           res.data.data.hbaddrs1.forEach(item => {
-            console.log('res.data.data.hbaddrs1',item)
             _this.form.hbaddrs2.push({
               nodeid: item.nodeid,
               ip: ''
@@ -100,7 +98,6 @@ export default {
           _this.form.hbaddrs2.flag = false
         }
       } else {
-        // console.log( '_this.nodesError',_this.nodesError)
         _this.nodesError = true
       }
     });
@@ -177,7 +174,6 @@ export default {
               nodeid: item.nodeid
             })
           })
-          // console.log('1pushdata', pushData)
 
           //向后端提交数据
           _this.loadingBtn = true    //确定按钮loading状态
@@ -205,12 +201,10 @@ export default {
           }
         }
 
-        console.log('hb2 flag', _this.form.hbaddrs2.flag)
-        console.log('hb1 flag', _this.form.hbaddrs1.flag)
         if(_this.form.hbaddrs2.flag && _this.form.hbaddrs1.flag) {
           pushData.hbaddrs1 = []
           pushData.hbaddrs2 = []
-          console.log('form', _this.form)
+
           _this.form.hbaddrs1.forEach(item => {
             pushData.hbaddrs1.push({
               ip: item.ip,
@@ -223,7 +217,6 @@ export default {
               nodeid: item.nodeid
             })
           })
-          // console.log('2pushdata', pushData)
           
           //向后端提交数据
           _this.loadingBtn = true //确定按钮loading状态
