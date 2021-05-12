@@ -247,7 +247,6 @@
                 <span class="modify-label">{{ meta_attributes[key] }}</span>
                 <span>
                   <el-input
-                    style="width: 100%"
                     class="block"
                     v-if="
                       metaAttrTypes[meta_attributes[key]] == 'string' ||
@@ -258,7 +257,7 @@
                   ></el-input>
                   <el-switch
                     class="block"
-                    style="width: 100%"
+                    style="height: 40px"
                     :active-value="'true'"
                     :inactive-value="'false'"
                     v-if="metaAttrTypes[meta_attributes[key]] == 'boolean'"
@@ -267,7 +266,6 @@
                   ></el-switch>
                   <el-input-number
                     class="block"
-                    style="width: 100%"
                     v-if="metaAttrTypes[meta_attributes[key]] == 'integer'"
                     v-model="addForm.meta_attributes[meta_attributes[key]]"
                     @input="forceUpdate"

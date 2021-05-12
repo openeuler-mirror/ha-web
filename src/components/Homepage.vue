@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-aside width="auto">
-      <div class="logo">
+      <div class="home-logo">
         <img src="../assets/logo.png" />
         <span v-show="!isCollapse">openUnicorn HA</span>
       </div>
@@ -118,17 +118,17 @@ export default {
       border-right: 4px solid #c21a1f;
     }
   }
-  .logo {
-    padding: 8px 12px;
+  .home-logo {
     position: relative;
 
     img {
       width: 40px;
+      padding: 8px 6px 8px 12px;
     }
     span {
       position: absolute;
       top: 50%;
-      left: 66px;
+      left: 60px;
       margin-top: -10px;
 
       font-size: 18px;
