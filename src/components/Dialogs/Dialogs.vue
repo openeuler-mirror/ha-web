@@ -5,12 +5,17 @@
     :visible.sync="isVisible"
     width="700px"
     :before-close="closeDialog"
+    v-if="isRouterShow"
   >
     <el-row>
       <div class="el-dialog__title">{{ title }}</div>
     </el-row>
     <el-form v-model="addForm" ref="addForm" label-width="200px">
-      <el-tabs v-model="activeName" class="button-tabs">
+      <el-tabs
+        v-model="activeName"
+        class="button-tabs"
+        :before-leave="checkInputs"
+      >
         <el-tab-pane name="first" class="tab-panels" label="基本">
           <el-form-item
             v-if="dialogType"
@@ -63,6 +68,8 @@
                 multiple
                 placeholder="请选择"
                 filterable
+                @remove-tag="deleteTag"
+                @change="forceUpdate"
               >
                 <el-option
                   v-for="item in noGroup"
@@ -93,7 +100,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <template v-if="requiredItems[0]">
+          <template v-if="requiredItems.length">
             <el-form-item
               v-for="(item, key) in requiredItems"
               :key="key"
@@ -103,8 +110,8 @@
               <el-row class="row-style">
                 <span class="block">
                   <el-input
-                  style="width: 100%"
-                   @input="forceUpdate"
+                    style="width: 100%"
+                    @input="forceUpdate"
                     v-if="
                       InsTypes[requiredItems[key].name] == 'string' ||
                       InsTypes[requiredItems[key].name] == 'enum'
@@ -121,6 +128,7 @@
                     v-model="
                       addForm.instance_attributes[requiredItems[key].name]
                     "
+                    style="height: 40px"
                     @input="forceUpdate"
                   ></el-switch>
                   <el-input-number
@@ -145,7 +153,7 @@
             addForm.type &&
             addForm.type !== '' &&
             instanceAttris &&
-            instanceAttris[0]
+            instanceAttris.length
           "
           label="实例属性"
           label-width="200px"
@@ -167,7 +175,6 @@
                   :key="item.name"
                   :label="item.name"
                   :value="item.name"
-                  :disabled="item.required == 1"
                 >
                 </el-option>
               </el-select>
@@ -176,7 +183,7 @@
           <div v-if="instance_attributes.length">
             <div v-for="(item, key) in instance_attributes" :key="item.name">
               <el-row v-if="!verifyItem(item)">
-                <span class="modify-label">{{instance_attributes[key]}}</span>
+                <span class="modify-label">{{ instance_attributes[key] }}</span>
                 <span>
                   <el-input
                     class="block"
@@ -217,7 +224,7 @@
           name="meta"
           class="tab-panels"
           label="元属性"
-          v-if="addForm.type && addForm.type !== '' && metaAttris"
+          v-if="metaAttris"
         >
           <el-row>
             <label class="modify-label">需要修改的元属性: </label>
@@ -257,7 +264,6 @@
                   ></el-input>
                   <el-switch
                     class="block"
-                    style="height: 40px"
                     :active-value="'true'"
                     :inactive-value="'false'"
                     v-if="metaAttrTypes[meta_attributes[key]] == 'boolean'"
@@ -305,7 +311,11 @@
               </el-select>
             </span>
           </el-row>
-          <el-table :data="yigebiaoge" style="width: 100%" :header-cell-style="{ 'background-color': '#fafafa' }">
+          <el-table
+            :data="yigebiaoge"
+            style="width: 100%"
+            :header-cell-style="{ 'background-color': '#fafafa' }"
+          >
             <el-table-column prop="name" label="name" width="70px">
             </el-table-column>
             <el-table-column prop="interval" label="interval" width="110px">
@@ -313,7 +323,11 @@
                 <el-input v-model="scope.row.interval"></el-input>
               </template>
             </el-table-column>
-            <el-table-column prop="start-delay" label="start-delay" width="110px">
+            <el-table-column
+              prop="start-delay"
+              label="start-delay"
+              width="110px"
+            >
               <template slot-scope="scope">
                 <el-input v-model="scope.row['start-delay']"></el-input>
               </template>
@@ -374,6 +388,7 @@ import {
 export default {
   data() {
     return {
+      isRouterShow: true,
       isVisible: false,
       addForm: {
         id: "",
@@ -433,6 +448,7 @@ export default {
       this.InsTypes = {};
       this.activeName = "first";
       this.tableData = [];
+      this.noGroup = [];
       this.addForm = {
         id: "",
         category: "",
@@ -446,9 +462,14 @@ export default {
       delete this.addForm.class;
       delete this.addForm.type;
       delete this.addForm.provider;
+      this.addForm.rscs = [];
+      this.isRouterShow = false;
+      this.requiredItems = [];
     },
     handleDialogOpen(type, action) {
+      this.isRouterShow = true;
       let _this = this;
+      _this.activeName == "first";
       _this.dialogType = type;
       _this.dialogAction = action;
       _this.title = _this.dialogAction == "add" ? "创建资源" : "编辑资源";
@@ -512,7 +533,18 @@ export default {
         _this.addForm.id = chosenItem.id;
         _this.addForm.category = chosenItem.type;
 
-        if (chosenItem.rsc_id) _this.addForm.rsc_id = chosenItem.rsc_id;
+        if (_this.dialogType == "clone")
+          _this.addForm.rsc_id = chosenItem.id.slice(0, -6);
+        if (_this.dialogType == "group") {
+          this.addForm.rscs = [];
+          _this.noGroup = [];
+          for (let i in chosenItem.subrscs) {
+            _this.addForm.rscs.push(chosenItem.subrscs[i].id);
+          }
+          for (let i in _this.$store.state.noGroupItems) {
+            _this.noGroup.push(_this.$store.state.noGroupItems[i]);
+          }
+        }
 
         let url = "resources/" + chosenItem.id + "?category=" + chosenItem.type;
         getRcsDetail(url).then((res) => {
@@ -536,6 +568,7 @@ export default {
             }
           }
           if (_this.dialogType == "primitive") {
+            let url = "";
             if (_this.RcsDetail.provider) {
               _this.addForm.type = _this.RcsDetail.type;
               _this.editMetas =
@@ -544,56 +577,46 @@ export default {
                 _this.RcsDetail.provider +
                 "/" +
                 _this.RcsDetail.type;
-              let url =
+              url =
                 "/metas/" +
                 _this.RcsDetail.class +
                 "/" +
                 _this.RcsDetail.type +
                 "/" +
                 _this.RcsDetail.provider;
-              getAttris(url).then((res) => {
-                _this.instanceAttris = res.data.data.parameters;
-                _this.actionsAttris = res.data.data.actions;
-                if (_this.RcsDetail.actions) {
-                  for (let i of _this.RcsDetail.actions) {
-                    for (let j of _this.actionsAttris) {
-                      if (j.name == i.name) {
-                        _this.action_attributes.push(j.name);
-                      }
-                    }
-                    _this.yigebiaoge.push(i);
-                  }
-                }
-                for (let i in _this.instanceAttris) {
-                  _this.InsTypes[_this.instanceAttris[i].name] =
-                    _this.instanceAttris[i].content.type;
-                }
-              });
             } else {
               _this.addForm.type = _this.RcsDetail.type;
               _this.editMetas =
                 _this.RcsDetail.class + "/" + _this.RcsDetail.type;
-              let url =
+              url =
                 "/metas/" + _this.RcsDetail.class + "/" + _this.RcsDetail.type;
-              getAttris(url).then((res) => {
-                _this.instanceAttris = res.data.data.parameters;
-                _this.actionsAttris = res.data.data.actions;
-                if (_this.RcsDetail.actions) {
-                  for (let i of _this.RcsDetail.actions) {
-                    for (let j of _this.actionsAttris) {
-                      if (j.name == i.name) {
-                        _this.action_attributes.push(j.name);
-                      }
-                    }
-                    _this.yigebiaoge.push(i);
-                  }
-                }
-                for (let i in _this.instanceAttris) {
-                  _this.InsTypes[_this.instanceAttris[i].name] =
-                    _this.instanceAttris[i].content.type;
-                }
-              });
             }
+            getAttris(url).then((res) => {
+              _this.instanceAttris = Array.from(
+                new Set(
+                  res.data.data.parameters.map((item) => JSON.stringify(item))
+                )
+              ).map((item) => JSON.parse(item));
+              _this.actionsAttris = Array.from(
+                new Set(
+                  res.data.data.actions.map((item) => JSON.stringify(item))
+                )
+              ).map((item) => JSON.parse(item));
+              for (let i in _this.instanceAttris) {
+                _this.InsTypes[_this.instanceAttris[i].name] =
+                  _this.instanceAttris[i].content.type;
+              }
+              for (let i in _this.instanceAttris) {
+                if (_this.instanceAttris[i].required == 1) {
+                  _this.requiredItems.push(_this.instanceAttris[i]);
+                  _this.instanceAttris.splice(i, 1);
+                  _this.instance_attributes.splice(
+                    _this.instanceAttris[i].name,
+                    1
+                  );
+                }
+              }
+            });
           }
         });
       }
@@ -620,19 +643,29 @@ export default {
           let url = "";
           if (value[2]) {
             url = "/metas/" + value[0] + "/" + value[2] + "/" + value[1];
+            _this.addForm.provider = value[1];
+
             _this.addForm.type = value[2];
           } else {
             url = "/metas/" + value[0] + "/" + value[1];
           }
           getAttris(url).then((res) => {
-            _this.instanceAttris = Array.from(new Set(res.data.data.parameters.map(item=>JSON.stringify(item)))).map(item=>JSON.parse(item));
-            _this.actionsAttris = Array.from(new Set(res.data.data.actions.map(item=>JSON.stringify(item)))).map(item=>JSON.parse(item));
+            _this.instanceAttris = Array.from(
+              new Set(
+                res.data.data.parameters.map((item) => JSON.stringify(item))
+              )
+            ).map((item) => JSON.parse(item));
+            _this.actionsAttris = Array.from(
+              new Set(res.data.data.actions.map((item) => JSON.stringify(item)))
+            ).map((item) => JSON.parse(item));
             for (let i in _this.instanceAttris) {
               _this.InsTypes[_this.instanceAttris[i].name] =
                 _this.instanceAttris[i].content.type;
+            }
+            for (let i in _this.instanceAttris) {
               if (_this.instanceAttris[i].required == 1) {
                 _this.requiredItems.push(_this.instanceAttris[i]);
-                _this.instanceAttris.splice(i,1)
+                _this.instanceAttris.splice(i, 1);
               }
             }
           });
@@ -687,9 +720,6 @@ export default {
       _this.disableSubmit = true;
 
       for (let i in _this.addForm.instance_attributes) {
-        if (_this.addForm.instance_attributes[i] == "") {
-          _this.addForm.instance_attributes[i] = 0;
-        }
         if (_this.addForm.instance_attributes[i] == "true") {
           _this.addForm.instance_attributes[i] = true;
         }
@@ -701,9 +731,6 @@ export default {
         _this.addForm.actions.push(_this.yigebiaoge[i]);
       }
       for (let i in _this.addForm.meta_attributes) {
-        if (_this.addForm.meta_attributes[i] == "") {
-          _this.addForm.meta_attributes[i] = 0;
-        }
         if (_this.addForm.meta_attributes[i] == "true") {
           _this.addForm.meta_attributes[i] = true;
         }
@@ -753,6 +780,7 @@ export default {
                   });
                   _this.disableSubmit = false;
                   _this.isVisible = false;
+                  _this.closeDialog();
                   _this.$emit("refresh");
                 })
                 .catch((err) => {
@@ -807,6 +835,7 @@ export default {
               _this.disableSubmit = false;
               _this.closeDialog();
               _this.isVisible = false;
+              _this.$emit("cleanSelecting");
               _this.$emit("refresh");
             })
             .catch((err) => {
@@ -817,6 +846,55 @@ export default {
               _this.disableSubmit = false;
             });
         }
+      }
+    },
+    checkInputs() {
+      switch (this.dialogType) {
+        case "primitive":
+          let requirements = true;
+          if (this.requiredItems.length && this.activeName == "first") {
+            for (let i of this.requiredItems) {
+              if (!this.addForm.instance_attributes[i.name]) {
+                requirements = false;
+              }
+            }
+          }
+          if (this.addForm.id && this.addForm.type && requirements) {
+            return true;
+          } else {
+            this.$message({
+              type: "warning",
+              message: "please check your inputs",
+            });
+            return false;
+          }
+        case "clone":
+          if (this.addForm.rsc_id) {
+            return true;
+          } else {
+            this.$message({
+              type: "warning",
+              message: "please check your inputs",
+            });
+            return false;
+          }
+        case "group":
+          if (this.addForm.rscs.length && this.addForm.id) {
+            return true;
+          } else {
+            this.$message({
+              type: "warning",
+              message: "please check your inputs",
+            });
+            return false;
+          }
+        default:
+          break;
+      }
+    },
+    deleteTag(val) {
+      if (this.noGroup.map((item) => item.id).indexOf(val) == -1) {
+        this.noGroup.push({ id: val });
       }
     },
   },
@@ -865,7 +943,7 @@ export default {
       .el-row {
         margin-bottom: 20px;
       }
-      .row-style{
+      .row-style {
         margin: 0px;
       }
       .modify-label {

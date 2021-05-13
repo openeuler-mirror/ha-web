@@ -4,6 +4,7 @@
       ref="operation"
       :nodeLists="nodeList"
       @refreshData="dataLoading"
+      @clear="clearSelected"
     ></operations>
     <!-- main table -->
     <el-table
@@ -98,6 +99,7 @@
                   class="iconfont icon-host"
                 ></i>
               </el-tooltip>
+
               <el-badge
                 is-dot
                 v-show="
@@ -115,11 +117,16 @@
             <template>
               <span
                 :key="item.id"
-                :style="{color: scope.row.running_node.indexOf(item.id) > -1 ? 'green': '#999'}"
+                :style="{
+                  color:
+                    scope.row.running_node &&
+                    scope.row.running_node.indexOf(item.id) > -1
+                      ? 'green'
+                      : '#999',
+                }"
                 class="iconfont icon-B"
               >
               </span>
-              
             </template>
 
             <template v-for="location in scope.row.location">
@@ -151,11 +158,6 @@
               @click.native="runStat('start')"
               >启动</el-button
             >
-            <el-input
-              v-model="input"
-              show-password
-              placeholder="请输入密码"
-            ></el-input>
           </el-row>
 
           <el-row>
@@ -189,7 +191,6 @@ export default {
       chosenSrc: {},
       chosenNode: {},
       disableStandbyDialog: false,
-      input: "",
     };
   },
   components: {
@@ -241,7 +242,10 @@ export default {
           }
         });
       getNodes().then((res) => {
-        _this.nodeList = res.data.data;
+        this.nodeList.length = 0;
+        for (let i of res.data.data) {
+          _this.nodeList.push(i);
+        }
         _this.nodeList.map(_this.parseNodeStatusMsg);
       });
     },
@@ -293,7 +297,8 @@ export default {
     },
     runStat(val) {
       let url = "nodes/" + this.chosenNode.id + "/" + val;
-      runAction(url, this.input).then((res) => {
+      runAction(url).then((res) => {
+        this.nodeList.length = 0;
         this.$message({
           type: "success",
           message: "node " + val + " success",
@@ -302,6 +307,14 @@ export default {
 
         this.dataLoading();
       });
+    },
+    clearSelected(a) {
+      this.radio = "";
+      this.$refs.singleTable.setCurrentRow(a);
+      this.$forceUpdate();
+      this.$store.commit("mutationsUpdateChosenItem", {});
+      this.$store.commit("mutationsitemChose", {});
+      this.$refs.operation.handleOperation();
     },
   },
 };

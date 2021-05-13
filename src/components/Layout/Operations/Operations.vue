@@ -102,15 +102,16 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <el-button
-        class="operations"
-        @click.native="getResources"
-      >
+      <el-button class="operations" @click.native="getResources">
         <i class="iconfont icon-shuaxin"></i>
         刷新
       </el-button>
     </el-row>
-    <dialogs ref="ezDialog" @refresh="getResources"></dialogs>
+    <dialogs
+      ref="ezDialog"
+      @refresh="getResources"
+      @cleanSelecting="cleanSelets"
+    ></dialogs>
 
     <!-- migrate -->
     <el-dialog
@@ -331,7 +332,7 @@ export default {
         period: "",
         to_node: "",
       },
-      migrateNodes: [],  //可迁移节点
+      migrateNodes: [], //可迁移节点
       resources_id: [],
       rscLocationVisible: false,
       rscColocationVisible: false,
@@ -340,12 +341,11 @@ export default {
       rscColocation: {},
       rscOrder: {},
       nodeList: [],
-
     };
   },
   computed: {
     showEdit() {
-      return !this.$store.state.itemChose;
+      return !this.chosenItem.id;
     },
     showStart() {
       if (this.chosenItem.id && this.chosenItem.status !== "Running") {
@@ -475,8 +475,13 @@ export default {
       this.$emit("refreshData");
     },
     handleOperation(data) {
-      this.chosenItem = {};
-      this.chosenItem = data;
+      if (data) {
+        this.chosenItem = {};
+        this.chosenItem = data;
+      } else {
+        this.chosenItem = {};
+        this.$forceUpdate();
+      }
     },
     operate(action) {
       let _this = this;
@@ -484,13 +489,12 @@ export default {
         // console.log(_this.chosenItem)
         // console.log(_this.nodeLists)
         //选中的数据的running_node有值，则该值不可作为迁移的节点
-        _this.nodeLists.forEach(item => {
-          if(_this.chosenItem.running_node.indexOf(item.id) == -1) {
-            _this.migrateNodes.push(item.id)
+        _this.nodeLists.forEach((item) => {
+          if (_this.chosenItem.running_node.indexOf(item.id) == -1) {
+            _this.migrateNodes.push(item.id);
           }
-        }) 
+        });
         _this.disableMigrateDialog = true;
-        
       } else {
         let req = "/resources/" + this.chosenItem.id + "/" + action;
         easyRequest(req).then(() => {
@@ -583,14 +587,13 @@ export default {
       for (const key in _this.rscLocation) {
         location[key] = _this.rscLocation[key];
         if (_this.rscLocation[key].length == 0) {
-          continue
-        } else if(_this.rscLocation[key].length >= 1) {
+          continue;
+        } else if (_this.rscLocation[key].length >= 1) {
           location.node_level.push({
             level: key,
             node: _this.rscLocation[key],
           });
         } else {
-
         }
       }
 
@@ -647,7 +650,10 @@ export default {
         period: "",
         to_node: "",
       };
-     this.disableMigrateDialog = false
+      this.disableMigrateDialog = false;
+    },
+    cleanSelets() {
+      this.$emit("clear");
     },
   },
 };

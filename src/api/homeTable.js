@@ -141,11 +141,10 @@ export function standbyAction(url) {
 
 
 }
-export function runAction(url, data) {
+export function runAction(url) {
   return request({
     url,
     method: 'put',
-    data
   })
 
 
