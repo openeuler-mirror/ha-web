@@ -27,7 +27,7 @@ export default {
             let aLink = document.createElement("a");
             let evt = document.createEvent("MouseEvents");
             evt.initEvent("click", false, true);
-            aLink.href = "kylinha-log-ha1-20210506111701.tar";
+            aLink.href = res.data.data.filepath;
             aLink.dispatchEvent(evt);
             return Promise.resolve();
           });
