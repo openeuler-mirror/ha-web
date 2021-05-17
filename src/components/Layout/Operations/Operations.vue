@@ -486,8 +486,14 @@ export default {
     operate(action) {
       let _this = this;
       if (action == "migrate") {
-        // console.log(_this.chosenItem)
-        // console.log(_this.nodeLists)
+        _this.migrateNodes = [] //清空上次存储的值，以免造成数据重复
+
+        //因为不点击当前行chosenItem不会更新最新数据，所以该方法更新choseItem 
+        _this.$store.state.rscs.forEach(item => {
+          if(item.id == _this.chosenItem.id) {
+            _this.chosenItem = item
+          }
+        })
         //选中的数据的running_node有值，则该值不可作为迁移的节点
         _this.nodeLists.forEach((item) => {
           if (_this.chosenItem.running_node.indexOf(item.id) == -1) {
