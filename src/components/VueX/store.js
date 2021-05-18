@@ -9,13 +9,17 @@ const state = {
     ids: [],
     noGroupItems: [],
     itemChose: false,
-    rscs: []
+    rscs: [],
+    username:''
 
 }
 
 const mutations = {
     mutationsShowDialog(state, n = '0') {
         return state.count = n
+    },
+    mutationsUsername(state,data) {
+        return state.username = data
     },
     mutationsitemChose(state, data) {
         if (data.id == "ms-drbd" || data.id == "drbd-ps:0" || data.id == "drbd-ps:1") {

@@ -61,6 +61,7 @@ export default {
         .post("/api/v1/login", _this.loginForm)
         .then(() => {
           localStorage.setItem("userLogin", _this.loginForm.username);
+          this.$store.commit("mutationsUsername", _this.loginForm.username);
           this.$router.push({ path: "/" });
         })
         .catch((err) => {

@@ -3,7 +3,7 @@
     <el-dropdown class="button-group">
       <el-button class="btn-user" type="default">
         <i class="iconfont icon-yonghutouxiang"></i>
-        <span>user</span>
+        <span>{{username}}</span>
       </el-button>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item @click.native="refreshSetting"
@@ -44,8 +44,13 @@ export default {
         { text: "每5秒自动刷新", value: 5 },
         { text: "每10秒自动刷新", value: 10 },
       ],
+      username:'',
       value: localStorage.getItem("refresh") ? parseInt(localStorage.getItem("refresh")) : 0,
     };
+  },
+  created(){
+    this.username=this.$store.state.username
+    console.log(this.username);
   },
   methods: {
     refreshSetting() {
