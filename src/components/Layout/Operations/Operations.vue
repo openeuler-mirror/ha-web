@@ -84,7 +84,7 @@
         </template>
       </el-popconfirm>
       <el-dropdown>
-        <el-button :disabled="showButtons" class="el-dropdown-link operations">
+        <el-button :disabled="!(chosenItem.id && chosenItem.type !== 'clone')" class="el-dropdown-link operations">
           <i class="iconfont icon-guanxitu"></i>
           关系
         </el-button>
@@ -398,6 +398,7 @@ export default {
     handleClickRelation(str) {
       let _this = this;
       _this.getNodeList();
+
       //判断传来的值是否与tableData的id相同，相同置为disabled
       function getSelectChildrenData(data) {
         _this.resources_id = [];
@@ -447,8 +448,9 @@ export default {
               _this.rscLocation[key] = [];
             }
             //将从接口获取到的值赋给rscLocation
-            if (res.data.node_level) {
-              res.data.node_level.map((item) => {
+            if (res.data.data.node_level) {
+              res.data.data.node_level.map((item) => {
+
                 for (const key in _this.rscLocation) {
                   if (item.level === key) {
                     _this.rscLocation[key].push(item.node);
@@ -462,7 +464,6 @@ export default {
                 }
               });
             }
-
             _this.rscLocationVisible = true;
             break;
         }
@@ -595,12 +596,13 @@ export default {
         if (_this.rscLocation[key].length == 0) {
           continue;
         } else if (_this.rscLocation[key].length >= 1) {
-          location.node_level.push({
-            level: key,
-            node: _this.rscLocation[key],
-          });
-        } else {
-        }
+          for (const item of _this.rscLocation[key]) {
+            location.node_level.push({
+              level: key,
+              node: item,
+            });
+          }
+        } 
       }
 
       let url = "/resources/" + _this.chosenItem.id + "/location";
