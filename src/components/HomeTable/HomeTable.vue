@@ -232,6 +232,14 @@ export default {
             }
           });
           _this.$store.commit("mutationsIds", ids);
+          if (_this.radio) {
+            for (let i of _this.tableData) {
+              if (i.id == _this.radio) {
+                let chosenItem = JSON.parse(JSON.stringify(i));
+                _this.showRow(chosenItem);
+              }
+            }
+          }
         })
         .catch((err) => {
           if (err.response.status == 403) {

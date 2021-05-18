@@ -84,7 +84,10 @@
         </template>
       </el-popconfirm>
       <el-dropdown>
-        <el-button :disabled="!(chosenItem.id && chosenItem.type !== 'clone')" class="el-dropdown-link operations">
+        <el-button
+          :disabled="!(chosenItem.id && chosenItem.type !== 'clone')"
+          class="el-dropdown-link operations"
+        >
           <i class="iconfont icon-guanxitu"></i>
           关系
         </el-button>
@@ -487,14 +490,19 @@ export default {
     operate(action) {
       let _this = this;
       if (action == "migrate") {
-        _this.migrateNodes = [] //清空上次存储的值，以免造成数据重复
+        this.migrate = {
+          is_force: false,
+          period: "",
+          to_node: "",
+        };
+        _this.migrateNodes = []; //清空上次存储的值，以免造成数据重复
 
-        //因为不点击当前行chosenItem不会更新最新数据，所以该方法更新choseItem 
-        _this.$store.state.rscs.forEach(item => {
-          if(item.id == _this.chosenItem.id) {
-            _this.chosenItem = item
+        //因为不点击当前行chosenItem不会更新最新数据，所以该方法更新choseItem
+        _this.$store.state.rscs.forEach((item) => {
+          if (item.id == _this.chosenItem.id) {
+            _this.chosenItem = item;
           }
-        })
+        });
         //选中的数据的running_node有值，则该值不可作为迁移的节点
         _this.nodeLists.forEach((item) => {
           if (_this.chosenItem.running_node.indexOf(item.id) == -1) {
@@ -505,6 +513,7 @@ export default {
       } else {
         let req = "/resources/" + this.chosenItem.id + "/" + action;
         easyRequest(req).then(() => {
+          _this.getResources();
           this.$message({
             type: "success",
             message: "resource " + action + " success",
@@ -521,18 +530,6 @@ export default {
         this.$message({
           type: "success",
           message: "resource migrate success",
-        });
-      });
-    },
-    updateUnmigrate() {
-      let _this = this;
-      let url = "/resources/" + _this.chosenItem.id + "/unmigrate";
-      updateUnmigrates(url).then(() => {
-        _this.disableMigrateDialog = false;
-        _this.getResources();
-        this.$message({
-          type: "success",
-          message: "resource unmigrate success",
         });
       });
     },
