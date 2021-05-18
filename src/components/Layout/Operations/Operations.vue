@@ -336,7 +336,7 @@ export default {
         to_node: "",
       },
       migrateNodes: [], //可迁移节点
-      resources_id: [],
+      resources_id: [], //可选资源id
       rscLocationVisible: false,
       rscColocationVisible: false,
       rscOrderVisible: false,
@@ -406,7 +406,7 @@ export default {
       function getSelectChildrenData(data) {
         _this.resources_id = [];
         for (const item of _this.$store.state.rscs) {
-          if (item.id == data.rsc_id) {
+          if (item.id == data.rsc_id || item.type == 'clone') {
             continue;
           }
           _this.resources_id.push({
@@ -417,7 +417,7 @@ export default {
           if (key == "rsc_id" || data[key].length == 0) continue;
           for (let i in data[key]) {
             for (const j in _this.resources_id) {
-              if (i == _this.resources_id[j].id) {
+              if (data[key][i] == _this.resources_id[j].id) {
                 _this.resources_id[j].disabled = true;
               }
             }
@@ -437,7 +437,9 @@ export default {
             break;
           case "order":
             _this.rscOrder = res.data.data;
-            //  if(_this.rscOrder){           getSelectChildrenData(_this.rscOrder);}
+            if(_this.rscOrder) {           
+              getSelectChildrenData(_this.rscOrder);
+            }
             _this.rscOrderVisible = true;
             break;
           default:

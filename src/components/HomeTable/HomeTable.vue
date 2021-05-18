@@ -37,7 +37,7 @@
                 ? 'Failed'
                 : scope.row.status
             "
-            placement="top"
+            placement="right"
           >
             <i
               class="iconfont icon-B"
