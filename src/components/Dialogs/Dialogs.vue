@@ -1,5 +1,4 @@
 <template>
-  <!-- dialogs -->
   <el-dialog
     class="basicAddDialog"
     :visible.sync="isVisible"
@@ -16,14 +15,17 @@
         class="button-tabs"
         :before-leave="checkInputs"
       >
-        <el-tab-pane name="first" class="tab-panels" label="基本">
+        <el-tab-pane
+          name="first"
+          class="tab-panels"
+          :label="$t('dialog.basic')"
+        >
           <el-form-item
             v-if="dialogType"
             class="required"
-            label="资源名称"
+            :label="$t('dialog.rscName')"
             prop="id"
           >
-            <!-- <span class="labels"> 资源名称： </span> -->
             <el-input
               class="block"
               :disabled="disableInputName"
@@ -34,10 +36,9 @@
           <el-form-item
             v-if="dialogType == 'primitive' && dialogAction == 'add'"
             class="required"
-            label="资源类型"
+            :label="$t('dialog.rscType')"
             prop="type"
           >
-            <!-- <span class="labels"> 资源类型： </span> -->
             <el-cascader
               class="block"
               v-model="addForm.type"
@@ -45,12 +46,13 @@
               :props="{ expandTrigger: 'hover' }"
               @change="addRscTypeSelected"
               filterable
+              :placeholder="$t('common.pleaseSelect')"
             ></el-cascader>
           </el-form-item>
           <el-form-item
             v-if="dialogType == 'primitive' && dialogAction == 'edit'"
             class="required"
-            label="资源类型:"
+            :label="$t('dialog.rscType')"
             prop="type"
           >
             <el-input class="block" v-model="editMetas" disabled></el-input>
@@ -58,7 +60,7 @@
           <el-form-item
             v-if="dialogType == 'group'"
             class="required"
-            label="组内资源"
+            :label="$t('dialog.groupRsc')"
             prop="groupRsc"
           >
             <el-row>
@@ -66,7 +68,7 @@
                 class="block"
                 v-model="addForm.rscs"
                 multiple
-                placeholder="请选择"
+                :placeholder="$t('common.pleaseSelect')"
                 filterable
                 @remove-tag="deleteTag"
                 @change="forceUpdate"
@@ -82,12 +84,15 @@
             </el-row>
           </el-form-item>
 
-          <el-form-item v-if="dialogType == 'clone'" label="克隆对象:">
+          <el-form-item
+            v-if="dialogType == 'clone'"
+            :label="$t('dialog.target')"
+          >
             <el-select
               :disabled="dialogAction == 'edit'"
               class="block"
               v-model="addForm.rsc_id"
-              placeholder="请选择"
+              :placeholder="$t('common.pleaseSelect')"
               @change="setCloneRscId"
               filterable
             >
@@ -155,16 +160,18 @@
             instanceAttris &&
             instanceAttris.length
           "
-          label="实例属性"
+          :label="$t('dialog.instance')"
           label-width="200px"
         >
           <el-row>
-            <span class="modify-label"> 需要修改的实例属性： </span>
+            <span class="modify-label">
+              {{ $t("dialog.instanceChange") }}
+            </span>
             <span class="block">
               <el-select
                 v-model="instance_attributes"
                 multiple
-                placeholder="请选择"
+                :placeholder="$t('common.pleaseSelect')"
                 class="block"
                 @remove-tag="deleteInsTag"
                 filterable
@@ -223,17 +230,17 @@
         <el-tab-pane
           name="meta"
           class="tab-panels"
-          label="元属性"
+          :label="$t('dialog.metas')"
           v-if="metaAttris"
         >
           <el-row>
-            <label class="modify-label">需要修改的元属性: </label>
+            <label class="modify-label">{{ $t("dialog.metasChange") }} </label>
             <span>
               <el-select
                 class="block"
                 v-model="meta_attributes"
                 multiple
-                placeholder="请选择"
+                :placeholder="$t('common.pleaseSelect')"
                 @remove-tag="deleteMetaTag"
                 filterable
               >
@@ -287,16 +294,16 @@
           v-if="addForm.type && addForm.type !== '' && actionsAttris"
           name="forth"
           class="tab-panels"
-          label="操作属性"
+          :label="$t('dialog.actions')"
           label-width="200px"
         >
           <el-row>
-            <span class="modify-label"> 需要修改的操作属性： </span>
+            <span class="modify-label">{{ $t("dialog.actionsChange") }}</span>
             <span class="block">
               <el-select
                 v-model="action_attributes"
                 multiple
-                placeholder="请选择"
+                :placeholder="$t('common.pleaseSelect')"
                 class="block"
                 @change="addActionTag"
                 filterable
@@ -340,7 +347,10 @@
             <el-table-column prop="role" label="role" width="130px">
               <template slot-scope="scope">
                 <!-- <el-input v-model="scope.row.role"></el-input> -->
-                <el-select v-model="scope.row.role" placeholder="请选择">
+                <el-select
+                  v-model="scope.row.role"
+                  :placeholder="$t('dialog.pleaseSelect')"
+                >
                   <el-option
                     v-for="item in role"
                     :key="item.name"
@@ -352,7 +362,10 @@
             </el-table-column>
             <el-table-column prop="on-fail" label="on-fail" width="130px">
               <template slot-scope="scope">
-                <el-select v-model="scope.row['on-fail']" placeholder="请选择">
+                <el-select
+                  v-model="scope.row['on-fail']"
+                  :placeholder="$t('dialog.pleaseSelect')"
+                >
                   <el-option
                     v-for="item in onFail"
                     :key="item.name"
@@ -366,9 +379,12 @@
         </el-tab-pane>
 
         <span class="hometable-dialog-footer">
-          <el-button @click="closeDialog">取 消</el-button>
-          <el-button :disabled="disableSubmit" type="primary" @click="addItem"
-            >确 定</el-button
+          <el-button @click="closeDialog">{{ $t("common.cancel") }}</el-button>
+          <el-button
+            :disabled="disableSubmit"
+            type="primary"
+            @click="addItem"
+            >{{ $t("common.confirm") }}</el-button
           >
         </span>
       </el-tabs>
@@ -472,7 +488,10 @@ export default {
       _this.activeName == "first";
       _this.dialogType = type;
       _this.dialogAction = action;
-      _this.title = _this.dialogAction == "add" ? "创建资源" : "编辑资源";
+      _this.title =
+        _this.dialogAction == "add"
+          ? this.$t("dialog.add")
+          : this.$t("dialog.edit");
       _this.disableInputName =
         _this.dialogType == "clone" || _this.dialogAction == "edit"
           ? true

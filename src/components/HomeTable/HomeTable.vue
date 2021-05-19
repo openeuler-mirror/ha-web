@@ -19,15 +19,15 @@
       height="80vh"
     >
       <el-table-column width="40"> </el-table-column>
-      <el-table-column label="选择" width="60">
+      <el-table-column :label="$t('table.select')" width="60">
         <template slot-scope="scope">
           <el-radio class="radio" v-model="radio" :label="scope.row.id">
             &nbsp;
           </el-radio>
         </template>
       </el-table-column>
-      <el-table-column sortable prop="id" label="资源名"> </el-table-column>
-      <el-table-column sortable prop="status" label="状态">
+      <el-table-column sortable prop="id" :label="$t('table.rscName')"> </el-table-column>
+      <el-table-column sortable prop="status" :label="$t('table.status')">
         <template slot-scope="scope">
           <el-tooltip
             class="item"
@@ -76,8 +76,8 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column sortable prop="type" label="资源类型"> </el-table-column>
-      <el-table-column sortable prop="svc" label="服务"> </el-table-column>
+      <el-table-column sortable prop="type" :label="$t('table.rscType')"> </el-table-column>
+      <el-table-column sortable prop="svc" :label="$t('table.service')"> </el-table-column>
       <template v-for="(item, index) in nodeList">
         <el-table-column :key="index" width="150px">
           <template #header>
@@ -145,18 +145,18 @@
       class="location"
     >
       <el-form :model="chosenNode" label-width="100px">
-        <el-form-item label="节点id:">
+        <el-form-item :label="$t('table.nodeId')">
           <span>{{ chosenNode.id }}</span>
         </el-form-item>
         <el-form-item class="node-buttons">
           <el-row>
             <el-button v-if="chosenNode.running" @click.native="runStat('stop')"
-              >停用
+              >{{$t('table.disable')}}
             </el-button>
             <el-button
               v-if="!chosenNode.running"
               @click.native="runStat('start')"
-              >启动</el-button
+              >{{$t('table.enable')}}</el-button
             >
           </el-row>
 
@@ -164,10 +164,10 @@
             <el-button
               v-if="chosenNode.standby"
               @click.native="standbyStat('unstandby')"
-              >启用</el-button
+              >{{$t('table.unstandby')}}</el-button
             >
             <el-button v-else @click.native="standbyStat('standby')"
-              >备用</el-button
+              >{{$t('table.standby')}}</el-button
             >
           </el-row>
         </el-form-item>

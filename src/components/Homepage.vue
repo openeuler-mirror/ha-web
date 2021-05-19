@@ -16,33 +16,33 @@
         <el-menu-item index="1">
           <i class="iconfont icon-xitong1"></i>
           <template #title>
-            <span>系统</span>
+            <span>{{ $t("sidebar.system") }}</span>
           </template>
         </el-menu-item>
 
         <el-submenu index="2">
           <template #title>
             <i class="iconfont icon-peizhi"></i>
-            <span>集群配置</span>
+            <span>{{ $t("sidebar.cluster") }}</span>
           </template>
           <el-menu-item index="2-1">
-            <span>首选项配置</span>
+            <span>{{ $t("sidebar.priority") }}</span>
           </el-menu-item>
           <el-menu-item index="2-2">
-            <span>心跳配置</span>
+            <span>{{ $t("sidebar.heartbeat") }}</span>
           </el-menu-item>
         </el-submenu>
 
         <el-submenu index="3">
           <template #title>
             <i class="iconfont icon-gongju"></i>
-            <span>工具</span>
+            <span>{{ $t("sidebar.tool") }}</span>
           </template>
           <el-menu-item index="3-1">
             <logs></logs>
           </el-menu-item>
           <el-menu-item index="3-2">
-            <span>集群快捷操作</span>
+            <span>{{ $t("sidebar.shortcut") }}</span>
           </el-menu-item>
         </el-submenu>
       </el-menu>
@@ -58,7 +58,9 @@
         <home-table></home-table>
         <priority :msg="$store.state.count == '2-1'"></priority>
         <heart-beat :msg="$store.state.count == '2-2'"></heart-beat>
-        <cluster-operation :msg="$store.state.count == '3-2'"></cluster-operation>
+        <cluster-operation
+          :msg="$store.state.count == '3-2'"
+        ></cluster-operation>
       </el-main>
     </el-container>
   </el-container>
@@ -76,7 +78,7 @@ export default {
   data() {
     return {
       isCollapse: false,
-      menuItemIndex: '',
+      menuItemIndex: "",
     };
   },
   components: {
@@ -88,13 +90,13 @@ export default {
     HeartBeat,
   },
   methods: {
-    handleSelect(key, keyPath){
-      let _this = this
-      _this.$store.commit('mutationsShowDialog', key);
+    handleSelect(key, keyPath) {
+      let _this = this;
+      _this.$store.commit("mutationsShowDialog", key);
     },
     toggleCollapse() {
-      let _this = this
-      _this.isCollapse = !_this.isCollapse
+      let _this = this;
+      _this.isCollapse = !_this.isCollapse;
     },
   },
 };
@@ -109,11 +111,11 @@ export default {
   color: #fff;
 }
 .el-container {
-  .el-menu{
-    .el-menu-item.is-active{
+  .el-menu {
+    .el-menu-item.is-active {
       color: #fff;
     }
-    .el-menu-item:hover{
+    .el-menu-item:hover {
       color: #c21a1f;
       border-right: 4px solid #c21a1f;
     }
@@ -146,7 +148,6 @@ export default {
     div.el-menu-item :hover {
       border-right: 1px solid #c21a1f;
     }
-    
   }
   .el-header {
     background: #fff;
@@ -160,7 +161,7 @@ export default {
       border-bottom: 1px solid #ecf0f6;
       background: transparent;
 
-      i{
+      i {
         font-size: 26px;
         line-height: 60px;
       }

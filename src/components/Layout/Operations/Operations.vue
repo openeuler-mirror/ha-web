@@ -5,18 +5,18 @@
       <el-dropdown>
         <el-button class="el-dropdown-link operations" style="float='left'">
           <i class="iconfont icon-icon-test"></i>
-          添加
+          {{ $t("operations.add") }}
         </el-button>
         <template #dropdown>
           <el-dropdown-menu placement="bottom-end">
             <el-dropdown-item @click.native="openDialog('primitive', 'add')">
-              添加普通资源</el-dropdown-item
+              {{ $t("operations.primitive") }}</el-dropdown-item
             >
             <el-dropdown-item @click.native="openDialog('group', 'add')">
-              添加组资源</el-dropdown-item
+              {{ $t("operations.group") }}</el-dropdown-item
             >
             <el-dropdown-item @click.native="openDialog('clone', 'add')">
-              添加克隆资源</el-dropdown-item
+              {{ $t("operations.clone") }}</el-dropdown-item
             >
           </el-dropdown-menu>
         </template>
@@ -28,7 +28,7 @@
         :disabled="showEdit"
       >
         <i class="iconfont icon-bianji2"></i>
-        编辑
+        {{ $t("operations.edit") }}
       </el-button>
       <el-button
         :disabled="showStart"
@@ -37,7 +37,7 @@
         class="operations"
       >
         <i class="iconfont icon-kaishi"></i>
-        启动
+        {{ $t("operations.start") }}
       </el-button>
       <el-button
         :disabled="showButtons"
@@ -46,7 +46,7 @@
         class="operations"
       >
         <i class="iconfont icon-tingzhi1"></i>
-        停止
+        {{ $t("operations.stop") }}
       </el-button>
       <el-button
         :disabled="showButtons"
@@ -55,7 +55,7 @@
         class="operations"
       >
         <i class="iconfont icon-yijianqingli"></i>
-        清理
+        {{ $t("operations.cleanup") }}
       </el-button>
       <el-button
         :disabled="showMigrate"
@@ -64,7 +64,7 @@
         class="operations"
       >
         <i class="iconfont icon-qianchu"></i>
-        迁移
+        {{ $t("operations.migrate") }}
       </el-button>
       <el-button
         :disabled="showUnmigrate"
@@ -73,13 +73,18 @@
         class="operations"
       >
         <i class="iconfont icon-qianru"></i>
-        回迁
+        {{ $t("operations.unmigrate") }}
       </el-button>
-      <el-popconfirm @confirm="deleteItem" title="确定删除资源吗？">
+      <el-popconfirm
+        :confirm-button-text="$t('common.confirm')"
+        :cancel-button-text="$t('common.cancel')"
+        @confirm="deleteItem"
+        :title="$t('operations.confirmDelete')"
+      >
         <template #reference>
           <el-button :disabled="showButtons" class="operations">
             <i class="iconfont icon-shanchukai"></i>
-            删除
+            {{ $t("operations.delete") }}
           </el-button>
         </template>
       </el-popconfirm>
@@ -89,25 +94,31 @@
           class="el-dropdown-link operations"
         >
           <i class="iconfont icon-guanxitu"></i>
-          关系
+          {{ $t("operations.relation") }}
         </el-button>
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item>
-              <span @click="handleClickRelation('location')">资源位置</span>
+              <span @click="handleClickRelation('location')">
+                {{ $t("operations.location") }}</span
+              >
             </el-dropdown-item>
             <el-dropdown-item>
-              <span @click="handleClickRelation('colocation')">资源协同</span>
+              <span @click="handleClickRelation('colocation')">
+                {{ $t("operations.coop") }}</span
+              >
             </el-dropdown-item>
             <el-dropdown-item>
-              <span @click="handleClickRelation('order')">资源顺序</span>
+              <span @click="handleClickRelation('order')">
+                {{ $t("operations.order") }}</span
+              >
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
       <el-button class="operations" @click.native="getResources">
         <i class="iconfont icon-shuaxin"></i>
-        刷新
+        {{ $t("operations.refresh") }}
       </el-button>
     </el-row>
     <dialogs
@@ -118,7 +129,7 @@
 
     <!-- migrate -->
     <el-dialog
-      title="迁移资源"
+      :title="$t('operations.migrateRsc')"
       :visible.sync="disableMigrateDialog"
       width="600px"
       top="15vh"
@@ -126,11 +137,11 @@
       :before-close="resetMigrate"
     >
       <el-form :model="migrate" label-width="160px">
-        <el-form-item label="资源名称:">
+        <el-form-item :label="$t('operations.rscName')">
           <span>{{ chosenItem.id }}</span>
         </el-form-item>
-        <el-form-item label="迁移至节点:">
-          <el-select v-model="migrate.to_node" no-data-text="无匹配结果">
+        <el-form-item :label="$t('operations.toNode')">
+          <el-select v-model="migrate.to_node" :no-data-text="$t('operations.noRes')">
             <el-option
               v-for="item in migrateNodes"
               :key="item"
@@ -140,33 +151,33 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="强制迁移:">
+        <el-form-item :label="$t('operations.force')">
           <el-switch v-model="migrate.is_force"> </el-switch>
         </el-form-item>
-        <el-form-item label="有效期:">
+        <el-form-item :label="$t('operations.validity')">
           <el-input style="width: 56%" v-model="migrate.period">
-            <template slot="append">小时</template>
+            <template slot="append">{{$t('operations.hour')}}</template>
           </el-input>
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="resetMigrate">取 消</el-button>
-          <el-button type="primary" @click="updateMigrate">确 定</el-button>
+          <el-button @click="resetMigrate">{{$t('common.cancel')}}</el-button>
+          <el-button type="primary" @click="updateMigrate">{{$t('common.confirm')}}</el-button>
         </span>
       </template>
     </el-dialog>
 
     <!-- location -->
     <el-dialog
-      title="资源位置"
+      :title="$t('operations.location')"
       :visible.sync="rscLocationVisible"
       width="600px"
       top="15vh"
       class="location"
     >
       <el-form :model="rscLocation" label-width="160px">
-        <el-form-item label="资源名称:">
+        <el-form-item :label="$t('operations.rscName')">
           <span class="block">{{ chosenItem.id }}</span>
         </el-form-item>
         <el-form-item
@@ -179,6 +190,7 @@
             multiple
             @change="handleLocationChange($event)"
             @remove-tag="handleLocationRemoveTag"
+             :placeholder="$t('common.pleaseSelect')"
           >
             <el-option
               v-for="item in nodeList"
@@ -193,25 +205,25 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="rscLocationVisible = false">取 消</el-button>
-          <el-button type="primary" @click="locates">确 定</el-button>
+          <el-button @click="rscLocationVisible = false">{{$t('common.cancel')}}</el-button>
+          <el-button type="primary" @click="locates">{{$t('common.confirm')}}</el-button>
         </span>
       </template>
     </el-dialog>
 
     <!-- colocation -->
     <el-dialog
-      title="资源协同"
+      :title="$t('operations.coop')"
       :visible.sync="rscColocationVisible"
       width="600px"
       top="15vh"
       class="location"
     >
       <el-form :model="rscColocation" label-width="160px">
-        <el-form-item label="资源名称:">
+        <el-form-item :label="$t('operations.rscName')">
           <span>{{ chosenItem.id }}</span>
         </el-form-item>
-        <el-form-item label="同节点资源:">
+        <el-form-item :label="$t('operations.samenode')">
           <el-select
             v-model="rscColocation.same_node"
             multiple
@@ -228,7 +240,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="互斥节点资源:">
+        <el-form-item :label="$t('operations.diffnode')">
           <el-select
             v-model="rscColocation.diff_node"
             multiple
@@ -248,25 +260,25 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="rscColocationVisible = false">取 消</el-button>
-          <el-button type="primary" @click="coordination">确 定</el-button>
+          <el-button @click="rscColocationVisible = false">{{$t('common.cancel')}}</el-button>
+          <el-button type="primary" @click="coordination">{{$t('common.confirm')}}</el-button>
         </span>
       </template>
     </el-dialog>
 
     <!-- order -->
     <el-dialog
-      title="资源顺序"
+      :title="$t('operations.order')"
       :visible.sync="rscOrderVisible"
       width="600px"
       top="15vh"
       class="location"
     >
       <el-form :model="rscOrder" label-width="160px">
-        <el-form-item label="资源名称:">
+        <el-form-item :label="$t('operations.rscName')">
           <span>{{ chosenItem.id }}</span>
         </el-form-item>
-        <el-form-item label="前置资源:">
+        <el-form-item :label="$t('operations.front')">
           <el-select
             v-model="rscOrder.before_rscs"
             multiple
@@ -283,7 +295,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="后置资源:">
+        <el-form-item :label="$t('operations.back')">
           <el-select
             v-model="rscOrder.after_rscs"
             multiple
@@ -303,8 +315,8 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="rscOrderVisible = false">取 消</el-button>
-          <el-button type="primary" @click="orders">确 定</el-button>
+          <el-button @click="rscOrderVisible = false">{{$t('common.cancel')}}</el-button>
+          <el-button type="primary" @click="orders">{{$t('common.confirm')}}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -406,7 +418,7 @@ export default {
       function getSelectChildrenData(data) {
         _this.resources_id = [];
         for (const item of _this.$store.state.rscs) {
-          if (item.id == data.rsc_id || item.type == 'clone') {
+          if (item.id == data.rsc_id || item.type == "clone") {
             continue;
           }
           _this.resources_id.push({
@@ -437,7 +449,7 @@ export default {
             break;
           case "order":
             _this.rscOrder = res.data.data;
-            if(_this.rscOrder) {           
+            if (_this.rscOrder) {
               getSelectChildrenData(_this.rscOrder);
             }
             _this.rscOrderVisible = true;
@@ -455,7 +467,6 @@ export default {
             //将从接口获取到的值赋给rscLocation
             if (res.data.data.node_level) {
               res.data.data.node_level.map((item) => {
-
                 for (const key in _this.rscLocation) {
                   if (item.level === key) {
                     _this.rscLocation[key].push(item.node);
@@ -601,7 +612,7 @@ export default {
               node: item,
             });
           }
-        } 
+        }
       }
 
       let url = "/resources/" + _this.chosenItem.id + "/location";

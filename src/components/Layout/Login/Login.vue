@@ -10,7 +10,7 @@
       <!-- {/* 登录输入 */} -->
       <div class="form">
         <div class="login_text">
-          <span>欢迎登录</span>
+          <span>{{$t('login.welcome')}}</span>
         </div>
 
         <el-form class="input_form" v-model="loginForm" ref="loginForm">
@@ -18,7 +18,7 @@
             <el-input
               class="iconfont icon-yonghutouxiang"
               v-model="loginForm.username"
-              placeholder="输入用户名"
+              :placeholder="$t('login.username')"
               @keyup.enter.native="onSubmit"
             ></el-input>
           </el-form-item>
@@ -26,14 +26,14 @@
             <el-input
               class="iconfont icon-suo"
               v-model="loginForm.password"
-              placeholder="输入密码"
+              :placeholder="$t('login.password')"
               show-password
               @keyup.enter.native="onSubmit"
             ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button class="btn" type="primary" @click.native="onSubmit"
-              >登录</el-button
+              >{{$t('login.login')}}</el-button
             >
           </el-form-item>
         </el-form>

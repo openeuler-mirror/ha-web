@@ -3,18 +3,20 @@
     <el-dropdown class="button-group">
       <el-button class="btn-user" type="default">
         <i class="iconfont icon-yonghutouxiang"></i>
-        <span>{{username}}</span>
+        <span>{{ username }}</span>
       </el-button>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item @click.native="refreshSetting"
-          >刷新设置</el-dropdown-item
-        >
-        <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
+        <el-dropdown-item @click.native="refreshSetting">{{
+          $t("topbar.refresh")
+        }}</el-dropdown-item>
+        <el-dropdown-item @click.native="logout">{{
+          $t("topbar.logout")
+        }}</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
-    <el-dialog title="刷新设置" :visible.sync="disableRefresh" width="30%">
-      <span>刷新设置：</span>
-      <el-select v-model="value" placeholder="请选择">
+    <el-dialog :title="$t('topbar.refresh')" :visible.sync="disableRefresh" width="30%">
+      <span>{{ $t("topbar.refresh") }}:</span>
+      <el-select v-model="value" :placeholder="$t('common.pleaseSelect')">
         <el-option
           v-for="item in options"
           :key="item.value"
@@ -25,8 +27,12 @@
       </el-select>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="disableRefresh = false">取 消</el-button>
-        <el-button type="primary" @click="refreshDetermined">确 定</el-button>
+        <el-button @click="disableRefresh = false">{{
+          $t("common.cancel")
+        }}</el-button>
+        <el-button type="primary" @click="refreshDetermined">{{
+          $t("common.confirm")
+        }}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -34,23 +40,24 @@
 
 <script>
 // import { logout } from "@/api/logout";
-import axios from 'axios'
+import axios from "axios";
 export default {
   data() {
     return {
       disableRefresh: false,
       options: [
-        { text: "不自动刷新", value: 0 },
-        { text: "每5秒自动刷新", value: 5 },
-        { text: "每10秒自动刷新", value: 10 },
+        { text: this.$t("topbar.disableRefresh"), value: 0 },
+        { text: this.$t("topbar.fivesec"), value: 5 },
+        { text: this.$t("topbar.tensec"), value: 10 },
       ],
-      username:'',
-      value: localStorage.getItem("refresh") ? parseInt(localStorage.getItem("refresh")) : 0,
+      username: "",
+      value: localStorage.getItem("refresh")
+        ? parseInt(localStorage.getItem("refresh"))
+        : 0,
     };
   },
-  created(){
-    this.username=this.$store.state.username
-    console.log(this.username);
+  created() {
+    this.username = this.$store.state.username;
   },
   methods: {
     refreshSetting() {
@@ -62,12 +69,11 @@ export default {
       localStorage.setItem("refresh", _this.value);
       _this.disableRefresh = false;
       //_this.$router.push({ path: "/" });
-      window.location = "/"
-      
+      window.location = "/";
     },
     logout() {
       localStorage.removeItem("userLogin");
-      axios.post('api/v1/logout').then(() => {
+      axios.post("api/v1/logout").then(() => {
         document.cookie =
           "beegosessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       });

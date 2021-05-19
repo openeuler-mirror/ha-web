@@ -10,9 +10,26 @@ import './assets/icon/iconfont.css'
 import './assets/element/index.css'
 import store from './components/VueX/store'
 // require('../mock');
+import VueI18n from 'vue-i18n'
+
+Vue.use(VueI18n)
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false
+const i18n = new VueI18n({
+
+  locale: 'zh', // 定义默认语言为中文 
+
+  messages: {
+
+    'zh': require('@/assets/i18n/zh.json'),
+
+    'en': require('@/assets/i18n/en.json')
+
+  }
+
+});
+
 
 axios.get('/static/config.json').then(res => {
   const config = res.data
@@ -22,6 +39,7 @@ axios.get('/static/config.json').then(res => {
       el: '#app',
       store,
       router,
+      i18n,
       components: { App },
       template: '<App/>'
     })

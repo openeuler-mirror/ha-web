@@ -1,7 +1,7 @@
 <template>
   <div class="priority-modal">
     <el-dialog
-      title="集群快捷操作"
+      :title="$t('sidebar.shortcut')"
       :visible.sync="msg"
       :modal-append-to-body="false"
       top="10vh"
@@ -13,10 +13,10 @@
     >
       <el-form :model="form" ref="form">
         <el-form-item>
-          <span>集群操作</span>
+          <span>{{$t('sidebar.action')}}</span>
           <el-select
             v-model="form.value"
-            placeholder="请选择操作命令"
+            :placeholder="$t('sidebar.select')"
             @change="handleSelectChange"
           >
             <el-option
@@ -29,14 +29,14 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <span>操作结果</span>
+          <span>{{$t('sidebar.result')}}</span>
           <el-input disabled type="textarea" :rows="15" v-model="form.desc">
           </el-input>
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="handleBtnClick">关闭</el-button>
+          <el-button @click="handleBtnClick">{{$t('sidebar.close')}}</el-button>
         </span>
       </template>
     </el-dialog>

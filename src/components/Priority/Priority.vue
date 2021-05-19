@@ -1,7 +1,7 @@
 <template>
   <div class="priority-modal priority-type">
     <el-dialog
-      title="首选项配置"
+      :title="$t('sidebar.priority')"
       :visible.sync="msg"
       :modal-append-to-body="false"
       id="priority-content"
@@ -81,8 +81,10 @@
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="handleCancel">取 消</el-button>
-          <el-button type="primary" @click="updatePriority">确 定</el-button>
+          <el-button @click="handleCancel">{{ $t("common.cancel") }}</el-button>
+          <el-button type="primary" @click="updatePriority">{{
+            $t("common.confirm")
+          }}</el-button>
         </span>
       </template>
     </el-dialog>
