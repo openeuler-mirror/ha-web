@@ -19,6 +19,7 @@
         "log": "日志下载",
         "warning": "集群nodes状态为 Not Running 或 Not Running/Standby, 心跳配置功能不能使用",
         "ip": "节点心跳IP-",
+        "main": "主心跳",
         "backup": "备用心跳",
         "switch": "启用备用心跳",
         "shortcut": "集群快捷操作",
@@ -30,7 +31,6 @@
         "select": "请选择操作命令",
         "result": "操作结果",
         "close": "关闭"
-        
     },
     "topbar": {
         "refresh": "刷新设置",
