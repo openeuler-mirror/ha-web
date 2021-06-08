@@ -349,7 +349,7 @@
                 <!-- <el-input v-model="scope.row.role"></el-input> -->
                 <el-select
                   v-model="scope.row.role"
-                  :placeholder="$t('dialog.pleaseSelect')"
+                  :placeholder="$t('common.pleaseSelect')"
                 >
                   <el-option
                     v-for="item in role"
@@ -364,7 +364,7 @@
               <template slot-scope="scope">
                 <el-select
                   v-model="scope.row['on-fail']"
-                  :placeholder="$t('dialog.pleaseSelect')"
+                  :placeholder="$t('common.pleaseSelect')"
                 >
                   <el-option
                     v-for="item in onFail"
@@ -621,6 +621,17 @@ export default {
                   res.data.data.actions.map((item) => JSON.stringify(item))
                 )
               ).map((item) => JSON.parse(item));
+              if (_this.RcsDetail.actions) {
+                for (let i of _this.RcsDetail.actions) {
+                  for (let j in _this.actionsAttris) {
+                    if (_this.actionsAttris[j].name == i.name) {
+                      _this.actionsAttris[j] = JSON.parse(JSON.stringify(i));
+                    }
+                  }
+                  _this.action_attributes.push(JSON.stringify(i));
+                  _this.addActionTag(_this.action_attributes);
+                }
+              }
               for (let i in _this.instanceAttris) {
                 _this.InsTypes[_this.instanceAttris[i].name] =
                   _this.instanceAttris[i].content.type;
