@@ -136,7 +136,7 @@ $ npm -v
 
 ```bash
 
-$ git clone https://gitee.com/openeuler/A-Tune.git
+$ git clone https://gitee.com/openeuler/ha-web.git
 
 ```
 ### 3、安装node_modules依赖:
