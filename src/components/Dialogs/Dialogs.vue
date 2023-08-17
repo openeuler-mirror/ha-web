@@ -5,10 +5,8 @@
     width="700px"
     :before-close="closeDialog"
     v-if="isRouterShow"
+    :title="title"
   >
-    <el-row>
-      <div class="el-dialog__title">{{ title }}</div>
-    </el-row>
     <el-form v-model="addForm" ref="addForm" label-width="200px">
       <el-tabs
         v-model="activeName"
@@ -961,7 +959,7 @@ export default {
 };
 </script>
 
-<style scoped lang='scss'>
+<style scoped lang='scss' scoped>
 .el-dialog {
   .button-tabs {
     .tab-panels {
@@ -1019,5 +1017,8 @@ export default {
       margin-bottom: 10px;
     }
   }
+}
+/deep/ .el-dialog__body{
+   padding: 10px 20px
 }
 </style>
