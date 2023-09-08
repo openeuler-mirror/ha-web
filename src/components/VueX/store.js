@@ -44,7 +44,7 @@ const mutations = {
         for (let i in data) {
             state.ids[i] = data[i]
         }
-        return state.noGroupItems
+        return state.ids
     },
     mutationsRscs(state, data) {
         for (let i in data) {
