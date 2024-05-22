@@ -14,6 +14,15 @@
         }}</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
+    <el-dropdown class="button-group">
+      <el-button class="btn-user" type="default">
+        <span>{{ language }}</span>
+      </el-button>
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item @click.native="handleChangeLanguage('zh-CN')">中文</el-dropdown-item>
+        <el-dropdown-item @click.native="handleChangeLanguage('en-US')">English</el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
     <el-dialog :title="$t('topbar.refresh')" :visible.sync="disableRefresh" width="30%">
       <span>{{ $t("topbar.refresh") }}:</span>
       <el-select v-model="value" :placeholder="$t('common.pleaseSelect')">
@@ -54,6 +63,7 @@ export default {
       value: localStorage.getItem("refresh")
         ? parseInt(localStorage.getItem("refresh"))
         : 0,
+      language: '中文',
     };
   },
   created() {
@@ -79,6 +89,22 @@ export default {
       });
       this.$router.push({ path: "/login" });
     },
+
+    handleChangeLanguage(lang) {
+      switch(lang) {
+        case 'zh-CN':
+          this.language = '中文';
+          break;
+        case 'en-US':
+          this.language = 'English';
+          break;
+        default: 
+          this.language = '中文';
+          break;
+      }
+      this.$i18n.locale = lang;
+      localStorage.setItem('language',lang);
+    }
   },
 };
 </script>

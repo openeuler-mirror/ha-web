@@ -3,7 +3,7 @@
     <el-row>
       <!-- add -->
       <el-dropdown>
-        <el-button class="el-dropdown-link operations" style="float='left'">
+        <el-button class="el-dropdown-link operations" style="float:'left'">
           <i class="iconfont icon-icon-test"></i>
           {{ $t("operations.add") }}
         </el-button>
