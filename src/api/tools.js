@@ -1,23 +1,23 @@
-import request from '@/api/request'
+import request from '@/api/request';
+import { CLUSTER } from '@/utils/config';
 
 export function getLogs() {
   return request({
-    url: '/logs',
+    url: `${CLUSTER}/logs`,
     method: 'get',
   })
 }
 
 export function getCmds() {
   return request({
-    url: '/commands',
+    url: `${CLUSTER}/commands`,
     method: 'get',
   })
 }
 
 export function getCmdResult(data) {
   return request({
-    url: '/commands/'+data,
+    url: `${CLUSTER}/commands/` + data,
     method: 'get',
-    
   })
 }

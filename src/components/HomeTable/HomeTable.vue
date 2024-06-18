@@ -292,8 +292,8 @@ export default {
     },
 
     standbyStat(val) {
-      let url = "nodes/" + this.chosenNode.id + "/" + val;
-      standbyAction(url).then((res) => {
+      // let url = "nodes/" + this.chosenNode.id + "/" + val;
+      standbyAction({id: this.chosenNode.id, action: val }).then((res) => {
         this.$message({
           type: "success",
           message: "node " + val + " success",
@@ -304,8 +304,8 @@ export default {
       });
     },
     runStat(val) {
-      let url = "nodes/" + this.chosenNode.id + "/" + val;
-      runAction(url).then((res) => {
+      // let url = "nodes/" + this.chosenNode.id + "/" + val;
+      runAction({ id: this.chosenNode.id, action: val }).then((res) => {
         this.nodeList.length = 0;
         this.$message({
           type: "success",

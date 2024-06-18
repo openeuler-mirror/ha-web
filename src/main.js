@@ -5,7 +5,6 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui' //element-ui的全部组件
 import 'element-ui/lib/theme-chalk/index.css'//element-ui的css
-import axios from 'axios';
 import './assets/icon/iconfont.css'
 import './assets/element/index.css'
 import store from './components/VueX/store'
@@ -36,19 +35,11 @@ const i18n = new VueI18n({
 localStorage.setItem('language',lang);   
 
 
-axios.get('/static/config.json').then(res => {
-  const config = res.data
-  if (config && config.api_base_url) {
-    Vue.prototype.api_base_url = config.api_base_url
-    window._vm = new Vue({
-      store,
-      router,
-      i18n,
-      render: h => h(App)
-    }).$mount('#app');
-  } else {
-    console.log('load api base url error')
-  }
-}).catch(err => {
-  console.log('load api base url error')
-})
+
+window._vm = new Vue({
+  store,
+  router,
+  i18n,
+  render: h => h(App)
+}).$mount('#app');
+
