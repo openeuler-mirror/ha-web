@@ -32,7 +32,7 @@
             ></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button class="btn" type="primary" @click.native="onSubmit"
+            <el-button class="btn" type="primary" :loading="loading" @click.native="onSubmit"
               >{{$t('login.login')}}</el-button
             >
           </el-form-item>
@@ -44,10 +44,11 @@
 
 <script>
 import { login } from "@/api/login";
-import axios from "axios";
+
 export default {
   data() {
     return {
+      loading: false,
       loginForm: {
         username: "",
         password: "",
@@ -56,17 +57,22 @@ export default {
   },
   methods: {
     onSubmit() {
-      let _this = this;
-      axios
-        .post("/api/v1/login", _this.loginForm)
-        .then(() => {
-          localStorage.setItem("userLogin", _this.loginForm.username);
-          this.$store.commit("mutationsUsername", _this.loginForm.username);
+      this.loading = true;
+      login(this.loginForm).then(res => {
+        console.log('hahah', res.data);
+        if(res.data.action) {
+          localStorage.setItem("userLogin", this.loginForm.username);
+          this.$store.commit("mutationsUsername", this.loginForm.username);
           this.$router.push({ path: "/" });
-        })
-        .catch((err) => {
-          console.log("login failed" + err);
-        });
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.data.error
+          })
+        }
+        this.loading = false;
+       
+      });
     },
   },
 };
