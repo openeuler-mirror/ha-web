@@ -3,7 +3,7 @@ import qs from 'qs'
 import axios from 'axios'
 
 const service = axios.create({
-  baseURL: Vue.prototype.api_base_url,
+  baseURL: "/api/v1",
   timeout: 100000
 })
 

@@ -327,7 +327,6 @@
 import {
   easyRequest,
   updateMigrates,
-  updateUnmigrates,
   deleteItems,
   getResourceRelation,
   updateLocations,
@@ -437,9 +436,8 @@ export default {
         }
       }
 
-      let url = "/resources/" + _this.chosenItem.id + "/relations/" + str;
-
-      getResourceRelation(url).then((res) => {
+      // let url = "/resources/" + _this.chosenItem.id + "/relations/" + str;
+      getResourceRelation({ id: _this.chosenItem.id, action: str }).then((res) => {
         switch (str) {
           case "colocation":
             _this.rscColocation = res.data.data;
@@ -524,8 +522,12 @@ export default {
         });
         _this.disableMigrateDialog = true;
       } else {
-        let req = "/resources/" + this.chosenItem.id + "/" + action;
-        easyRequest(req).then(() => {
+        let data = {};
+        data.id = this.chosenItem.id;
+        data.action = action;
+        // let req = "/resources/" + this.chosenItem.id + "/" + action;
+
+        easyRequest(data).then(() => {
           _this.getResources();
           this.$message({
             type: "success",
@@ -536,8 +538,11 @@ export default {
     },
     updateMigrate() {
       let _this = this;
-      let url = "/resources/" + _this.chosenItem.id + "/migrate";
-      updateMigrates(url, _this.migrate).then(() => {
+      // let url = "/resources/" + _this.chosenItem.id + "/migrate";
+      let id = _this.chosenItem.id;
+      let data = _this.migrate;
+
+      updateMigrates({id, data}).then(() => {
         _this.disableMigrateDialog = false;
         _this.getResources();
         this.$message({
@@ -548,8 +553,10 @@ export default {
     },
     deleteItem() {
       let _this = this;
-      let url = "/resources/" + _this.chosenItem.id + "/delete";
-      deleteItems(url).then(() => {
+      // let url = "/resources/" + _this.chosenItem.id + "/delete";
+      let id = _this.chosenItem.id;
+
+      deleteItems(id).then(() => {
         _this.getResources();
         this.$message({
           type: "success",
@@ -615,8 +622,11 @@ export default {
         }
       }
 
-      let url = "/resources/" + _this.chosenItem.id + "/location";
-      updateLocations(url, location).then(() => {
+      // let url = "/resources/" + _this.chosenItem.id + "/location";
+      let id = _this.chosenItem.id;
+      let data = location;
+
+      updateLocations({ id, data }).then(() => {
         _this.rscLocationVisible = false;
         _this.getResources();
         this.$message({
@@ -627,8 +637,11 @@ export default {
     },
     coordination() {
       let _this = this;
-      let url = "/resources/" + _this.chosenItem.id + "/colocation";
-      updateCoordination(url, _this.rscColocation).then(() => {
+      // let url = "/resources/" + _this.chosenItem.id + "/colocation";
+      let id = _this.chosenItem.id;
+      let data =  _this.rscColocation;
+
+      updateCoordination({ id, data }).then(() => {
         _this.rscColocationVisible = false;
         _this.getResources();
         this.$message({
@@ -639,8 +652,10 @@ export default {
     },
     orders() {
       let _this = this;
-      let url = "/resources/" + _this.chosenItem.id + "/order";
-      updateOrder(url, _this.rscOrder).then(() => {
+      // let url = "/resources/" + _this.chosenItem.id + "/order";
+      let id = _this.chosenItem.id;
+      let data = _this.rscOrder;
+      updateOrder({ id, data }).then(() => {
         _this.rscOrderVisible = false;
         _this.getResources();
         this.$message({

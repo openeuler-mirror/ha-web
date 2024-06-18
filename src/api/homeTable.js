@@ -1,151 +1,151 @@
-import request from '@/api/request'
+import request from '@/api/request';
+import { CLUSTER } from '@/utils/config'
 
+// 获取资源
 export function getResource() {
   return request({
-    url: '/resources',
+    url: `${CLUSTER}/resources`,
     method: 'get',
-
   })
 }
-export function getDrdbStatus() {
-  return request({
-    url: '/drbd_status',
-    method: 'get',
 
-  })
-}
-export function easyRequest(req) {
-  return request({
-    url: req,
-    method: 'PUT',
-
-  })
-}
-export function getMetas() {
-  return request({
-    url: '/metas',
-    method: 'get',
-
-  })
-}
-export function getMetaAttris(type) {
-  return request({
-    url: '/resources/meta_attributes/' + type,
-    method: 'get',
-
-  })
-}
-export function getInstanceAttris(type) {
-  return request({
-    url: '/meta_attributes/' + type,
-    method: 'get',
-
-  })
-}
-export function getAttris(url) {
-  return request({
-    url: url,
-    method: 'get',
-
-  })
-}
+// 添加资源
 export function addItems(data) {
   return request({
-    url: '/resources',
+    url: `${CLUSTER}/resources`,
     method: 'post',
     data
-
   })
 }
-export function deleteItems(url) {
-  return request({
-    url: url,
-    method: 'put',
 
-
-  })
-}
-export function updateMigrates(url, data) {
+// 修改资源信息
+export function editItem({id, data}) {
   return request({
-    url: url,
+    url: `${CLUSTER}/resources/${id}`,
     method: 'put',
     data
-
   })
 }
-export function updateUnmigrates(url) {
+
+// 资源操作
+export function easyRequest(data) {
   return request({
-    url: url,
+    url: `${CLUSTER}/resources/${data.id}/${data.action}`,
     method: 'put',
-
+  })
+}
+export function deleteItems(id) {
+  return request({
+    url:  `${CLUSTER}/resources/${id}/delete`,
+    method: 'put',
+  })
+}
+export function updateMigrates({id, data}) {
+  return request({
+    url: `${CLUSTER}/resources/${id}/migrate`,
+    method: 'put',
+    data
+  })
+}
+export function updateLocations({id, data}) {
+  return request({
+    url: `${CLUSTER}/resources/${id}/location"`,
+    method: 'put',
+    data
+  })
+}
+export function updateOrder({id, data}) {
+  return request({
+    url: `${CLUSTER}/resources/${id}/order`,
+    method: 'put',
+    data
+  })
+}
+export function updateCoordination({id, data}) {
+  return request({
+    url: `${CLUSTER}/resources/${id}/colocation`,
+    method: 'put',
+    data
   })
 }
 
-//关系资源位置
-export function getResourceRelation(url) {
+// 获取关系资源位置信息
+export function getResourceRelation({id, action}) {
   return request({
-    url: url,
+    url: `${CLUSTER}/resources/${id}/relations/${action}`,
     method: 'get',
   })
 }
 
 
-
-export function updateLocations(url, data) {
+export function getRcsDetail(data) {
   return request({
-    url: url,
-    method: 'put',
-    data
-  })
-}
-export function updateOrder(url, data) {
-  return request({
-    url: url,
-    method: 'put',
-    data
-  })
-}
-export function updateCoordination(url, data) {
-  return request({
-    url: url,
-    method: 'put',
-    data
-  })
-}
-export function getRcsDetail(url) {
-  return request({
-    url: url,
+    url: `${CLUSTER}/resources/${data.id}?category=${data.category}`,
     method: 'get',
   })
 }
-export function editItem(url, data) {
+
+// 获取资源元属性
+export function getMetaAttris(type) {
   return request({
-    url: url,
-    method: 'put',
-    data
+    url: `${CLUSTER}/resources/meta_attributes/` + type,
+    method: 'get',
   })
 }
+
+// 获取metas信息
+export function getMetas() {
+  return request({
+    url: `${CLUSTER}/metas`,
+    method: 'get',
+  })
+}
+
+// 获取资源创建信息
+export function getAttris(data) {
+  let url = data.provider 
+    ? `/${data.class}/${data.type}/${data.provider}`
+    : `/${data.class}/${data.type}`;
+
+  return request({
+    url: ` ${CLUSTER}/metas` + url,
+    method: 'get',
+  })
+}
+
+
 export function getOperationAttris(type) {
   return request({
-    url: '/meta_attributes/' + type,
+    url: `${CLUSTER}/meta_attributes/` + type,
     method: 'get',
   })
-
-
 }
-export function standbyAction(url) {
+
+export function getInstanceAttris(type) {
   return request({
-    url,
+    url: `${CLUSTER}/meta_attributes/` + type,
+    method: 'get',
+  })
+}
+
+
+export function getDrdbStatus() {
+  return request({
+    url: `${CLUSTER}/drbd_status`,
+    method: 'get',
+  })
+}
+
+// 节点状态修改
+export function standbyAction({id, action}) {
+  return request({
+    url: `${CLUSTER}/nodes/${id}/${action}`,
     method: 'put',
   })
-
-
 }
-export function runAction(url) {
+export function runAction({id, action}) {
   return request({
-    url,
+    url: `${CLUSTER}/nodes/${id}/${action}`,
     method: 'put',
   })
-
-
 }

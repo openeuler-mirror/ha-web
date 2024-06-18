@@ -563,8 +563,12 @@ export default {
           }
         }
 
-        let url = "resources/" + chosenItem.id + "?category=" + chosenItem.type;
-        getRcsDetail(url).then((res) => {
+        // let url = "resources/" + chosenItem.id + "?category=" + chosenItem.type;
+        let data = {};
+        data.id = chosenItem.id;
+        data.category = chosenItem.type;
+
+        getRcsDetail(data).then((res) => {
           _this.RcsDetail = res.data.data;
           if (_this.RcsDetail.class)
             _this.addForm.class = _this.RcsDetail.class;
@@ -585,7 +589,9 @@ export default {
             }
           }
           if (_this.dialogType == "primitive") {
-            let url = "";
+            // let url = "";
+            let urlData = {};
+            
             if (_this.RcsDetail.provider) {
               _this.addForm.type = _this.RcsDetail.type;
               _this.editMetas =
@@ -594,21 +600,22 @@ export default {
                 _this.RcsDetail.provider +
                 "/" +
                 _this.RcsDetail.type;
-              url =
-                "/metas/" +
-                _this.RcsDetail.class +
-                "/" +
-                _this.RcsDetail.type +
-                "/" +
-                _this.RcsDetail.provider;
+
+                urlData.class = _this.RcsDetail.class;
+                urlData.type = _this.RcsDetail.type;
+                urlData.provider = _this.RcsDetail.provider;
+
+              // url = "/metas/" + _this.RcsDetail.class + "/" + _this.RcsDetail.type + "/" + _this.RcsDetail.provider;
             } else {
               _this.addForm.type = _this.RcsDetail.type;
               _this.editMetas =
                 _this.RcsDetail.class + "/" + _this.RcsDetail.type;
-              url =
-                "/metas/" + _this.RcsDetail.class + "/" + _this.RcsDetail.type;
+
+                urlData.class = _this.RcsDetail.class;
+                urlData.type = _this.RcsDetail.type;
+              // url = "/metas/" + _this.RcsDetail.class + "/" + _this.RcsDetail.type;
             }
-            getAttris(url).then((res) => {
+            getAttris(urlData).then((res) => {
               _this.instanceAttris = Array.from(
                 new Set(
                   res.data.data.parameters.map((item) => JSON.stringify(item))
@@ -668,16 +675,25 @@ export default {
         if (value[0]) {
           _this.addForm.class = value[0];
           _this.addForm.type = value[1];
-          let url = "";
+          // let url = "";
+          let urlData = {};
+
           if (value[2]) {
-            url = "/metas/" + value[0] + "/" + value[2] + "/" + value[1];
+            urlData.class = value[0];
+            urlData.type = value[2];
+            urlData.provider = value[1];
+
+            // url = "/metas/" + value[0] + "/" + value[2] + "/" + value[1];
             _this.addForm.provider = value[1];
 
             _this.addForm.type = value[2];
           } else {
-            url = "/metas/" + value[0] + "/" + value[1];
+            urlData.class = value[0];
+            urlData.type = value[1];
+
+            // url = "/metas/" + value[0] + "/" + value[1];
           }
-          getAttris(url).then((res) => {
+          getAttris(urlData).then((res) => {
             _this.instanceAttris = Array.from(
               new Set(
                 res.data.data.parameters.map((item) => JSON.stringify(item))
@@ -852,8 +868,9 @@ export default {
         }
       } else {
         if (_this.dialogAction == "edit") {
-          let url = "/resources/" + _this.addForm.id;
-          editItem(url, _this.addForm)
+          // let url = "/resources/" + _this.addForm.id;
+
+          editItem({id: _this.addForm.id, data: _this.addForm} )
             .then((res) => {
               this.$message({
                 type: "success",

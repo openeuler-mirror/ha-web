@@ -1,9 +1,9 @@
-import request from '@/api/request'
+import request from '@/api/request';
+import { CLUSTER } from '@/utils/config';
 
 export function getNodes() {
   return request({
-    url: '/nodes',
+    url: `${CLUSTER}/nodes`,
     method: 'get',
- 
   })
 }
