@@ -814,7 +814,7 @@ export default {
               });
             break;
           case "group":
-            if (_this.addForm.id && _this.rscs !== []) {
+            if (_this.addForm.id && _this.addForm.rscs !== []) {
               _this.addForm.category = "group";
               addItems(_this.addForm)
                 .then((res) => {
