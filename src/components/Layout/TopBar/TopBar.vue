@@ -48,8 +48,8 @@
 </template>
 
 <script>
-// import { logout } from "@/api/logout";
-import axios from "axios";
+import { logout } from "@/api/login";
+
 export default {
   data() {
     return {
@@ -83,7 +83,7 @@ export default {
     },
     logout() {
       localStorage.removeItem("userLogin");
-      axios.post("api/v1/logout").then(() => {
+      logout().then(() => {
         document.cookie =
           "beegosessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       });
