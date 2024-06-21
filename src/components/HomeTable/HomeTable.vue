@@ -225,7 +225,9 @@ export default {
           let noGroup = [];
           let ids = [];
           _this.tableData.forEach((item) => {
-            ids.push(item.id);
+            if(item.type!='clone'){
+              ids.push(item.id);
+            }
             if (!item.subrscs) {
               noGroup.push(item);
               _this.$store.commit("mutationsNoGroupItems", noGroup);
