@@ -3,7 +3,7 @@
     <div class="login_bg" onKeyDown="">
       <!-- {/* 头部 */} -->
       <div class="logo">
-        <img src="../../../assets/logo.png" />
+        <img src="../../assets/logo.png" />
         <span>openUnicorn HA</span>
       </div>
 
@@ -88,7 +88,7 @@ export default {
   left: 0;
   bottom: 0;
   right: 0;
-  background: url(../../../assets/bg.png) no-repeat;
+  background: url(../../assets/bg.png) no-repeat;
   background-size: cover;
 }
 

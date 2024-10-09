@@ -333,7 +333,7 @@ import {
   updateOrder,
   updateCoordination,
 } from "@/api/homeTable";
-import Dialogs from "@/components/Dialogs/Dialogs";
+import Dialogs from "@/views/Dialogs";
 export default {
   props: ["nodeLists"],
   data() {

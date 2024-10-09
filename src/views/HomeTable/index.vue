@@ -179,7 +179,7 @@
 <script>
 import { getResource, runAction, standbyAction } from "@/api/homeTable";
 import { getNodes } from "@/api/node";
-import Operations from "@/components/Layout/Operations/Operations";
+import Operations from "@/components/Operations";
 
 import Vue from "vue";
 export default {

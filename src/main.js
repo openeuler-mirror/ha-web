@@ -7,7 +7,7 @@ import ElementUI from 'element-ui' //element-ui的全部组件
 import 'element-ui/lib/theme-chalk/index.css'//element-ui的css
 import './assets/icon/iconfont.css'
 import './assets/element/index.css'
-import store from './components/VueX/store'
+import store from './store'
 // require('../mock');
 import VueI18n from 'vue-i18n'
 
