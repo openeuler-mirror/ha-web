@@ -1035,7 +1035,7 @@ export default {
     }
   }
 }
-/deep/ .el-dialog__body{
+::v-deep  .el-dialog__body{
    padding: 10px 20px
 }
 </style>

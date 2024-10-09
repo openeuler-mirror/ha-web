@@ -2,7 +2,7 @@ export default [
     {
         path: "/",
         name: "index",
-        component: resolve => require(["@/components/Homepage"], resolve),
+        component: resolve => require(["@/views/Layout/layout"], resolve),
         meta: {
             title: "HA"
         }
@@ -10,7 +10,7 @@ export default [
     {
         path: "/404",
         name: "404",
-        component: resolve => require(["@/components/404"], resolve),
+        component: resolve => require(["@/views/404"], resolve),
         meta: {
             title: "404"
         }
@@ -18,7 +18,7 @@ export default [
     {
         path: "/login",
         name: "login",
-        component: resolve => require(["@/components/Layout/Login/Login"], resolve),
+        component: resolve => require(["@/views/Login"], resolve),
         meta: {
             title: "login"
         }

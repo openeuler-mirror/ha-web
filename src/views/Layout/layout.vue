@@ -2,7 +2,7 @@
   <el-container>
     <el-aside width="auto">
       <div class="home-logo">
-        <img src="../assets/logo.png" />
+        <img src="../../assets/logo.png" />
         <span v-show="!isCollapse">openUnicorn HA</span>
       </div>
 
@@ -67,12 +67,12 @@
 </template>
 
 <script>
-import HomeTable from "@/components/HomeTable/HomeTable";
-import Priority from "@/components/Priority/Priority";
-import HeartBeat from "@/components/HeartBeat/HeartBeat";
-import Logs from "@/components/Logs/Logs";
-import ClusterOperation from "@/components/ClusterOperation/ClusterOperation";
-import TopBar from "@/components/Layout/TopBar/TopBar";
+import HomeTable from "@/views/HomeTable";
+import Priority from "@/views/Priority";
+import HeartBeat from "@/views/HeartBeat";
+import Logs from "@/views/Logs";
+import ClusterOperation from "@/views/ClusterOperation";
+import TopBar from "./components/TopBar";
 
 export default {
   data() {
