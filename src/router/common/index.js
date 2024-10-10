@@ -2,7 +2,7 @@ export default [
     {
         path: "/",
         name: "index",
-        component: resolve => require(["@/views/Layout/layout"], resolve),
+        component: resolve => require(["@/views/Layout/Layout"], resolve),
         meta: {
             title: "HA"
         }
@@ -10,7 +10,7 @@ export default [
     {
         path: "/404",
         name: "404",
-        component: resolve => require(["@/views/404"], resolve),
+        component: resolve => require(["@/views/Error/404"], resolve),
         meta: {
             title: "404"
         }

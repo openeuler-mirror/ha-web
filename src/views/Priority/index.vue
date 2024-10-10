@@ -103,39 +103,36 @@ export default {
     };
   },
   created() {
-    let _this = this;
     getPriorities().then((res) => {
-      _this.rets = res.data.data;
+      this.rets = res.data.data;
     });
   },
   methods: {
     updatePriority() {
-      let _this = this;
-      for (let prikeys in _this.rets.parameters) {
+      for (let prikeys in this.rets.parameters) {
         if (
-          _this.rets.parameters[prikeys].value == "true" ||
-          _this.rets.parameters[prikeys].value == "false"
+          this.rets.parameters[prikeys].value == "true" ||
+          this.rets.parameters[prikeys].value == "false"
         ) {
-          if (_this.rets.parameters[prikeys].value == "true") {
-            _this.priorities[prikeys] = true;
+          if (this.rets.parameters[prikeys].value == "true") {
+            this.priorities[prikeys] = true;
           } else {
-            _this.priorities[prikeys] = false;
+            this.priorities[prikeys] = false;
           }
         } else {
-          _this.priorities[prikeys] = _this.rets.parameters[prikeys].value;
+          this.priorities[prikeys] = this.rets.parameters[prikeys].value;
         }
       }
-      update(_this.priorities).then((res) => {
+      update(this.priorities).then((res) => {
         this.$message({
           type: "success",
           message: "已更新首选项",
         });
-        _this.$store.state.count = "";
+        this.$store.state.count = "";
       });
     },
     handleCancel() {
-      let _this = this;
-      _this.$store.state.count = "";
+      this.$store.state.count = "";
     },
   },
 };

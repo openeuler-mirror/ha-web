@@ -91,12 +91,10 @@ export default {
   },
   methods: {
     handleSelect(key, keyPath) {
-      let _this = this;
-      _this.$store.commit("mutationsShowDialog", key);
+      this.$store.commit("mutationsShowDialog", key);
     },
     toggleCollapse() {
-      let _this = this;
-      _this.isCollapse = !_this.isCollapse;
+      this.isCollapse = !this.isCollapse;
     },
   },
 };

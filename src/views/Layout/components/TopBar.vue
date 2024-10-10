@@ -71,21 +71,18 @@ export default {
   },
   methods: {
     refreshSetting() {
-      let _this = this;
-      _this.disableRefresh = true;
+      this.disableRefresh = true;
     },
     refreshDetermined() {
-      let _this = this;
-      localStorage.setItem("refresh", _this.value);
-      _this.disableRefresh = false;
-      //_this.$router.push({ path: "/" });
+      localStorage.setItem("refresh", this.value);
+      this.disableRefresh = false;
+      //this.$router.push({ path: "/" });
       window.location = "/";
     },
     logout() {
-      localStorage.removeItem("userLogin");
+      localStorage.removeItem("userName");
       logout().then(() => {
-        document.cookie =
-          "beegosessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        document.cookie = "beegosessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       });
       this.$router.push({ path: "/login" });
     },

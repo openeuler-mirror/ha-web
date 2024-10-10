@@ -91,38 +91,36 @@ export default {
     };
   },
   created() {
-    let _this = this;
     getConfigs().then((res) => {
       // console.log('bijiao', (res.data.data).constructor == Object)
       //判断心跳配置数据是否正常，正常数据类型为object
       if (res.data.data.constructor == Object) {
         if (res.data.data.hbaddrs1) {
-          _this.form.hbaddrs1 = res.data.data.hbaddrs1;
-          _this.form.hbaddrs1.flag = true;
+          this.form.hbaddrs1 = res.data.data.hbaddrs1;
+          this.form.hbaddrs1.flag = true;
         }
 
         if (res.data.data.hbaddrs2) {
-          _this.form.hbaddrs2 = res.data.data.hbaddrs2;
-          _this.form.hbaddrs2.flag = true;
+          this.form.hbaddrs2 = res.data.data.hbaddrs2;
+          this.form.hbaddrs2.flag = true;
         } else if (res.data.data.hbaddrs1) {
           res.data.data.hbaddrs1.forEach((item) => {
-            _this.form.hbaddrs2.push({
+            this.form.hbaddrs2.push({
               nodeid: item.nodeid,
               ip: "",
             });
           });
-          _this.form.hbaddrs2.flag = false;
+          this.form.hbaddrs2.flag = false;
         }
       } else {
-        _this.nodesError = true;
+        this.nodesError = true;
       }
     });
   },
   methods: {
     //错误信息显示
     showErrorMessage() {
-      let _this = this;
-      _this.$message({
+      this.$message({
         type: "error",
         message: "请输入正确IP！",
         duration: 1500,
@@ -130,63 +128,58 @@ export default {
     },
     //判断输入的内容是否是正确的ip格式的方法 hb判断是主心跳还是备用心跳
     getInputValue(value, hb) {
-      let _this = this;
-      if (_this.reg.test(value) || typeof value == "undefined") {
+      if (this.reg.test(value) || typeof value == "undefined") {
         hb == 0 || hb == "0"
-          ? (_this.form.hbaddrs1.flag = true)
-          : (_this.form.hbaddrs2.flag = true);
+          ? (this.form.hbaddrs1.flag = true)
+          : (this.form.hbaddrs2.flag = true);
       } else {
         hb == 0 || hb == "0"
-          ? (_this.form.hbaddrs1.flag = false)
-          : (_this.form.hbaddrs2.flag = false);
-        _this.showErrorMessage();
+          ? (this.form.hbaddrs1.flag = false)
+          : (this.form.hbaddrs2.flag = false);
+        this.showErrorMessage();
       }
     },
     //判断输入的内容改变后是否是正确的ip格式
     handleInputOneChange(value) {
-      let _this = this;
-      _this.getInputValue(value, 0);
+      this.getInputValue(value, 0);
     },
     handleInputTwoChange(value) {
-      let _this = this;
-      _this.getInputValue(value, 1);
+      this.getInputValue(value, 1);
     },
 
     //判断是否可切换tab
     handleTabSwitch() {
-      let _this = this;
       //备用心跳开启时，判断心跳是否输入或输入正确，正确则hbaddrs2.flag = true,否则为false
-      if (_this.backupHeartBeat == true) {
-        for (let item of _this.form.hbaddrs2) {
-          if (!_this.reg.test(item.ip)) {
-            _this.form.hbaddrs2.flag = false;
+      if (this.backupHeartBeat == true) {
+        for (let item of this.form.hbaddrs2) {
+          if (!this.reg.test(item.ip)) {
+            this.form.hbaddrs2.flag = false;
             break;
           } else {
-            _this.form.hbaddrs2.flag = true;
+            this.form.hbaddrs2.flag = true;
           }
         }
       } else {
-        _this.form.hbaddrs2.flag = true;
+        this.form.hbaddrs2.flag = true;
       }
 
       //hbaddrs1.flag或者hbaddrs1.flag为false时， tab不可切换
       if (
-        _this.form.hbaddrs1.flag == false ||
-        _this.form.hbaddrs2.flag == false
+        this.form.hbaddrs1.flag == false ||
+        this.form.hbaddrs2.flag == false
       ) {
-        _this.showErrorMessage();
+        this.showErrorMessage();
         return false;
       }
     },
     updateHeartBeat() {
-      let _this = this;
       let pushData = {};
       //备用心跳关闭
-      if (_this.backupHeartBeat == false) {
+      if (this.backupHeartBeat == false) {
         //输入的主心跳正确
-        if (_this.form.hbaddrs1.flag) {
+        if (this.form.hbaddrs1.flag) {
           pushData.hbaddrs1 = [];
-          _this.form.hbaddrs1.forEach((item) => {
+          this.form.hbaddrs1.forEach((item) => {
             pushData.hbaddrs1.push({
               ip: item.ip,
               nodeid: item.nodeid,
@@ -194,43 +187,43 @@ export default {
           });
 
           //向后端提交数据
-          _this.loadingBtn = true; //确定按钮loading状态
+          this.loadingBtn = true; //确定按钮loading状态
           updateHB(pushData).then(() => {
-            _this.$store.state.count = "";
-            _this.$message({
+            this.$store.state.count = "";
+            this.$message({
               type: "success",
               message: "已更新心跳配置",
             });
-            _this.loadingBtn = false; //确定按钮loading状态取消
+            this.loadingBtn = false; //确定按钮loading状态取消
           });
         } else {
           //输入的主心跳IP不正确
-          _this.showErrorMessage();
+          this.showErrorMessage();
         }
       } else {
         // 备用心跳开启
         //遍历hb2，判断ip是否输入正确，正确flag为true，否则为false
-        for (let item of _this.form.hbaddrs2) {
-          if (!_this.reg.test(item.ip)) {
-            _this.showErrorMessage();
-            _this.form.hbaddrs2.flag = false;
+        for (let item of this.form.hbaddrs2) {
+          if (!this.reg.test(item.ip)) {
+            this.showErrorMessage();
+            this.form.hbaddrs2.flag = false;
             break;
           } else {
-            _this.form.hbaddrs2.flag = true;
+            this.form.hbaddrs2.flag = true;
           }
         }
 
-        if (_this.form.hbaddrs2.flag && _this.form.hbaddrs1.flag) {
+        if (this.form.hbaddrs2.flag && this.form.hbaddrs1.flag) {
           pushData.hbaddrs1 = [];
           pushData.hbaddrs2 = [];
 
-          _this.form.hbaddrs1.forEach((item) => {
+          this.form.hbaddrs1.forEach((item) => {
             pushData.hbaddrs1.push({
               ip: item.ip,
               nodeid: item.nodeid,
             });
           });
-          _this.form.hbaddrs2.forEach((item) => {
+          this.form.hbaddrs2.forEach((item) => {
             pushData.hbaddrs2.push({
               ip: item.ip,
               nodeid: item.nodeid,
@@ -238,21 +231,20 @@ export default {
           });
 
           //向后端提交数据
-          _this.loadingBtn = true; //确定按钮loading状态
+          this.loadingBtn = true; //确定按钮loading状态
           updateHB(pushData).then(() => {
-            _this.$store.state.count = "";
-            _this.$message({
+            this.$store.state.count = "";
+            this.$message({
               type: "success",
               message: "已更新心跳配置",
             });
-            _this.loadingBtn = false; //确定按钮loading状态取消
+            this.loadingBtn = false; //确定按钮loading状态取消
           });
         }
       }
     },
     handleCancel() {
-      let _this = this;
-      (_this.activeName = "first"), (_this.$store.state.count = "");
+      (this.activeName = "first"), (this.$store.state.count = "");
     },
   },
 };

@@ -1,4 +1,5 @@
 <template>
+  <!-- 集群快捷操作 -->
   <div class="priority-modal">
     <el-dialog
       :title="$t('sidebar.shortcut')"
@@ -60,33 +61,29 @@ export default {
     };
   },
   created() {
-    let _this = this;
     getCmds().then((res) => {
-      _this.commands = res.data.data;
+      this.commands = res.data.data;
     });
   },
   // watch: {
   //   "form.value": function (nVal, oVal) 
-  //     let _this = this;
   //     if (nVal !== oVal) {
-  //       _this.handleSelectChange(nVal);
+  //       this.handleSelectChange(nVal);
   //     }
   //   },
   // },
   methods: {
     handleSelectChange(value) {
-      let _this = this;
       getCmdResult(value).then((res) => {
-        _this.form.desc = res.data.data;
+        this.form.desc = res.data.data;
       });
     },
     handleBtnClick() {
-      let _this = this;
-      _this.form = {
+      this.form = {
         value: "",
         desc: "",
       };
-      _this.$store.state.count = "";
+      this.$store.state.count = "";
     },
   },
 };
