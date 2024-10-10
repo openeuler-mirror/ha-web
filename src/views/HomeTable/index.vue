@@ -79,7 +79,7 @@
       <el-table-column sortable prop="type" :label="$t('table.rscType')"> </el-table-column>
       <el-table-column sortable prop="svc" :label="$t('table.service')"> </el-table-column>
       <template v-for="(item, index) in nodeList">
-        <el-table-column :key="index" width="150px">
+        <el-table-column :key="index" v-if="true" width="150px">
           <template #header>
             <div @click="openStandByDialog(item)">
               <el-tooltip
@@ -197,55 +197,52 @@ export default {
     Operations,
   },
   created() {
-    let _this = this;
     this.dataLoading();
     if (
       localStorage.getItem("refresh") &&
       localStorage.getItem("refresh") != 0
     ) {
       window.setInterval(() => {
-        setTimeout(_this.dataLoading(), 0);
+        setTimeout(this.dataLoading(), 0);
       }, localStorage.getItem("refresh") * 1000);
     }
   },
   methods: {
     showRow(row) {
-      let _this = this;
-      _this.radio = row.id;
-      _this.$store.commit("mutationsUpdateChosenItem", row);
-      _this.$store.commit("mutationsitemChose", row);
-      _this.$refs.operation.handleOperation(_this.$store.state.chosenItem);
+      this.radio = row.id;
+      this.$store.commit("mutationsUpdateChosenItem", row);
+      this.$store.commit("mutationsitemChose", row);
+      this.$refs.operation.handleOperation(this.$store.state.chosenItem);
     },
     dataLoading() {
-      let _this = this;
       getResource()
         .then((res) => {
-          _this.tableData = res.data.data;
-          _this.$store.commit("mutationsRscs", _this.tableData);
+          this.tableData = res.data.data;
+          this.$store.commit("mutationsRscs", this.tableData);
           let noGroup = [];
           let ids = [];
-          _this.tableData.forEach((item) => {
+          this.tableData.forEach((item) => {
             if(item.type!='clone'){
               ids.push(item.id);
             }
             if (!item.subrscs) {
               noGroup.push(item);
-              _this.$store.commit("mutationsNoGroupItems", noGroup);
+              this.$store.commit("mutationsNoGroupItems", noGroup);
             }
           });
-          _this.$store.commit("mutationsIds", ids);
-          if (_this.radio) {
-            for (let i of _this.tableData) {
-              if (i.id == _this.radio) {
+          this.$store.commit("mutationsIds", ids);
+          if (this.radio) {
+            for (let i of this.tableData) {
+              if (i.id == this.radio) {
                 let chosenItem = JSON.parse(JSON.stringify(i));
-                _this.showRow(chosenItem);
+                this.showRow(chosenItem);
               }
             }
           }
         })
         .catch((err) => {
           if (err.response.status == 403) {
-            localStorage.removeItem("userLogin");
+            localStorage.removeItem("userName");
             document.cookie =
               "beegosessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
             this.$router.push({ path: "/login" });
@@ -254,9 +251,9 @@ export default {
       getNodes().then((res) => {
         this.nodeList.length = 0;
         for (let i of res.data.data) {
-          _this.nodeList.push(i);
+          this.nodeList.push(i);
         }
-        _this.nodeList.map(_this.parseNodeStatusMsg);
+        this.nodeList.map(this.parseNodeStatusMsg);
       });
     },
     parseNodeStatusMsg(node) {

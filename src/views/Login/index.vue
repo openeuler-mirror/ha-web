@@ -59,9 +59,9 @@ export default {
     onSubmit() {
       this.loading = true;
       login(this.loginForm).then(res => {
-        console.log('hahah', res.data);
+        console.log('登录', res.data);
         if(res.data.action) {
-          localStorage.setItem("userLogin", this.loginForm.username);
+          localStorage.setItem("userName", this.loginForm.username);
           this.$store.commit("mutationsUsername", this.loginForm.username);
           this.$router.push({ path: "/" });
         } else {

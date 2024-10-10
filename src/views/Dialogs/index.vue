@@ -482,30 +482,29 @@ export default {
     },
     handleDialogOpen(type, action) {
       this.isRouterShow = true;
-      let _this = this;
-      _this.activeName == "first";
-      _this.dialogType = type;
-      _this.dialogAction = action;
-      _this.title =
-        _this.dialogAction == "add"
+      this.activeName == "first";
+      this.dialogType = type;
+      this.dialogAction = action;
+      this.title =
+        this.dialogAction == "add"
           ? this.$t("dialog.add")
           : this.$t("dialog.edit");
-      _this.disableInputName =
-        _this.dialogType == "clone" || _this.dialogAction == "edit"
+      this.disableInputName =
+        this.dialogType == "clone" || this.dialogAction == "edit"
           ? true
           : false;
-      getMetaAttris(_this.dialogType).then((res) => {
-        _this.metaAttris = res.data.data;
-        for (let i in _this.metaAttris) {
-          _this.metaAttrTypes[_this.metaAttris[i].name] =
-            _this.metaAttris[i].content.type;
+      getMetaAttris(this.dialogType).then((res) => {
+        this.metaAttris = res.data.data;
+        for (let i in this.metaAttris) {
+          this.metaAttrTypes[this.metaAttris[i].name] =
+            this.metaAttris[i].content.type;
         }
       });
-      switch (_this.dialogType) {
+      switch (this.dialogType) {
         case "primitive":
           getMetas().then((res) => {
-            _this.metas = res.data.data;
-            let types = _this.metas;
+            this.metas = res.data.data;
+            let types = this.metas;
             let options = [];
             const toOption = (item) => ({ value: item, label: item });
             Object.keys(types).forEach((key) => {
@@ -532,34 +531,34 @@ export default {
 
               options.push(item);
             });
-            _this.metas = options;
+            this.metas = options;
           });
           break;
         case "group":
-          for (let i in _this.$store.state.noGroupItems) {
-            _this.noGroup.push(_this.$store.state.noGroupItems[i]);
+          for (let i in this.$store.state.noGroupItems) {
+            this.noGroup.push(this.$store.state.noGroupItems[i]);
           }
         case "clone":
-          for (let i in _this.$store.state.ids) {
-            _this.tableData.push(_this.$store.state.ids[i]);
+          for (let i in this.$store.state.ids) {
+            this.tableData.push(this.$store.state.ids[i]);
           }
       }
-      if (_this.dialogAction == "edit") {
-        let chosenItem = _this.$store.state.chosenItem;
-        _this.dialogType = chosenItem.type;
-        _this.addForm.id = chosenItem.id;
-        _this.addForm.category = chosenItem.type;
+      if (this.dialogAction == "edit") {
+        let chosenItem = this.$store.state.chosenItem;
+        this.dialogType = chosenItem.type;
+        this.addForm.id = chosenItem.id;
+        this.addForm.category = chosenItem.type;
 
-        if (_this.dialogType == "clone")
-          _this.addForm.rsc_id = chosenItem.id.slice(0, -6);
-        if (_this.dialogType == "group") {
+        if (this.dialogType == "clone")
+          this.addForm.rsc_id = chosenItem.id.slice(0, -6);
+        if (this.dialogType == "group") {
           this.addForm.rscs = [];
-          _this.noGroup = [];
+          this.noGroup = [];
           for (let i in chosenItem.subrscs) {
-            _this.addForm.rscs.push(chosenItem.subrscs[i].id);
+            this.addForm.rscs.push(chosenItem.subrscs[i].id);
           }
-          for (let i in _this.$store.state.noGroupItems) {
-            _this.noGroup.push(_this.$store.state.noGroupItems[i]);
+          for (let i in this.$store.state.noGroupItems) {
+            this.noGroup.push(this.$store.state.noGroupItems[i]);
           }
         }
 
@@ -569,84 +568,84 @@ export default {
         data.category = chosenItem.type;
 
         getRcsDetail(data).then((res) => {
-          _this.RcsDetail = res.data.data;
-          if (_this.RcsDetail.class)
-            _this.addForm.class = _this.RcsDetail.class;
-          _this.addForm.provider = _this.RcsDetail.provider;
-          if (_this.RcsDetail.meta_attributes) {
-            for (let i in _this.RcsDetail.meta_attributes) {
-              _this.meta_attributes.push(i);
-              _this.addForm.meta_attributes[i] =
-                _this.RcsDetail.meta_attributes[i];
+          this.RcsDetail = res.data.data;
+          if (this.RcsDetail.class)
+            this.addForm.class = this.RcsDetail.class;
+          this.addForm.provider = this.RcsDetail.provider;
+          if (this.RcsDetail.meta_attributes) {
+            for (let i in this.RcsDetail.meta_attributes) {
+              this.meta_attributes.push(i);
+              this.addForm.meta_attributes[i] =
+                this.RcsDetail.meta_attributes[i];
             }
           }
 
-          if (_this.RcsDetail.instance_attributes) {
-            for (let i in _this.RcsDetail.instance_attributes) {
-              _this.instance_attributes.push(i);
-              _this.addForm.instance_attributes[i] =
-                _this.RcsDetail.instance_attributes[i];
+          if (this.RcsDetail.instance_attributes) {
+            for (let i in this.RcsDetail.instance_attributes) {
+              this.instance_attributes.push(i);
+              this.addForm.instance_attributes[i] =
+                this.RcsDetail.instance_attributes[i];
             }
           }
-          if (_this.dialogType == "primitive") {
+          if (this.dialogType == "primitive") {
             // let url = "";
             let urlData = {};
             
-            if (_this.RcsDetail.provider) {
-              _this.addForm.type = _this.RcsDetail.type;
-              _this.editMetas =
-                _this.RcsDetail.class +
+            if (this.RcsDetail.provider) {
+              this.addForm.type = this.RcsDetail.type;
+              this.editMetas =
+                this.RcsDetail.class +
                 "/" +
-                _this.RcsDetail.provider +
+                this.RcsDetail.provider +
                 "/" +
-                _this.RcsDetail.type;
+                this.RcsDetail.type;
 
-                urlData.class = _this.RcsDetail.class;
-                urlData.type = _this.RcsDetail.type;
-                urlData.provider = _this.RcsDetail.provider;
+                urlData.class = this.RcsDetail.class;
+                urlData.type = this.RcsDetail.type;
+                urlData.provider = this.RcsDetail.provider;
 
-              // url = "/metas/" + _this.RcsDetail.class + "/" + _this.RcsDetail.type + "/" + _this.RcsDetail.provider;
+              // url = "/metas/" + this.RcsDetail.class + "/" + this.RcsDetail.type + "/" + this.RcsDetail.provider;
             } else {
-              _this.addForm.type = _this.RcsDetail.type;
-              _this.editMetas =
-                _this.RcsDetail.class + "/" + _this.RcsDetail.type;
+              this.addForm.type = this.RcsDetail.type;
+              this.editMetas =
+                this.RcsDetail.class + "/" + this.RcsDetail.type;
 
-                urlData.class = _this.RcsDetail.class;
-                urlData.type = _this.RcsDetail.type;
-              // url = "/metas/" + _this.RcsDetail.class + "/" + _this.RcsDetail.type;
+                urlData.class = this.RcsDetail.class;
+                urlData.type = this.RcsDetail.type;
+              // url = "/metas/" + this.RcsDetail.class + "/" + this.RcsDetail.type;
             }
             getAttris(urlData).then((res) => {
-              _this.instanceAttris = Array.from(
+              this.instanceAttris = Array.from(
                 new Set(
                   res.data.data.parameters.map((item) => JSON.stringify(item))
                 )
               ).map((item) => JSON.parse(item));
-              _this.actionsAttris = Array.from(
+              this.actionsAttris = Array.from(
                 new Set(
                   res.data.data.actions.map((item) => JSON.stringify(item))
                 )
               ).map((item) => JSON.parse(item));
-              if (_this.RcsDetail.actions) {
-                for (let i of _this.RcsDetail.actions) {
-                  for (let j in _this.actionsAttris) {
-                    if (_this.actionsAttris[j].name == i.name) {
-                      _this.actionsAttris[j] = JSON.parse(JSON.stringify(i));
+              if (this.RcsDetail.actions) {
+                for (let i of this.RcsDetail.actions) {
+                  for (let j in this.actionsAttris) {
+                    if (this.actionsAttris[j].name == i.name) {
+                      this.actionsAttris[j] = JSON.parse(JSON.stringify(i));
                     }
                   }
-                  _this.action_attributes.push(JSON.stringify(i));
-                  _this.addActionTag(_this.action_attributes);
+                  this.action_attributes.push(JSON.stringify(i));
+                  this.addActionTag(this.action_attributes);
                 }
               }
-              for (let i in _this.instanceAttris) {
-                _this.InsTypes[_this.instanceAttris[i].name] =
-                  _this.instanceAttris[i].content.type;
+              for (let i in this.instanceAttris) {
+                this.InsTypes[this.instanceAttris[i].name] =
+                  this.instanceAttris[i].content.type;
               }
-              for (let i in _this.instanceAttris) {
-                if (_this.instanceAttris[i].required == 1) {
-                  _this.requiredItems.push(_this.instanceAttris[i]);
-                  _this.instanceAttris.splice(i, 1);
-                  _this.instance_attributes.splice(
-                    _this.instanceAttris[i].name,
+              for (let i in this.instanceAttris) {
+                if (this.instanceAttris[i].required == 1) {
+                  this.requiredItems.push(this.instanceAttris[i]);
+                  this.instanceAttris.splice(i, 1);
+                  this.instance_attributes.splice(
+                    this.instanceAttris[i].name,
                     1
                   );
                 }
@@ -655,26 +654,25 @@ export default {
           }
         });
       }
-      _this.isVisible = true;
+      this.isVisible = true;
     },
     addRscTypeSelected(value) {
-      let _this = this;
-      _this.instanceAttris = [];
-      _this.actionsAttris = [];
-      _this.InsTypes = {};
-      _this.instance_attributes = [];
-      _this.addForm.instance_attributes = {};
-      _this.action_attributes = [];
-      _this.yigebiaoge = [];
+      this.instanceAttris = [];
+      this.actionsAttris = [];
+      this.InsTypes = {};
+      this.instance_attributes = [];
+      this.addForm.instance_attributes = {};
+      this.action_attributes = [];
+      this.yigebiaoge = [];
       this.meta_attributes = []; //选中的元属性列表
       this.requiredItems = [];
-      delete _this.addForm.class;
-      delete _this.addForm.provider;
-      delete _this.addForm.type;
+      delete this.addForm.class;
+      delete this.addForm.provider;
+      delete this.addForm.type;
       if (value) {
         if (value[0]) {
-          _this.addForm.class = value[0];
-          _this.addForm.type = value[1];
+          this.addForm.class = value[0];
+          this.addForm.type = value[1];
           // let url = "";
           let urlData = {};
 
@@ -684,9 +682,9 @@ export default {
             urlData.provider = value[1];
 
             // url = "/metas/" + value[0] + "/" + value[2] + "/" + value[1];
-            _this.addForm.provider = value[1];
+            this.addForm.provider = value[1];
 
-            _this.addForm.type = value[2];
+            this.addForm.type = value[2];
           } else {
             urlData.class = value[0];
             urlData.type = value[1];
@@ -694,22 +692,22 @@ export default {
             // url = "/metas/" + value[0] + "/" + value[1];
           }
           getAttris(urlData).then((res) => {
-            _this.instanceAttris = Array.from(
+            this.instanceAttris = Array.from(
               new Set(
                 res.data.data.parameters.map((item) => JSON.stringify(item))
               )
             ).map((item) => JSON.parse(item));
-            _this.actionsAttris = Array.from(
+            this.actionsAttris = Array.from(
               new Set(res.data.data.actions.map((item) => JSON.stringify(item)))
             ).map((item) => JSON.parse(item));
-            for (let i in _this.instanceAttris) {
-              _this.InsTypes[_this.instanceAttris[i].name] =
-                _this.instanceAttris[i].content.type;
+            for (let i in this.instanceAttris) {
+              this.InsTypes[this.instanceAttris[i].name] =
+                this.instanceAttris[i].content.type;
             }
-            for (let i in _this.instanceAttris) {
-              if (_this.instanceAttris[i].required == 1) {
-                _this.requiredItems.push(_this.instanceAttris[i]);
-                _this.instanceAttris.splice(i, 1);
+            for (let i in this.instanceAttris) {
+              if (this.instanceAttris[i].required == 1) {
+                this.requiredItems.push(this.instanceAttris[i]);
+                this.instanceAttris.splice(i, 1);
               }
             }
           });
@@ -745,64 +743,60 @@ export default {
       }
     },
     deleteInsTag(value) {
-      let _this = this;
-      delete _this.addForm.instance_attributes[value];
+      delete this.addForm.instance_attributes[value];
     },
     deleteMetaTag(value) {
-      let _this = this;
-      delete _this.addForm.meta_attributes[value];
+      delete this.addForm.meta_attributes[value];
     },
     forceUpdate() {
       this.$forceUpdate();
     },
     setCloneRscId(value) {
-      let _this = this;
-      _this.addForm.id = _this.addForm.rsc_id + "-clone";
+      this.addForm.id = this.addForm.rsc_id + "-clone";
     },
     addItem(value) {
-      let _this = this;
-      _this.disableSubmit = true;
+      this.disableSubmit = true;
 
-      for (let i in _this.addForm.instance_attributes) {
-        if (_this.addForm.instance_attributes[i] == "true") {
-          _this.addForm.instance_attributes[i] = true;
+      for (let i in this.addForm.instance_attributes) {
+        if (this.addForm.instance_attributes[i] == "true") {
+          this.addForm.instance_attributes[i] = true;
         }
-        if (_this.addForm.instance_attributes[i] == "false") {
-          _this.addForm.instance_attributes[i] = false;
-        }
-      }
-      for (let i in _this.yigebiaoge) {
-        _this.addForm.actions.push(_this.yigebiaoge[i]);
-      }
-      for (let i in _this.addForm.meta_attributes) {
-        if (_this.addForm.meta_attributes[i] == "true") {
-          _this.addForm.meta_attributes[i] = true;
-        }
-        if (_this.addForm.meta_attributes[i] == "false") {
-          _this.addForm.meta_attributes[i] = false;
+        if (this.addForm.instance_attributes[i] == "false") {
+          this.addForm.instance_attributes[i] = false;
         }
       }
-      if (_this.dialogAction == "add") {
-        switch (_this.dialogType) {
+      for (let i in this.yigebiaoge) {
+        this.addForm.actions.push(this.yigebiaoge[i]);
+      }
+      for (let i in this.addForm.meta_attributes) {
+        if (this.addForm.meta_attributes[i] == "true") {
+          this.addForm.meta_attributes[i] = true;
+        }
+        if (this.addForm.meta_attributes[i] == "false") {
+          this.addForm.meta_attributes[i] = false;
+        }
+      }
+      if (this.dialogAction == "add") {
+        switch (this.dialogType) {
           case "primitive":
-            _this.addForm.category = "primitive";
-            addItems(_this.addForm)
+            this.addForm.category = "primitive";
+            addItems(this.addForm)
               .then((res) => {
                 if (res.data.action == true) {
                   this.$message({
                     type: "success",
                     message: "resource adding success",
                   });
-                  _this.disableSubmit = false;
-                  _this.isVisible = false;
-                  _this.closeDialog();
-                  _this.$emit("refresh");
+                  this.disableSubmit = false;
+                  this.isVisible = false;
+                  this.closeDialog();
+                  this.$emit("refresh");
                 } else {
                   this.$message({
                     type: "error",
                     message: " please check your inputs",
                   });
-                  _this.disableSubmit = false;
+                  this.disableSubmit = false;
                 }
               })
               .catch((err) => {
@@ -810,85 +804,85 @@ export default {
                   type: "error",
                   message: err + " please check your inputs",
                 });
-                _this.disableSubmit = false;
+                this.disableSubmit = false;
               });
             break;
           case "group":
-            if (_this.addForm.id && _this.addForm.rscs !== []) {
-              _this.addForm.category = "group";
-              addItems(_this.addForm)
+            if (this.addForm.id && this.addForm.rscs.length > 0) {
+              this.addForm.category = "group";
+              addItems(this.addForm)
                 .then((res) => {
                   this.$message({
                     type: "success",
                     message: "resource adding success",
                   });
-                  _this.disableSubmit = false;
-                  _this.isVisible = false;
-                  _this.closeDialog();
-                  _this.$emit("refresh");
+                  this.disableSubmit = false;
+                  this.isVisible = false;
+                  this.closeDialog();
+                  this.$emit("refresh");
                 })
                 .catch((err) => {
                   this.$message({
                     type: "error",
                     message: err + " please check your inputs",
                   });
-                  _this.closeDialog();
-                  _this.disableSubmit = false;
+                  this.closeDialog();
+                  this.disableSubmit = false;
                 });
             }
             break;
           case "clone":
-            if (_this.addForm.rsc_id) {
-              _this.addForm.category = "clone";
-              addItems(_this.addForm)
+            if (this.addForm.rsc_id) {
+              this.addForm.category = "clone";
+              addItems(this.addForm)
                 .then((res) => {
                   this.$message({
                     type: "success",
                     message: "resource adding success",
                   });
-                  _this.disableSubmit = false;
-                  _this.isVisible = false;
-                  _this.$emit("refresh");
+                  this.disableSubmit = false;
+                  this.isVisible = false;
+                  this.$emit("refresh");
                 })
                 .catch((err) => {
                   this.$message({
                     type: "error",
                     message: err + " please check your inputs",
                   });
-                  _this.disableSubmit = false;
+                  this.disableSubmit = false;
                 });
             } else {
               this.$message({
                 type: "error",
                 message: "please check your inputs",
               });
-              _this.disableSubmit = false;
+              this.disableSubmit = false;
             }
             break;
         }
       } else {
-        if (_this.dialogAction == "edit") {
-          // let url = "/resources/" + _this.addForm.id;
+        if (this.dialogAction == "edit") {
+          // let url = "/resources/" + this.addForm.id;
 
-          editItem({id: _this.addForm.id, data: _this.addForm} )
+          editItem({id: this.addForm.id, data: this.addForm} )
             .then((res) => {
               this.$message({
                 type: "success",
                 message: "resource edit success",
               });
 
-              _this.disableSubmit = false;
-              _this.closeDialog();
-              _this.isVisible = false;
-              _this.$emit("cleanSelecting");
-              _this.$emit("refresh");
+              this.disableSubmit = false;
+              this.closeDialog();
+              this.isVisible = false;
+              this.$emit("cleanSelecting");
+              this.$emit("refresh");
             })
             .catch((err) => {
               this.$message({
                 type: "error",
                 message: err + "please check your inputs",
               });
-              _this.disableSubmit = false;
+              this.disableSubmit = false;
             });
         }
       }
@@ -947,13 +941,12 @@ export default {
     instance_attributes: {
       deep: true,
       handler(val, oldVal) {
-        let _this = this;
         for (let j = 0; j < val.length; j++) {
           if (
-            !_this.addForm.instance_attributes[val[j]] &&
-            _this.addForm.instance_attributes[val[j]] !== ""
+            !this.addForm.instance_attributes[val[j]] &&
+            this.addForm.instance_attributes[val[j]] !== ""
           ) {
-            _this.addForm.instance_attributes[val[j]] = "";
+            this.addForm.instance_attributes[val[j]] = "";
           }
         }
       },
@@ -961,13 +954,12 @@ export default {
     meta_attributes: {
       deep: true,
       handler(val, oldVal) {
-        let _this = this;
         for (let j = 0; j < val.length; j++) {
           if (
-            !_this.addForm.meta_attributes[val[j]] &&
-            _this.addForm.meta_attributes[val[j]] !== ""
+            !this.addForm.meta_attributes[val[j]] &&
+            this.addForm.meta_attributes[val[j]] !== ""
           ) {
-            _this.addForm.meta_attributes[val[j]] = "";
+            this.addForm.meta_attributes[val[j]] = "";
           }
         }
       },

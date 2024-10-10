@@ -405,80 +405,78 @@ export default {
   created() {},
   methods: {
     getNodeList() {
-      let _this = this;
-      _this.nodeList = JSON.parse(JSON.stringify(_this.nodeLists));
+      this.nodeList = JSON.parse(JSON.stringify(this.nodeLists));
       this.$forceUpdate();
     },
     handleClickRelation(str) {
-      let _this = this;
-      _this.getNodeList();
+      this.getNodeList();
 
       //判断传来的值是否与tableData的id相同，相同置为disabled
       function getSelectChildrenData(data) {
-        _this.resources_id = [];
-        for (const item of _this.$store.state.rscs) {
+        this.resources_id = [];
+        for (const item of this.$store.state.rscs) {
           if (item.id == data.rsc_id || item.type == "clone") {
             continue;
           }
-          _this.resources_id.push({
+          this.resources_id.push({
             id: item.id,
           });
         }
         for (const key in data) {
           if (key == "rsc_id" || data[key].length == 0) continue;
           for (let i in data[key]) {
-            for (const j in _this.resources_id) {
-              if (data[key][i] == _this.resources_id[j].id) {
-                _this.resources_id[j].disabled = true;
+            for (const j in this.resources_id) {
+              if (data[key][i] == this.resources_id[j].id) {
+                this.resources_id[j].disabled = true;
               }
             }
           }
         }
       }
 
-      // let url = "/resources/" + _this.chosenItem.id + "/relations/" + str;
-      getResourceRelation({ id: _this.chosenItem.id, action: str }).then((res) => {
+      // let url = "/resources/" + this.chosenItem.id + "/relations/" + str;
+      getResourceRelation({ id: this.chosenItem.id, action: str }).then((res) => {
         switch (str) {
           case "colocation":
-            _this.rscColocation = res.data.data;
-            getSelectChildrenData(_this.rscColocation);
-            // _this.rscColocation = colocation;
-            _this.rscColocationVisible = true;
+            this.rscColocation = res.data.data;
+            getSelectChildrenData(this.rscColocation);
+            // this.rscColocation = colocation;
+            this.rscColocationVisible = true;
             break;
           case "order":
-            _this.rscOrder = res.data.data;
-            if (_this.rscOrder) {
-              getSelectChildrenData(_this.rscOrder);
+            this.rscOrder = res.data.data;
+            if (this.rscOrder) {
+              getSelectChildrenData(this.rscOrder);
             }
-            _this.rscOrderVisible = true;
+            this.rscOrderVisible = true;
             break;
           default:
             let key = "";
-            for (let item in _this.nodeList) {
+            for (let item in this.nodeList) {
               if (item === "0") {
                 key = "Master Node";
               } else {
                 key = `Slave ${item}`;
               }
-              _this.rscLocation[key] = [];
+              this.rscLocation[key] = [];
             }
             //将从接口获取到的值赋给rscLocation
             if (res.data.data.node_level) {
               res.data.data.node_level.map((item) => {
-                for (const key in _this.rscLocation) {
+                for (const key in this.rscLocation) {
                   if (item.level === key) {
-                    _this.rscLocation[key].push(item.node);
+                    this.rscLocation[key].push(item.node);
                   }
                 }
                 //循环遍历node是否与nodeList的id相同，相同则置nodeList为disable
-                for (const i in _this.nodeList) {
-                  if (item.node === _this.nodeList[i].id) {
-                    _this.nodeList[i].disabled = true;
+                for (const i in this.nodeList) {
+                  if (item.node === this.nodeList[i].id) {
+                    this.nodeList[i].disabled = true;
                   }
                 }
               });
             }
-            _this.rscLocationVisible = true;
+            this.rscLocationVisible = true;
             break;
         }
       });
@@ -499,28 +497,27 @@ export default {
       }
     },
     operate(action) {
-      let _this = this;
       if (action == "migrate") {
         this.migrate = {
           is_force: false,
           period: "",
           to_node: "",
         };
-        _this.migrateNodes = []; //清空上次存储的值，以免造成数据重复
+        this.migrateNodes = []; //清空上次存储的值，以免造成数据重复
 
         //因为不点击当前行chosenItem不会更新最新数据，所以该方法更新choseItem
-        _this.$store.state.rscs.forEach((item) => {
-          if (item.id == _this.chosenItem.id) {
-            _this.chosenItem = item;
+        this.$store.state.rscs.forEach((item) => {
+          if (item.id == this.chosenItem.id) {
+            this.chosenItem = item;
           }
         });
         //选中的数据的running_node有值，则该值不可作为迁移的节点
-        _this.nodeLists.forEach((item) => {
-          if (_this.chosenItem.running_node.indexOf(item.id) == -1) {
-            _this.migrateNodes.push(item.id);
+        this.nodeLists.forEach((item) => {
+          if (this.chosenItem.running_node.indexOf(item.id) == -1) {
+            this.migrateNodes.push(item.id);
           }
         });
-        _this.disableMigrateDialog = true;
+        this.disableMigrateDialog = true;
       } else {
         let data = {};
         data.id = this.chosenItem.id;
@@ -528,7 +525,7 @@ export default {
         // let req = "/resources/" + this.chosenItem.id + "/" + action;
 
         easyRequest(data).then(() => {
-          _this.getResources();
+          this.getResources();
           this.$message({
             type: "success",
             message: "resource " + action + " success",
@@ -537,14 +534,13 @@ export default {
       }
     },
     updateMigrate() {
-      let _this = this;
-      // let url = "/resources/" + _this.chosenItem.id + "/migrate";
-      let id = _this.chosenItem.id;
-      let data = _this.migrate;
+      // let url = "/resources/" + this.chosenItem.id + "/migrate";
+      let id = this.chosenItem.id;
+      let data = this.migrate;
 
       updateMigrates({id, data}).then(() => {
-        _this.disableMigrateDialog = false;
-        _this.getResources();
+        this.disableMigrateDialog = false;
+        this.getResources();
         this.$message({
           type: "success",
           message: "resource migrate success",
@@ -552,12 +548,11 @@ export default {
       });
     },
     deleteItem() {
-      let _this = this;
-      // let url = "/resources/" + _this.chosenItem.id + "/delete";
-      let id = _this.chosenItem.id;
+      // let url = "/resources/" + this.chosenItem.id + "/delete";
+      let id = this.chosenItem.id;
 
       deleteItems(id).then(() => {
-        _this.getResources();
+        this.getResources();
         this.$message({
           type: "success",
           message: "resource delete success",
@@ -603,17 +598,16 @@ export default {
       }
     },
     locates() {
-      let _this = this;
       let location = {};
       location.node_level = [];
-      location.rsc_id = _this.chosenItem.id;
+      location.rsc_id = this.chosenItem.id;
 
-      for (const key in _this.rscLocation) {
-        location[key] = _this.rscLocation[key];
-        if (_this.rscLocation[key].length == 0) {
+      for (const key in this.rscLocation) {
+        location[key] = this.rscLocation[key];
+        if (this.rscLocation[key].length == 0) {
           continue;
-        } else if (_this.rscLocation[key].length >= 1) {
-          for (const item of _this.rscLocation[key]) {
+        } else if (this.rscLocation[key].length >= 1) {
+          for (const item of this.rscLocation[key]) {
             location.node_level.push({
               level: key,
               node: item,
@@ -622,13 +616,13 @@ export default {
         }
       }
 
-      // let url = "/resources/" + _this.chosenItem.id + "/location";
-      let id = _this.chosenItem.id;
+      // let url = "/resources/" + this.chosenItem.id + "/location";
+      let id = this.chosenItem.id;
       let data = location;
 
       updateLocations({ id, data }).then(() => {
-        _this.rscLocationVisible = false;
-        _this.getResources();
+        this.rscLocationVisible = false;
+        this.getResources();
         this.$message({
           type: "success",
           message: "location update success",
@@ -636,14 +630,13 @@ export default {
       });
     },
     coordination() {
-      let _this = this;
-      // let url = "/resources/" + _this.chosenItem.id + "/colocation";
-      let id = _this.chosenItem.id;
-      let data =  _this.rscColocation;
+      // let url = "/resources/" + this.chosenItem.id + "/colocation";
+      let id = this.chosenItem.id;
+      let data =  this.rscColocation;
 
       updateCoordination({ id, data }).then(() => {
-        _this.rscColocationVisible = false;
-        _this.getResources();
+        this.rscColocationVisible = false;
+        this.getResources();
         this.$message({
           type: "success",
           message: "location update success",
@@ -651,13 +644,12 @@ export default {
       });
     },
     orders() {
-      let _this = this;
-      // let url = "/resources/" + _this.chosenItem.id + "/order";
-      let id = _this.chosenItem.id;
-      let data = _this.rscOrder;
+      // let url = "/resources/" + this.chosenItem.id + "/order";
+      let id = this.chosenItem.id;
+      let data = this.rscOrder;
       updateOrder({ id, data }).then(() => {
-        _this.rscOrderVisible = false;
-        _this.getResources();
+        this.rscOrderVisible = false;
+        this.getResources();
         this.$message({
           type: "success",
           message: "location update success",
@@ -665,14 +657,12 @@ export default {
       });
     },
     deleteMetaTag(value) {
-      let _this = this;
-      delete _this.addForm.meta_attributes[value];
+      delete this.addForm.meta_attributes[value];
     },
     deleteInsTag(value) {
-      let _this = this;
-      console.log(_this.addForm.instance_attributes);
-      delete _this.addForm.instance_attributes[value];
-      console.log(_this.addForm.instance_attributes);
+      console.log(this.addForm.instance_attributes);
+      delete this.addForm.instance_attributes[value];
+      console.log(this.addForm.instance_attributes);
     },
     reset() {
       this.nodeList = [];

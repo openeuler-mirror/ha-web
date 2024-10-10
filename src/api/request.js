@@ -24,7 +24,7 @@ axios.interceptors.response.use(function (response) {
     // 否则的话抛出错误
     if (response.status === 403) {
     
-      localStorage.removeItem("userLogin");
+      localStorage.removeItem("userName");
       document.cookie =
         "beegosessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         location.replace('/')
