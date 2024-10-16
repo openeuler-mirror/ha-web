@@ -1,5 +1,10 @@
 <template>
   <div class="top-bar">
+    <!-- 菜单伸缩展开按钮 -->
+    <el-button class="btn-menu" @click="toggleCollapse">
+      <i class="iconfont icon-caidan"></i>
+    </el-button>
+    <!-- 翻译 -->
     <el-dropdown class="button-group">
       <el-button class="btn-user" type="default">
         <i class="iconfont icon-yonghutouxiang"></i>
@@ -7,13 +12,14 @@
       </el-button>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item @click.native="refreshSetting">{{
-          $t("topbar.refresh")
-        }}</el-dropdown-item>
+      $t("topbar.refresh")
+    }}</el-dropdown-item>
         <el-dropdown-item @click.native="logout">{{
-          $t("topbar.logout")
-        }}</el-dropdown-item>
+      $t("topbar.logout")
+    }}</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
+    <!-- 用户设置 -->
     <el-dropdown class="button-group">
       <el-button class="btn-user" type="default">
         <span>{{ language }}</span>
@@ -26,22 +32,17 @@
     <el-dialog :title="$t('topbar.refresh')" :visible.sync="disableRefresh" width="30%">
       <span>{{ $t("topbar.refresh") }}:</span>
       <el-select v-model="value" :placeholder="$t('common.pleaseSelect')">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.text"
-          :value="item.value"
-        >
+        <el-option v-for="item in options" :key="item.value" :label="item.text" :value="item.value">
         </el-option>
       </el-select>
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="disableRefresh = false">{{
-          $t("common.cancel")
-        }}</el-button>
+      $t("common.cancel")
+    }}</el-button>
         <el-button type="primary" @click="refreshDetermined">{{
-          $t("common.confirm")
-        }}</el-button>
+      $t("common.confirm")
+          }}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -53,6 +54,7 @@ import { logout } from "@/api/login";
 export default {
   data() {
     return {
+      isCollapse: false,
       disableRefresh: false,
       options: [
         { text: this.$t("topbar.disableRefresh"), value: 0 },
@@ -70,6 +72,10 @@ export default {
     this.username = this.$store.state.username;
   },
   methods: {
+    toggleCollapse() {
+      this.isCollapse = !this.isCollapse;
+      this.$emit('toggleCollapse', this.isCollapse)
+    },
     refreshSetting() {
       this.disableRefresh = true;
     },
@@ -88,19 +94,19 @@ export default {
     },
 
     handleChangeLanguage(lang) {
-      switch(lang) {
+      switch (lang) {
         case 'zh-CN':
           this.language = '中文';
           break;
         case 'en-US':
           this.language = 'English';
           break;
-        default: 
+        default:
           this.language = '中文';
           break;
       }
       this.$i18n.locale = lang;
-      localStorage.setItem('language',lang);
+      localStorage.setItem('language', lang);
     }
   },
 };
@@ -110,13 +116,30 @@ export default {
 .top-bar {
   color: #fff;
   height: 60px;
+
+  .btn-menu {
+    float: left;
+    padding: 0 25px;
+    margin: 0;
+    border: none;
+    border-bottom: 1px solid #ecf0f6;
+    background: transparent;
+
+    i {
+      font-size: 26px;
+      line-height: 60px;
+    }
+  }
+
   .button-group {
     float: right;
+
     .btn-user {
       border: none;
       color: #999;
       background: transparent;
     }
+
     .btn-user:hover {
       background: transparent;
     }

@@ -121,11 +121,11 @@
         {{ $t("operations.refresh") }}
       </el-button>
     </el-row>
-    <dialogs
+    <resource-dialogs
       ref="ezDialog"
       @refresh="getResources"
       @cleanSelecting="cleanSelets"
-    ></dialogs>
+    ></resource-dialogs>
 
     <!-- migrate -->
     <el-dialog
@@ -333,7 +333,7 @@ import {
   updateOrder,
   updateCoordination,
 } from "@/api/homeTable";
-import Dialogs from "@/views/Dialogs";
+import ResourceDialogs from "@/views/ResourceDialogs";
 export default {
   props: ["nodeLists"],
   data() {
@@ -400,7 +400,7 @@ export default {
     },
   },
   components: {
-    Dialogs,
+    ResourceDialogs,
   },
   created() {},
   methods: {

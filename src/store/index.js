@@ -15,8 +15,8 @@ const state = {
 }
 
 const mutations = {
-    mutationsShowDialog(state, n = '0') {
-        return state.count = n
+    mutationsShowDialog(state, activeName = 'system') {
+        return state.count = activeName
     },
     mutationsUsername(state,data) {
         return state.username = data
